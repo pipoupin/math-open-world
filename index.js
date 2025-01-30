@@ -1,5 +1,3 @@
-const mod = (n,m) => ((n % m) + m) % m
-
 const canvas = document.getElementById("game")
 const ctx = canvas.getContext("2d")
 
@@ -82,8 +80,14 @@ function update() {
 	if (!keys["q"] && !keys["d"])
 		player.dx = Math.sign(player.dx) * Math.max(Math.abs(player.dx) - player.acceleration, 0)
 
-	player.dy = Math.sign(player.dy) * Math.min(player.fullSpeed, Math.abs(player.dy))
-	player.dx = Math.sign(player.dx) * Math.min(player.fullSpeed, Math.abs(player.dx))
+	if (player.dx && player.dy) {
+		player.dy = Math.sign(player.dy) * Math.min(player.fullSpeed/1.3, Math.abs(player.dy))
+		player.dx = Math.sign(player.dx) * Math.min(player.fullSpeed/1.3, Math.abs(player.dx))
+	}
+	else {
+		player.dy = Math.sign(player.dy) * Math.min(player.fullSpeed, Math.abs(player.dy))
+		player.dx = Math.sign(player.dx) * Math.min(player.fullSpeed, Math.abs(player.dx))
+	}
 
 	const newWorldX = player.worldX + player.dx
 	const newWorldY = player.worldY + player.dy
