@@ -88,14 +88,14 @@ function update() {
 	const newWorldX = player.worldX + player.dx
 	const newWorldY = player.worldY + player.dy
     
-	if (0 <= newWorldX && newWorldX <= WORLD_WIDTH - player.hitbox.width) {
+	if (0 <= newWorldX && newWorldX <= WORLD_WIDTH - TILE_SIZE) {
 		player.worldX = newWorldX
 	}
 	else {
 		player.dx = 0
 	}
     
-	if (0 <= newWorldY && newWorldY <= WORLD_HEIGHT - player.hitbox.height) {
+	if (0 <= newWorldY && newWorldY <= WORLD_HEIGHT - TILE_SIZE) {
 		player.worldY = newWorldY
 	}
 	else {
