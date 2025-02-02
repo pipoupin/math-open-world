@@ -1,8 +1,9 @@
 const canvas = document.getElementById("game")
-const ctx = canvas.getContext("2d")
-
 canvas.width = window.innerWidth
 canvas.height = window.innerHeight
+
+const ctx = canvas.getContext("2d")
+ctx.imageSmoothingEnabled = false
 
 const TILE_SIZE = 128
 
@@ -36,46 +37,47 @@ const MAP_HEIGHT = gameMap.length
 const WORLD_WIDTH = MAP_WIDTH * TILE_SIZE
 const WORLD_HEIGHT = MAP_HEIGHT * TILE_SIZE
 
-async function loadImage(src) {
-	return new Promise((resolve, reject) => {
-		const img = new Image()
-		img.src = src
-		img.onload = () => resolve(img)
-		img.onerror = (err) => reject(err)
-	})
-}
-
 class TileSet {
+  /**
+   * @param {String} src - source of the image in the DOM 
+   * @param {number} tile_size - tile size in the image
+   */
   constructor(src, tile_size) {
-    this.tile_size = tile_size
-    this.img = null
-    this.loadImage(src)
+    this.tile_size = tile_size;
+    this.img = new Image();
+    
+    const imgElement = document.querySelector(`img[src="${src}"]`);
+    if (imgElement) {
+      this.img.src = imgElement.src;
+      this.img.onload = () => {
+        console.log(`Image loaded successfully: ${src}`);
+      };
+    } else {
+      console.error(`Failed to find image in the DOM: ${src}`);
+    }
   }
 
-  async loadImage(src) {
-		try {
-		this.img = await loadImage(src)
-		} catch (err){
-			console.error("Failed to load tileset image:", err)
-		}
-  }
-
-	/**
-	 * @param {number} tileNum nth-tile
-	 */
+  /**
+   * @param {CanvasRenderingContext2D} ctx - canvas context to draw
+   * @param {number} tileNum nth-tile
+   * @param {number} x - X screen coord
+   * @param {number} y - Y screen coord
+   */
   drawTile(tileNum, x, y) {
-    if (!this.img) return
+    if (!this.img.complete) {
+      console.warn("Image not loaded yet")
+      return
+    }
 
-    const tilesPerRow = Math.floor(this.img.width / this.tile_size)
+    const tilesPerRow = this.img.width / this.tile_size
     const tileX = (tileNum - 1) % tilesPerRow * this.tile_size
     const tileY = Math.floor((tileNum - 1) / tilesPerRow) * this.tile_size
 
+
     ctx.drawImage(
       this.img,
-      tileX, tileY,
-      this.tile_size, this.tile_size,
-      x, y,
-      TILE_SIZE, TILE_SIZE
+      tileX, tileY, this.tile_size, this.tile_size,
+      Math.floor(x), Math.floor(y), TILE_SIZE, TILE_SIZE
     )
   }
 }
@@ -93,11 +95,11 @@ const player = {
   dx: 0,
   dy: 0,
   hitbox: {
-    width: 50,
-    height: 80
+    width: 64,
+    height: 64
   },
-  worldX: 0,
-  worldY: 0,
+  worldX: WORLD_WIDTH/2,
+  worldY: WORLD_HEIGHT/2,
   fullSpeed: 10,
   acceleration: 4,
 	direction: 0,
@@ -113,6 +115,7 @@ window.addEventListener("keyup", (e) => keys[e.key] = false)
 window.addEventListener("resize", () => {
   canvas.width = window.innerWidth
   canvas.height = window.innerHeight
+	ctx.imageSmoothingEnabled = false
   player.x = canvas.width / 2
   player.y = canvas.height / 2
 })
