@@ -234,8 +234,8 @@ function update() {
     }).forEach(hitbox =>{
       // j'ai essayé ça mais ca marche pas
       //
-      player.worldX -= player.dx
-      player.dx = 0
+      //player.worldX -= player.dx
+      //player.dx = 0
       console.log("test")
     })
   } else {
@@ -250,8 +250,8 @@ function update() {
     }).forEach(hitbox =>{
       // j'ai essayé ça mais ca marche pas
       //
-      player.worldY -= player.dy
-      player.dy = 0
+      //player.worldY -= player.dy
+      //player.dy = 0
       console.log("test")
     })
   } else {
