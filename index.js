@@ -139,7 +139,7 @@ class Hitbox{
 			return false
 		}
 		if(this.get_corner(1).y >= hitbox.get_corner(3).y ^ this.get_corner(3).y <= hitbox.get_corner(1).y){
-		return false
+		    return false
 		}
 		return true
 	}
@@ -156,6 +156,14 @@ class PlayerHitbox extends Hitbox{
 		this.x2 = this.x1 + this.width
 		this.y2 = this.y1 + this.height
 	}
+
+    is_colliding(){
+        if(collision_hitboxes.filter(function funct(item){
+            return player.hitbox.is_touching(item)
+        }).length > 0){
+          return true
+        }
+    }
 }
 
 // Test hitbox
@@ -229,15 +237,15 @@ function update() {
   if (newWorldX >= 0 && newWorldX <= WORLD_WIDTH - player.hitbox.width) {
     player.worldX = newWorldX
 
-		collision_hitboxes.filter(function funct(item){
-      return player.hitbox.is_touching(item)
-    }).forEach(hitbox =>{
+	if(player.hitbox.is_colliding()){
       // j'ai essayé ça mais ca marche pas
       //
       //player.worldX -= player.dx
       //player.dx = 0
+      //
+      //bonne chance mdr
       console.log("test")
-    })
+    }
   } else {
     player.dx = 0
   }
@@ -245,15 +253,15 @@ function update() {
   if (newWorldY >= 0 && newWorldY <= WORLD_HEIGHT - player.hitbox.height) {
     player.worldY = newWorldY
 
-		collision_hitboxes.filter(function funct(item){
-      return player.hitbox.is_touching(item)
-    }).forEach(hitbox =>{
+	if(player.hitbox.is_colliding()){
       // j'ai essayé ça mais ca marche pas
       //
       //player.worldY -= player.dy
       //player.dy = 0
+      //
+      //bonne chance mdr
       console.log("test")
-    })
+    }
   } else {
     player.dy = 0
   }
