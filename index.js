@@ -135,11 +135,9 @@ class Hitbox{
 
 	is_touching(hitbox){
 		if(this.get_corner(1).x > hitbox.get_corner(2).x || this.get_corner(2).x < hitbox.get_corner(1).x){
-			console.log("test 1")
 			return false
 		}
 		if(this.get_corner(1).y > hitbox.get_corner(3).y || this.get_corner(3).y < hitbox.get_corner(1).y){
-			console.log("test 2")
 			return false
 		}
 		return true
@@ -168,6 +166,9 @@ class PlayerHitbox extends Hitbox{
 		this.y2 = this.y1 + this.height
 	}
 }
+
+// Test hitbox
+const test_hitbox = new Hitbox(1050, 1050, 1000, 1000, true)
 
 const tileset = new TileSet("floor.png", 16)
 const playerset = new TileSet("spritesheet.png", 16)
@@ -240,9 +241,10 @@ function update() {
 		collision_hitboxes.forEach(hitbox => {
 			if(player.hitbox.is_touching(hitbox)){
 				// g essayé ca ca marche pas
-        //
-        // player.worldX -= player.dx
-        //player.dx = 0
+			        //
+        			// player.worldX -= player.dx
+     				//player.dx = 0
+				console.log("test")
 			}
 		});
   } else {
@@ -255,6 +257,7 @@ function update() {
 		collision_hitboxes.forEach(hitbox => {
 			if(player.hitbox.is_touching(hitbox)){
 				// chais pas faites un truc aled j'arrive pas a faire des collisions
+				console.log("test")
 			}
 		});
   } else {
