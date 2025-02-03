@@ -92,8 +92,8 @@ class Hitbox{
 		this.x2 = x2
 		this.y1 = y1
 		this.y2 = y2
-		this.width = Math.abs(x1 - x2)
-		this.height = Math.abs(y1 - y2)
+		this.width = x1 - x2
+		this.height = y1 - y2
 		hitboxes.push(this)
 		if(collision){collision_hitboxes.push(this)}
 		if(register){not_player_hitboxes.push(this)}
@@ -127,36 +127,27 @@ class Hitbox{
 	}
 
 	render(){
-		ctx.strokeRect(this.get_corner(4).x - this.width / 2 - camera.x,
-						this.get_corner(4).y - this.height / 2 - camera.y,
-						this.width,
-						this.height)
+    ctx.strokeStyle = "blue"
+    ctx.strokeRect(this.get_corner(1).x- camera.x,
+            this.get_corner(1).y- camera.y,
+            this.width,
+            this.height)
 	}
 
 	is_touching(hitbox){
-		if(this.get_corner(1).x > hitbox.get_corner(2).x || this.get_corner(2).x < hitbox.get_corner(1).x){
+		if(this.get_corner(1).x >= hitbox.get_corner(2).x ^ this.get_corner(2).x <= hitbox.get_corner(1).x){
 			return false
 		}
-		if(this.get_corner(1).y > hitbox.get_corner(3).y || this.get_corner(3).y < hitbox.get_corner(1).y){
-			return false
+		if(this.get_corner(1).y >= hitbox.get_corner(3).y ^ this.get_corner(3).y <= hitbox.get_corner(1).y){
+		return false
 		}
 		return true
-	}
-
-	get_touching_hitboxes(){
-		let touching_hitboxes = []
-		not_player_hitboxes.forEach(hitbox => {
-			if (this.is_touching(hitbox)){
-				touching_hitboxes.push(hitbox)
-			}
-		});
-		return touching_hitboxes
 	}
 }
 
 class PlayerHitbox extends Hitbox{
 	constructor(width, height){
-		super(0, 0, width, height, false)
+		super(width, height, 0, 0, false)
 	}
 
 	recenter(x, y){
@@ -238,15 +229,15 @@ function update() {
   if (newWorldX >= 0 && newWorldX <= WORLD_WIDTH - player.hitbox.width) {
     player.worldX = newWorldX
 
-		collision_hitboxes.forEach(hitbox => {
-			if(player.hitbox.is_touching(hitbox)){
-				// g essayé ca ca marche pas
-			        //
-        			// player.worldX -= player.dx
-     				//player.dx = 0
-				console.log("test")
-			}
-		});
+		collision_hitboxes.filter(function funct(item){
+      return player.hitbox.is_touching(item)
+    }).forEach(hitbox =>{
+      // j'ai essayé ça mais ca marche pas
+      //
+      player.worldX -= player.dx
+      player.dx = 0
+      console.log("test")
+    })
   } else {
     player.dx = 0
   }
@@ -254,12 +245,15 @@ function update() {
   if (newWorldY >= 0 && newWorldY <= WORLD_HEIGHT - player.hitbox.height) {
     player.worldY = newWorldY
 
-		collision_hitboxes.forEach(hitbox => {
-			if(player.hitbox.is_touching(hitbox)){
-				// chais pas faites un truc aled j'arrive pas a faire des collisions
-				console.log("test")
-			}
-		});
+		collision_hitboxes.filter(function funct(item){
+      return player.hitbox.is_touching(item)
+    }).forEach(hitbox =>{
+      // j'ai essayé ça mais ca marche pas
+      //
+      player.worldY -= player.dy
+      player.dy = 0
+      console.log("test")
+    })
   } else {
     player.dy = 0
   }
@@ -293,8 +287,8 @@ function update() {
   camera.y = player.worldY - canvas.height / 2
 
   //update player's hitbox
-  player.hitbox.recenter(player.worldX, player.worldY + 25)
-  player.combat_hitbox.recenter(player.worldX, player.worldY - 60)
+  player.hitbox.recenter(player.worldX + 32, player.worldY + 55)
+  player.combat_hitbox.recenter(player.worldX + 32, player.worldY)
 }
 
 function render() {
