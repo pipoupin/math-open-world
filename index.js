@@ -7,6 +7,10 @@ ctx.imageSmoothingEnabled = false
 
 const TILE_SIZE = 128
 
+var collision_hitboxes = []
+var not_player_hitboxes = []
+var hitboxes = []
+
 const gameMap = 
 	[
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -82,6 +86,89 @@ class TileSet {
   }
 }
 
+class Hitbox{
+	constructor(x1, y1, x2, y2, collision=false, register=true){
+		this.x1 = x1
+		this.x2 = x2
+		this.y1 = y1
+		this.y2 = y2
+		this.width = Math.abs(x1 - x2)
+		this.height = Math.abs(y1 - y2)
+		hitboxes.push(this)
+		if(collision){collision_hitboxes.push(this)}
+		if(register){not_player_hitboxes.push(this)}
+	}
+
+	get_corner(i){
+		if (i == 1){
+			return {
+				x: Math.min(this.x1, this.x2),
+				y: Math.min(this.y1, this.y2)
+			}
+		}
+		if (i == 2){
+			return {
+				x: Math.max(this.x1, this.x2),
+				y: Math.min(this.y1, this.y2)
+			}
+		}
+		if (i == 3){
+			return {
+				x: Math.min(this.x1, this.x2),
+				y: Math.max(this.y1, this.y2)
+			}
+		}
+		if (i == 4){
+			return {
+				x: Math.max(this.x1, this.x2),
+				y: Math.max(this.y1, this.y2)
+			}
+		}
+	}
+
+	render(){
+		ctx.strokeRect(this.get_corner(4).x - this.width / 2 - camera.x,
+						this.get_corner(4).y - this.height / 2 - camera.y,
+						this.width,
+						this.height)
+	}
+
+	is_touching(hitbox){
+		if(this.get_corner(1).x > hitbox.get_corner(2).x || this.get_corner(2).x < hitbox.get_corner(1).x){
+			console.log("test 1")
+			return false
+		}
+		if(this.get_corner(1).y > hitbox.get_corner(3).y || this.get_corner(3).y < hitbox.get_corner(1).y){
+			console.log("test 2")
+			return false
+		}
+		return true
+	}
+
+	get_touching_hitboxes(){
+		let touching_hitboxes = []
+		not_player_hitboxes.forEach(hitbox => {
+			if (this.is_touching(hitbox)){
+				touching_hitboxes.push(hitbox)
+			}
+		});
+		return touching_hitboxes
+	}
+}
+
+class PlayerHitbox extends Hitbox{
+	constructor(width, height){
+		super(0, 0, width, height, false)
+	}
+
+	recenter(x, y){
+		this.x1 = x
+		this.y1 = y
+		this.x2 = this.x1 + this.width
+		this.y2 = this.y1 + this.height
+	}
+}
+
 const tileset = new TileSet("floor.png", 16)
 const playerset = new TileSet("spritesheet.png", 16)
 const camera = {
@@ -94,10 +181,8 @@ const player = {
   y: canvas.height / 2,
   dx: 0,
   dy: 0,
-  hitbox: {
-    width: 64,
-    height: 64
-  },
+  hitbox: new PlayerHitbox(64, 64),
+  combat_hitbox: new PlayerHitbox(64, 120),
   worldX: WORLD_WIDTH/2,
   worldY: WORLD_HEIGHT/2,
   fullSpeed: 10,
@@ -151,12 +236,27 @@ function update() {
 
   if (newWorldX >= 0 && newWorldX <= WORLD_WIDTH - player.hitbox.width) {
     player.worldX = newWorldX
+
+		collision_hitboxes.forEach(hitbox => {
+			if(player.hitbox.is_touching(hitbox)){
+				// g essayé ca ca marche pas
+        //
+        // player.worldX -= player.dx
+        //player.dx = 0
+			}
+		});
   } else {
     player.dx = 0
   }
 
   if (newWorldY >= 0 && newWorldY <= WORLD_HEIGHT - player.hitbox.height) {
     player.worldY = newWorldY
+
+		collision_hitboxes.forEach(hitbox => {
+			if(player.hitbox.is_touching(hitbox)){
+				// chais pas faites un truc aled j'arrive pas a faire des collisions
+			}
+		});
   } else {
     player.dy = 0
   }
@@ -188,6 +288,10 @@ function update() {
   // Update camera position
   camera.x = player.worldX - canvas.width / 2
   camera.y = player.worldY - canvas.height / 2
+
+  //update player's hitbox
+  player.hitbox.recenter(player.worldX, player.worldY + 25)
+  player.combat_hitbox.recenter(player.worldX, player.worldY - 60)
 }
 
 function render() {
@@ -223,6 +327,11 @@ function render() {
 			player.worldY - camera.y,
 		)
 	}
+
+  //draw hitboxes (debugging purpose)
+  hitboxes.forEach(hitbox =>{
+    hitbox.render()
+  })
 
 }
 
