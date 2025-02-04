@@ -130,6 +130,7 @@ class Hitbox {
 	 * @param {CanvasRenderingContext2D} ctx
 	 */
 	render(ctx){
+        ctx.strokeStyle = "blue"
 		ctx.strokeRect(
 			this.x1 - camera.x,
 			this.y1 - camera.y,
@@ -144,17 +145,25 @@ class Hitbox {
 	 * @return {Boolean}
 	 */
 	is_colliding(hitbox) {
-		return !(this.x1 > hitbox.x2 || hitbox.x1 > this.x2 || this.y1 > hitbox.y2 || hitbox.y1 > this.y2)
+		return !(this.x1 > hitbox.x2 || hitbox.x1 > this.x2 || this.y1 > hitbox.y2 || hitbox.y1 > this.y2)
 	}
 
-	get_colliding_hitboxes() {
+	get_colliding_hitboxes(type = 0) {
 		const colliding_hitboxes = []
-		for (let i = 0; i < hitboxes.length; i++)
-			if (this.is_colliding(hitboxes[i]) && hitboxes[i].player != this.player)
-				colliding_hitboxes.push(hitboxes[i])
-		for (let i = 0; i < hitboxes.length; i++)
-			if (this.is_colliding(hitboxes[i]) && hitboxes[i].player != this.player)
-				colliding_hitboxes.push(hitboxes[i])
+        if(type < 2){
+		    for (let i = 0; i < hitboxes.length; i++){
+			    if (this.is_colliding(hitboxes[i]) && hitboxes[i].player != this.player){
+				    colliding_hitboxes.push(hitboxes[i])
+                }
+            }
+        }
+        if(type == 0 || type == 2){
+            for (let i = 0; i < collision_hitboxes.length; i++){
+                if (this.is_colliding(collision_hitboxes[i]) && collision_hitboxes[i].player != this.player){
+                    colliding_hitboxes.push(collision_hitboxes[i])
+                }
+            }
+        }
 		return colliding_hitboxes
 	}
 
@@ -165,7 +174,7 @@ class Hitbox {
 		this.y2 = y + this.height / 2
 	}
 
-	destructor() {
+	destructor() {
 		collision_hitboxes.splice(collision_hitboxes.indexOf(this), 1)
 	}
 }
@@ -189,7 +198,7 @@ const player = {
   dx: 0,
   dy: 0,
   hitbox: new Hitbox(0, 0, 64, 64, true, true),
-  combat_hitbox: new Hitbox(0,0, 64, 80, false, true),
+  combat_hitbox: new Hitbox(0,0, 64, 110, false, true),
   worldX: WORLD_WIDTH/2,
   worldY: WORLD_HEIGHT/2,
   fullSpeed: 10,
@@ -243,12 +252,32 @@ function update() {
 
   if (newWorldX >= 0 && newWorldX <= WORLD_WIDTH - player.hitbox.width) {
     player.worldX = newWorldX
+
+	if(player.hitbox.get_colliding_hitboxes(2).length > 0){
+      // j'ai essayé ça mais ca marche pas
+      //
+      //player.worldX -= player.dx
+      //player.dx = 0
+      //
+      //bonne chance mdr
+      console.log("test")
+    }
   } else {
     player.dx = 0
   }
 
   if (newWorldY >= 0 && newWorldY <= WORLD_HEIGHT - player.hitbox.height) {
     player.worldY = newWorldY
+
+	if(player.hitbox.get_colliding_hitboxes(2).length > 0){
+      // j'ai essayé ça mais ca marche pas
+      //
+      //player.worldY -= player.dy
+      //player.dy = 0
+      //
+      //bonne chance mdr
+      console.log("test")
+    }
   } else {
     player.dy = 0
   }
@@ -269,7 +298,7 @@ function update() {
 			player.direction = 3
 		}
 
-		if (player.dx || player.dy)
+		if (player.dx || player.dy)
 			player.animation_step++
 		else
 			player.animation_step = -1
@@ -282,7 +311,7 @@ function update() {
   camera.y = player.worldY - canvas.height / 2
 
   //update player's hitbox
-  player.hitbox.center_around(player.worldX, player.worldY)
+  player.hitbox.center_around(player.worldX, player.worldY + 25)
   player.combat_hitbox.center_around(player.worldX, player.worldY)
 }
 
@@ -315,6 +344,9 @@ function render() {
   hitboxes.forEach(hitbox =>{
     hitbox.render(ctx)
   })
+  collision_hitboxes.forEach(hitbox => {
+    hitbox.render(ctx)
+  })
 
 }
 
@@ -323,5 +355,7 @@ function gameLoop() {
   render()
   requestAnimationFrame(gameLoop)
 }
+
+const test_hitbox = new Hitbox(1000, 1000, 1050, 1050, true, false)
 
 gameLoop()
