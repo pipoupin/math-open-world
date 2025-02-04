@@ -7,9 +7,8 @@ ctx.imageSmoothingEnabled = false
 
 const TILE_SIZE = 128
 
-var collision_hitboxes = []
-var not_player_hitboxes = []
-var hitboxes = []
+const collision_hitboxes = [] // for "body" collision
+const hitboxes = [] // for attacks
 
 const gameMap = 
 	[
@@ -40,6 +39,11 @@ const MAP_HEIGHT = gameMap.length
 
 const WORLD_WIDTH = MAP_WIDTH * TILE_SIZE
 const WORLD_HEIGHT = MAP_HEIGHT * TILE_SIZE
+
+function destroy(object) {
+	object.destructor()
+	delete object
+}
 
 class TileSet {
   /**
@@ -86,88 +90,91 @@ class TileSet {
   }
 }
 
-class Hitbox{
-	constructor(x1, y1, x2, y2, collision=false, register=true){
-		this.x1 = x1
-		this.x2 = x2
-		this.y1 = y1
-		this.y2 = y2
-		this.width = x1 - x2
-		this.height = y1 - y2
-		hitboxes.push(this)
-		if(collision){collision_hitboxes.push(this)}
-		if(register){not_player_hitboxes.push(this)}
+class Hitbox {
+	/*
+	 * @param {Number} x1 - left x
+	 * @param {Number} y1 - top y
+	 * @param {Number} x2 - right x
+	 * @param {Number} y2 - bot y
+	 * @param {Boolean} collision
+	 */
+	constructor(x1, y1, x2, y2, collision=false, player=false){
+		this.x1 = Math.min(x1, x2)
+		this.x2 = Math.max(x1, x2)
+		this.y1 = Math.min(y1, y2)
+		this.y2 = Math.max(y1, y2)
+
+		this.width = Math.abs(x1 - x2)
+		this.height = Math.abs(y1 - y2)
+
+		if(collision) collision_hitboxes.push(this)
+		else hitboxes.push(this)
+		
+		this.player = player
 	}
 
-	get_corner(i){
-		if (i == 1){
-			return {
-				x: Math.min(this.x1, this.x2),
-				y: Math.min(this.y1, this.y2)
-			}
-		}
-		if (i == 2){
-			return {
-				x: Math.max(this.x1, this.x2),
-				y: Math.min(this.y1, this.y2)
-			}
-		}
-		if (i == 3){
-			return {
-				x: Math.min(this.x1, this.x2),
-				y: Math.max(this.y1, this.y2)
-			}
-		}
-		if (i == 4){
-			return {
-				x: Math.max(this.x1, this.x2),
-				y: Math.max(this.y1, this.y2)
-			}
+
+	/*
+	 * @param {Number} i - index (0, 1, 2 or 3)
+	 */
+	get_corner(i) {
+		switch(i) {
+			case 0: return {x: this.x1, y: this.y1}
+			case 1: return {x: this.x2, y: this.y1}
+			case 2: return {x: this.x1, y: this.y2}
+			case 3: return {x: this.x2, y: this.y2}
 		}
 	}
 
-	render(){
-    ctx.strokeStyle = "blue"
-    ctx.strokeRect(this.get_corner(1).x- camera.x,
-            this.get_corner(1).y- camera.y,
-            this.width,
-            this.height)
+	/*
+	 * @param {CanvasRenderingContext2D} ctx
+	 */
+	render(ctx){
+		ctx.strokeRect(
+			this.x1 - camera.x,
+			this.y1 - camera.y,
+			this.width,
+			this.height
+		)
 	}
 
-	is_touching(hitbox){
-		if(this.get_corner(1).x >= hitbox.get_corner(2).x ^ this.get_corner(2).x <= hitbox.get_corner(1).x){
-			return false
-		}
-		if(this.get_corner(1).y >= hitbox.get_corner(3).y ^ this.get_corner(3).y <= hitbox.get_corner(1).y){
-		    return false
-		}
-		return true
+
+	/*
+	 * @param {Hitbox} hitbox
+	 * @return {Boolean}
+	 */
+	is_colliding(hitbox) {
+		return !(this.x1 > hitbox.x2 || hitbox.x1 > this.x2 || this.y1 > hitbox.y2 || hitbox.y1 > this.y2)
+	}
+
+	get_colliding_hitboxes() {
+		const colliding_hitboxes = []
+		for (let i = 0; i < hitboxes.length; i++)
+			if (this.is_colliding(hitboxes[i]) && hitboxes[i].player != this.player)
+				colliding_hitboxes.push(hitboxes[i])
+		for (let i = 0; i < hitboxes.length; i++)
+			if (this.is_colliding(hitboxes[i]) && hitboxes[i].player != this.player)
+				colliding_hitboxes.push(hitboxes[i])
+		return colliding_hitboxes
+	}
+
+	center_around(x, y) {
+		this.x1 = x - this.width / 2
+		this.x2 = x + this.width / 2
+		this.y1 = y - this.height / 2
+		this.y2 = y + this.height / 2
+	}
+
+	destructor() {
+		collision_hitboxes.splice(collision_hitboxes.indexOf(this), 1)
 	}
 }
 
-class PlayerHitbox extends Hitbox{
-	constructor(width, height){
-		super(width, height, 0, 0, false)
-	}
-
-	recenter(x, y){
-		this.x1 = x
-		this.y1 = y
-		this.x2 = this.x1 + this.width
-		this.y2 = this.y1 + this.height
-	}
-
-    is_colliding(){
-        if(collision_hitboxes.filter(function funct(item){
-            return player.hitbox.is_touching(item)
-        }).length > 0){
-          return true
-        }
-    }
+class Entity {
 }
 
-// Test hitbox
-const test_hitbox = new Hitbox(1050, 1050, 1000, 1000, true)
+class Player extends Entity {
+}
 
 const tileset = new TileSet("floor.png", 16)
 const playerset = new TileSet("spritesheet.png", 16)
@@ -181,8 +188,8 @@ const player = {
   y: canvas.height / 2,
   dx: 0,
   dy: 0,
-  hitbox: new PlayerHitbox(64, 64),
-  combat_hitbox: new PlayerHitbox(64, 120),
+  hitbox: new Hitbox(0, 0, 64, 64, true, true),
+  combat_hitbox: new Hitbox(0,0, 64, 80, false, true),
   worldX: WORLD_WIDTH/2,
   worldY: WORLD_HEIGHT/2,
   fullSpeed: 10,
@@ -295,8 +302,8 @@ function update() {
   camera.y = player.worldY - canvas.height / 2
 
   //update player's hitbox
-  player.hitbox.recenter(player.worldX + 32, player.worldY + 55)
-  player.combat_hitbox.recenter(player.worldX + 32, player.worldY)
+  player.hitbox.center_around(player.worldX, player.worldY)
+  player.combat_hitbox.center_around(player.worldX, player.worldY)
 }
 
 function render() {
@@ -319,23 +326,14 @@ function render() {
   }
 
   // Draw player
-	
-	if (player.animation_step > -1) {
-		playerset.drawTile(4 * player.direction + player.animation_step + 2,
-			player.worldX - camera.x,
-			player.worldY - camera.y,
-		)
-	}
-	else {
-		playerset.drawTile(4 * player.direction + 1,
-			player.worldX - camera.x,
-			player.worldY - camera.y,
-		)
-	}
+	playerset.drawTile(4 * player.direction + player.animation_step + 2,
+		player.worldX - camera.x - TILE_SIZE / 2,
+		player.worldY - camera.y - TILE_SIZE / 2
+	)
 
   //draw hitboxes (debugging purpose)
   hitboxes.forEach(hitbox =>{
-    hitbox.render()
+    hitbox.render(ctx)
   })
 
 }

@@ -1,11 +1,11 @@
 body {
-	display: flex;
-	justify-content: center;
-	align-items: center;
+	margin: 0;
+	padding: 0;
 }
 
 canvas {
 	image-rendering: pixelated;
 	image-rendering: -moz-crisp-edges;
 	image-rendering: crisp-edges;
+	display: block;
 }
