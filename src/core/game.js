@@ -36,8 +36,10 @@ export class Game {
 	async run() {
 		// create class objects
 		this.inputHandler = new InputHandler()
+		const default_tileset = await Tileset.create(this, "images/map.png", 16)
 		this.maps = [
-			await Map.create(this, 'map.json', await Tileset.create(this, 'images/map.png', 16))
+			await Map.create(this, 'map.json', default_tileset),
+			await Map.create(this, 'map copy.json', default_tileset)
 		]
 		this.current_map = 0 // "scene"
 		this.map = this.maps[this.current_map]
@@ -67,5 +69,10 @@ export class Game {
 		this.update(current_time)
 		this.render()
 		requestAnimationFrame(this.loop.bind(this))
+	}
+
+	set_current_map(new_map){
+		this.current_map = new_map
+		this.map = this.maps[this.current_map]
 	}
 }
