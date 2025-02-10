@@ -38,9 +38,10 @@ export class Game {
 		// create class objects
 		this.inputHandler = new InputHandler()
 		const default_tileset = await Tileset.create(this, "images/map.png", 16)
+		const alternative_tileset = await Tileset.create(this, "images/floor.png", 16)
 		this.maps = [
 			await Map.create(this, 'map.json', default_tileset),
-			await Map.create(this, 'map copy.json', default_tileset)
+			await Map.create(this, 'map copy.json', alternative_tileset)
 		]
 		this.current_map = 0 // "scene"
 		this.map = this.maps[this.current_map]
@@ -53,8 +54,9 @@ export class Game {
 			new Hitbox(this, this.get_current_map(), 0, 0, this.TILE_SIZE, this.TILE_SIZE, false, false),
 			this.TILE_SIZE /2, this.TILE_SIZE / 2, 200))
 		
-		// test hitbox for "command" parameter and for map switch
+		// test hitboxes for "command" parameter and for map switch
 		new Hitbox(this, this.get_current_map(), 1000, 1000, this.TILE_SIZE, this.TILE_SIZE, false, false, function f(){this.game.set_map(1)})
+		new Hitbox(this, this.maps[1], 500, 500, this.TILE_SIZE, this.TILE_SIZE, false, false, function f(){this.game.set_map(0)})
 
 		requestAnimationFrame(this.loop.bind(this))
 	}
