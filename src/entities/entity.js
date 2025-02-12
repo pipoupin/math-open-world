@@ -93,10 +93,12 @@ export class Entity {
 
   backPositionX() {
     this.worldX -= this.dx
+    this.dx = 0
   }
 
   backPositionY() {
     this.worldY -= this.dy
+    this.dy = 0
   }
 
   handleAnimation(current_time) {
