@@ -1,12 +1,12 @@
 export class Map {
-	constructor(game, tileset) {
+	constructor(game, tileset) {
 		this.game = game
 		this.tileset = tileset
 		this.layers = []
 		this.world = {}
 	}
 
-	static async create(game, src, tileset) {
+	static async create(game, src, tileset) {
 		const map = new Map(game, tileset)
     try {
 			await map.load(src)
@@ -27,7 +27,7 @@ export class Map {
 			this.height = body.height
 			this.world.width = this.width * this.game.TILE_SIZE
 			this.world.height = this.height * this.game.TILE_SIZE
-			for (let layer of body.layers) {
+			for (let layer of body.layers) {
 				if (layer.type === "tilelayer")
 					this.layers.push(layer.data)
 			}

@@ -20,7 +20,7 @@ export class Tileset {
 		const img = new Image()
 		img.src = src
 		this.img = img
-		await new Promise((resolve, reject) => { 
+		await new Promise((resolve, reject) => { 
 			img.onload = resolve
 			img.onerror = reject
 		})

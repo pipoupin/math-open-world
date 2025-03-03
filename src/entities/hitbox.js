@@ -1,5 +1,6 @@
 import { Game } from "../core/game.js"
 import { Map } from "../world/map.js"
+import { Entity } from "./entity.js"
 
 export class Hitbox {
 	/**
@@ -11,7 +12,7 @@ export class Hitbox {
 	 * @param {Number} height - hitbox height
 	 * @param {boolean} collision - is the hitbox a collision hitbox
 	 * @param {boolean} [player=false] - is the hitbox a player's hitbox
-	 * @param {(entity) => void} [command=function f(entity){}] - function executed when colliding with the an entity
+	 * @param {(entity: Entity) => void} [command=function f(entity){}] - function executed when colliding with the an entity
 	 */
 	constructor(game, map, x, y, width, height, collision=false, player=false, command=function f(){}){
 		this.game = game
@@ -60,7 +61,7 @@ export class Hitbox {
 
 
 	/**
-	 * @param {Hitbox} hitbox
+	 * @param {Hitbox} hitbox
 	 * @return {Boolean}
 	 */
 	is_colliding(hitbox) {
