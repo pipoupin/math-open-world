@@ -59,18 +59,6 @@ export class Player extends Entity {
 
 		super.update(current_time)
 
-		this.collision_hitbox.get_colliding_hitboxes(true, false).forEach(hitbox => {
-			hitbox.command()
-		})
-
-		this.combat_hitbox.get_colliding_hitboxes(false, true).forEach(hitbox => {
-			hitbox.command()
-		})
-
-		this.collision_hitbox.get_colliding_hitboxes(false, false).forEach(hitbox => {
-			hitbox.command()
-		})
-
 		this.collision_hitbox.set(this.worldX - this.game.TILE_SIZE / 2, this.worldY)
 		this.combat_hitbox.set(this.worldX - this.game.TILE_SIZE / 2, this.worldY - this.game.TILE_SIZE / 2)
 	}

@@ -11,7 +11,7 @@ export class Hitbox {
 	 * @param {Number} height - hitbox height
 	 * @param {boolean} collision - is the hitbox a collision hitbox
 	 * @param {boolean} [player=false] - is the hitbox a player's hitbox
-	 * @param {() => void} [command=function f(){}] - function executed when colliding with the player
+	 * @param {(entity) => void} [command=function f(entity){}] - function executed when colliding with the an entity
 	 */
 	constructor(game, map, x, y, width, height, collision=false, player=false, command=function f(){}){
 		this.game = game
@@ -33,7 +33,6 @@ export class Hitbox {
 
 		this.command = command
 	}
-
 
 	/**
 	 * @param {Number} i - index (0, 1, 2 or 3)
@@ -92,8 +91,8 @@ export class Hitbox {
 		}
 
 		if(!(combat || collision)){
-			for (let i = 0; i < this.game.hitboxes.length; i++){
-				if((! this.game.hitboxes[i] in colliding_hitboxes) && (!this.game.hitboxes[i] in this.game.collision_hitboxes) && (! this.game.hitboxes[i] in this.game.combat_hitboxes)){
+			for (let i = 0; i < this.game.hitboxes.length; i++) {
+				if( (! this.game.hitboxes[i] in colliding_hitboxes) && (!this.game.hitboxes[i] in this.game.collision_hitboxes) && (! this.game.hitboxes[i] in this.game.combat_hitboxes)){
 					if (this.is_colliding(this.game.hitboxes[i]))
 						colliding_hitboxes.push(this.game.collision_hitboxes[i])
 				}
@@ -115,6 +114,13 @@ export class Hitbox {
 		this.y1 = y
 		this.x2 = x + this.width
 		this.y2 = y + this.height
+	}
+
+	move_by(dx, dy) {
+		this.x1 += dx
+		this.x2 += dx
+		this.y1 += dy
+		this.y2 += dy
 	}
 
 	set_map(new_map){

@@ -1,11 +1,12 @@
 export class Tileset {
-	constructor(game, tile_size) {
-		this.tile_size = tile_size
+	constructor(game, img_tile_size, screen_tile_size) {
+		this.img_tile_size = img_tile_size
+		this.screen_tile_size = screen_tile_size
 		this.game = game
 	}
 
-	static async create(game, src, tile_size) {
-		const tileset = new Tileset(game, tile_size)
+	static async create(game, src, img_tile_size, screen_tile_size) {
+		const tileset = new Tileset(game, img_tile_size, screen_tile_size)
 		try {
 			await tileset.load(src)
 		} catch (error) {
@@ -26,15 +27,15 @@ export class Tileset {
 	}
 
 	drawTile(tile_num, screenX, screenY) {
-		const tilesPerRow = this.img.width / this.tile_size
-		const tileX = (tile_num - 1) % tilesPerRow * this.tile_size
-		const tileY = Math.floor((tile_num - 1) / tilesPerRow) * this.tile_size
+		const tilesPerRow = this.img.width / this.img_tile_size
+		const tileX = (tile_num - 1) % tilesPerRow * this.img_tile_size
+		const tileY = Math.floor((tile_num - 1) / tilesPerRow) * this.img_tile_size
 
 		this.game.ctx.drawImage(
 			this.img,
-			tileX, tileY, this.tile_size, this.tile_size,
+			tileX, tileY, this.img_tile_size, this.img_tile_size,
 			Math.floor(screenX), Math.floor(screenY),
-			this.game.TILE_SIZE, this.game.TILE_SIZE
+			this.screen_tile_size, this.screen_tile_size
 		)
 	}
 }
