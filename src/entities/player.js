@@ -26,6 +26,10 @@ export class Player extends Entity {
 		this.dash_duration = 150
 	}
 
+	/**
+	 * 
+	 * @param {Number} current_time 
+	 */
 	update(current_time) {
 		// Handle player movement
 		if (this.inputHandler.isKeyPressed(' ') && current_time - this.last_dash >= this.dash_cooldown) {
@@ -63,6 +67,10 @@ export class Player extends Entity {
 		this.combat_hitbox.set(this.worldX - this.game.TILE_SIZE / 2, this.worldY - this.game.TILE_SIZE / 2)
 	}
 
+	/**
+	 * 
+	 * @param {Map} new_map 
+	 */
 	set_map(new_map){
 		this.map = new_map
 		this.collision_hitbox.set_map(new_map)

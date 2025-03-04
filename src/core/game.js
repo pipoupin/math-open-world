@@ -5,33 +5,43 @@ import { InputHandler } from './inputHandler.js'
 import { Entity } from '../entities/entity.js'
 import { Hitbox } from '../entities/hitbox.js'
 import { Problem } from '../ui/problem_test.js'
+import { Attack } from '../entities/attack.js'
 
 export class Game {
 	constructor() {
 		// setup canvas & context
+		/** @type {HTMLCanvasElement} */
 		this.canvas = document.getElementById('game')
 		this.canvas.width = window.innerWidth
 		this.canvas.height = window.innerHeight
 
+		/** @type {CanvasRenderingContext2D} */
 		this.ctx = this.canvas.getContext('2d')
 		this.ctx.imageSmoothingEnabled = false
 
 		document.addEventListener('resize', () => {
-		this.canvas.width = window.innerWidth
-		this.canvas.height = window.innerHeight
+			this.canvas.width = window.innerWidth
+			this.canvas.height = window.innerHeight
 
-		this.ctx = this.canvas.getContext('2d')
-		this.ctx.imageSmoothingEnabled = false
+			/** @type {CanvasRenderingContext2D} */
+			this.ctx = this.canvas.getContext('2d')
+			this.ctx.imageSmoothingEnabled = false
 		})
 
 		// initialize attributes
+		/** @type {Array<Hitbox>} */
 		this.hitboxes = []
+		/** @type {Array<Hitbox>} */
 		this.collision_hitboxes = []
+		/** @type {Array<Hitbox>} */
 		this.combat_hitboxes = []
 
+		/** @type {Array<Entity>} */
 		this.entities = []
+		/** @type {Array<Attack>} */
 		this.attacks = []
 
+		/** @type {Problem} */
 		this.problem = null
 
 		this.camera = { x: 100, y: 105.3 }
@@ -71,6 +81,11 @@ export class Game {
 		requestAnimationFrame(this.loop.bind(this))
 	}
 
+	/**
+	 * 
+	 * @param {Number} current_time 
+	 * @returns 
+	 */
 	update(current_time) {
 		if (this.problem) {
 			if (this.problem.closed) this.problem = null
@@ -93,15 +108,24 @@ export class Game {
 		this.map.render()
 		this.entities[0].render()
 		this.player.render()
+		
 		this.hitboxes.forEach(hitbox => {hitbox.render()})
 	}
 
+	/**
+	 * 
+	 * @param {Number} current_time 
+	 */
 	loop(current_time) {
 		this.update(current_time)
 		this.render()
 		requestAnimationFrame(this.loop.bind(this))
 	}
 
+	/**
+	 * 
+	 * @param {Number} new_map_nb 
+	 */
 	set_map(new_map_nb){
 		this.current_map = new_map_nb
 		this.map = this.maps[this.current_map]

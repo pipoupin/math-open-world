@@ -1,10 +1,26 @@
+import { Game } from "../core/game"
+
 export class Tileset {
+	/**
+	 * 
+	 * @param {Game} game 
+	 * @param {Number} img_tile_size 
+	 * @param {Number} screen_tile_size 
+	 */
 	constructor(game, img_tile_size, screen_tile_size) {
 		this.img_tile_size = img_tile_size
 		this.screen_tile_size = screen_tile_size
 		this.game = game
 	}
 
+	/**
+	 * 
+	 * @param {Game} game 
+	 * @param {String} src 
+	 * @param {Number} img_tile_size 
+	 * @param {Number} screen_tile_size 
+	 * @returns Tileset
+	 */
 	static async create(game, src, img_tile_size, screen_tile_size) {
 		const tileset = new Tileset(game, img_tile_size, screen_tile_size)
 		try {
@@ -16,6 +32,10 @@ export class Tileset {
 		return tileset
 	}
 
+	/**
+	 * 
+	 * @param {String} src 
+	 */
 	async load(src) {
 		const img = new Image()
 		img.src = src
@@ -26,6 +46,12 @@ export class Tileset {
 		})
 	}
 
+	/**
+	 * 
+	 * @param {Number} tile_num 
+	 * @param {Number} screenX 
+	 * @param {Number} screenY 
+	 */
 	drawTile(tile_num, screenX, screenY) {
 		const tilesPerRow = this.img.width / this.img_tile_size
 		const tileX = (tile_num - 1) % tilesPerRow * this.img_tile_size

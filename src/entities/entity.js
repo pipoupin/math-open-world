@@ -38,6 +38,11 @@ export class Entity {
     this.life = life
   }
 
+  /**
+   * 
+   * @param {Number} current_time 
+   * @returns 
+   */
   update(current_time) {
     if(this.game.get_current_map() != this.map)
 			return
@@ -74,7 +79,7 @@ export class Entity {
 
   updatePositionX() {
     const halfHitboxWidth = this.combat_hitbox.width / 2
-    this.worldX = this.clamp(
+    this.worldX = clamp(
       this.worldX + this.dx,
       halfHitboxWidth,
       this.game.map.world.width - halfHitboxWidth
@@ -83,7 +88,7 @@ export class Entity {
 
   updatePositionY() {
     const halfHitboxHeight = this.combat_hitbox.height / 2
-    this.worldY = this.clamp(
+    this.worldY = clamp(
       this.worldY + this.dy,
       halfHitboxHeight,
       this.game.map.world.height - halfHitboxHeight
@@ -94,7 +99,14 @@ export class Entity {
 		this.collision_hitbox.set(this.worldX - this.collision_hitbox.width / 2, this.worldY)
 	}
 
-  clamp(value, min, max) {
+  /**
+   * 
+   * @param {Number} value 
+   * @param {Number} min 
+   * @param {Number} max 
+   * @returns Number
+   */
+  static clamp(value, min, max) {
     return Math.max(min, Math.min(max, value))
   }
 
@@ -120,6 +132,11 @@ export class Entity {
     this.dy = 0
   }
 
+  /**
+   * 
+   * @param {Number} current_time 
+   * @returns 
+   */
   handleAnimation(current_time) {
     if (current_time - this.last_time < this.animation_duration) return
 

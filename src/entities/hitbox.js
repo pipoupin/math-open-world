@@ -103,6 +103,11 @@ export class Hitbox {
 		return colliding_hitboxes
 	}
 
+	/**
+	 * 
+	 * @param {Number} x 
+	 * @param {Number} y 
+	 */
 	center_around(x, y) {
 		this.x1 = x - this.width / 2
 		this.x2 = x + this.width / 2
@@ -110,6 +115,11 @@ export class Hitbox {
 		this.y2 = y + this.height / 2
 	}
 
+	/**
+	 * 
+	 * @param {Number} x 
+	 * @param {Number} y 
+	 */
 	set(x, y) {
 		this.x1 = x
 		this.y1 = y
@@ -117,6 +127,11 @@ export class Hitbox {
 		this.y2 = y + this.height
 	}
 
+	/**
+	 * 
+	 * @param {Number} dx 
+	 * @param {Number} dy 
+	 */
 	move_by(dx, dy) {
 		this.x1 += dx
 		this.x2 += dx
@@ -124,6 +139,10 @@ export class Hitbox {
 		this.y2 += dy
 	}
 
+	/**
+	 * 
+	 * @param {Map} new_map 
+	 */
 	set_map(new_map){
 		this.map = new_map
 	}

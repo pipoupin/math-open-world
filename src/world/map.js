@@ -1,4 +1,12 @@
+import { Game } from "../core/game"
+import { Tileset } from "./tileset"
+
 export class Map {
+	/**
+	 * 
+	 * @param {Game} game
+	 * @param {Tileset} tileset
+	 */
 	constructor(game, tileset) {
 		this.game = game
 		this.tileset = tileset
@@ -6,6 +14,13 @@ export class Map {
 		this.world = {}
 	}
 
+	/**
+	 * 
+	 * @param {Game} game 
+	 * @param {String} src 
+	 * @param {Tileset} tileset 
+	 * @returns 
+	 */
 	static async create(game, src, tileset) {
 		const map = new Map(game, tileset)
     try {
@@ -16,6 +31,10 @@ export class Map {
 		return map
 	}
 
+	/**
+	 * 
+	 * @param {String} src 
+	 */
 	async load(src) {
 			// extract json
 			const response = await fetch(src)
@@ -33,6 +52,13 @@ export class Map {
 			}
 	}
 
+	/**
+	 * 
+	 * @param {Number} layer_i 
+	 * @param {Number} x 
+	 * @param {Number} y 
+	 * @returns 
+	 */
 	get_cell(layer_i, x, y) {
 		return this.layers[layer_i][y * this.width + x]
 	}
