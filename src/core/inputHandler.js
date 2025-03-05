@@ -37,11 +37,11 @@ export class InputHandler {
                         && (widget.y + widget.height) >= this.mouse_pos.y){
 
                             widget.has_focus = true
-                            game.current_ui.focused_widget.has_focus = false
+                            if(game.current_ui.focused_widget) game.current_ui.focused_widget.has_focus = false
                             game.current_ui.focused_widget = widget
 
                             if(widget.type == "button") widget.command(widget)
-                                
+
                             if(widget.type == "textarea"){
                                 if(game.current_ui.selected_textarea) game.current_ui.selected_textarea.selected = false
                                 widget.selected = true
