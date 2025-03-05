@@ -22,14 +22,14 @@ export class Attack {
   }
 
   // specific to the attack
-  udpateCombatHitboxes(this) {
+  udpateCombatHitboxes() {
   }
 
-  update(this) {
+  update() {
     this.updateCombatHitboxes()
   }
 
-  destroy(this) {
+  destroy() {
     super.destroy()
   }
 }
@@ -53,11 +53,11 @@ export class ProjectileAttack extends Attack {
     )
   }
 
-  updateCombatHitboxes(this) {
+  updateCombatHitboxes() {
     this.hitbox[0].move_by(this.dx, this.dy)
   }
 
-  destroy(this) {
+  destroy() {
   }
 }
 

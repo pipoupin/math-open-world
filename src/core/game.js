@@ -4,8 +4,10 @@ import { Player } from '../entities/player.js'
 import { InputHandler } from './inputHandler.js'
 import { Entity } from '../entities/entity.js'
 import { Hitbox } from '../entities/hitbox.js'
-import { Problem } from '../ui/problem_test.js'
+import { Problem } from '../ui/problem_ui_test.js'
 import { Attack } from '../entities/attack.js'
+import { Ui } from '../ui/ui.js'
+import { Button, Label, TextArea } from '../ui/widgets.js'
 
 export class Game {
 	constructor() {
@@ -41,8 +43,8 @@ export class Game {
 		/** @type {Array<Attack>} */
 		this.attacks = []
 
-		/** @type {Problem} */
-		this.problem = null
+		/** @type {Ui} */
+		this.current_ui = null
 
 		this.camera = { x: 100, y: 105.3 }
 		this.TILE_SIZE = 128
@@ -50,7 +52,7 @@ export class Game {
 
 	async run() {
 		// create class objects
-		this.inputHandler = new InputHandler()
+		this.inputHandler = new InputHandler(this)
 		const default_tileset = await Tileset.create(this, "images/map.png", 16, this.TILE_SIZE)
 		const alternative_tileset = await Tileset.create(this, "images/floor.png", 16, this.TILE_SIZE)
 		this.maps = [
@@ -71,12 +73,34 @@ export class Game {
 		)
 		
 		// test hitboxes for "command" parameter and for map switch
-		new Hitbox(this, this.get_current_map(), 1000, 1000 + this.TILE_SIZE / 2, this.TILE_SIZE, this.TILE_SIZE / 2, false, false, () => {this.set_map(1)})
-		new Hitbox(this, this.maps[1], 500, 500 + this.TILE_SIZE / 2, this.TILE_SIZE, this.TILE_SIZE / 2, false, false, () => {this.set_map(0)})
+		new Hitbox(this, this.get_current_map(), 1000, 1000 + this.TILE_SIZE / 2, this.TILE_SIZE, this.TILE_SIZE / 2, false, false, (e, h) => {this.set_map(1)})
+		new Hitbox(this, this.maps[1], 500, 500 + this.TILE_SIZE / 2, this.TILE_SIZE, this.TILE_SIZE / 2, false, false, (e, h) => {this.set_map(0)})
 
 		// test problem
 		this.update()
-		this.problem = new Problem("Soit $f : \\mathbb R \\to \\mathbb R$ telle que $$ f' = f \\quad \\text{et} \\quad f(0) = 0$$. Que vaut $f(1)$", "votre solution", "0")
+		var test_problem = await Problem.create(this, "images/parchment1.png", 300, 300, "oui",
+					[
+						new Label(this, 625, 150, "coucou"),
+						new Label(this, 600, 175, "entre 'oui' dans la zone en bas:"),
+						new Button(this, 625, 300, 50, 50, (button) => {
+							button.ui.widgets.forEach((widget) => {
+								if(widget.type == "textarea"){
+									widget.submit()
+								}
+							})
+						}),
+						new TextArea(this, 625, 200, 100, 50, 10, (awnser, textarea) => {
+							console.log(awnser)
+							if(textarea.ui.awnser === awnser){
+								textarea.ui.is_finished = true
+							}
+						}, 10)
+					]
+				)
+		new Hitbox(this, this.maps[0], 200, 200, this.TILE_SIZE, this.TILE_SIZE, false, false, (entity, hitbox) => {
+			this.current_ui = test_problem
+			hitbox.destructor()
+		})
 
 		requestAnimationFrame(this.loop.bind(this))
 	}
@@ -87,9 +111,12 @@ export class Game {
 	 * @returns 
 	 */
 	update(current_time) {
-		if (this.problem) {
-			if (this.problem.closed) this.problem = null
-			else return
+		if(this.current_ui){
+			if(this.current_ui.is_finished){
+				this.current_ui = null
+			} else{
+				return
+			}
 		}
 
 		this.player.update(current_time)
@@ -108,8 +135,12 @@ export class Game {
 		this.map.render()
 		this.entities[0].render()
 		this.player.render()
-		
+
 		this.hitboxes.forEach(hitbox => {hitbox.render()})
+
+		if(this.current_ui){
+			this.current_ui.render()
+		}
 	}
 
 	/**

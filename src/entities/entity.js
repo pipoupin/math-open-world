@@ -61,17 +61,17 @@ export class Entity {
       this.backPositionY()
 			this.dy = 0
     }
-    
+
     this.collision_hitbox.get_colliding_hitboxes(true, false).forEach(hitbox => {
-			hitbox.command(this)
+			hitbox.command(this, hitbox)
 		})
 
 		this.combat_hitbox.get_colliding_hitboxes(false, true).forEach(hitbox => {
-			hitbox.command(this)
+			hitbox.command(this, hitbox)
 		})
 
 		this.combat_hitbox.get_colliding_hitboxes(false, false).forEach(hitbox => {
-			hitbox.command(this)
+			hitbox.command(this, hitbox)
 		})
 
     this.handleAnimation(current_time)
@@ -79,7 +79,7 @@ export class Entity {
 
   updatePositionX() {
     const halfHitboxWidth = this.combat_hitbox.width / 2
-    this.worldX = clamp(
+    this.worldX = Entity.clamp(
       this.worldX + this.dx,
       halfHitboxWidth,
       this.game.map.world.width - halfHitboxWidth
@@ -88,7 +88,7 @@ export class Entity {
 
   updatePositionY() {
     const halfHitboxHeight = this.combat_hitbox.height / 2
-    this.worldY = clamp(
+    this.worldY = Entity.clamp(
       this.worldY + this.dy,
       halfHitboxHeight,
       this.game.map.world.height - halfHitboxHeight

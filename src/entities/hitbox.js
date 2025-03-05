@@ -12,7 +12,7 @@ export class Hitbox {
 	 * @param {Number} height - hitbox height
 	 * @param {boolean} collision - is the hitbox a collision hitbox
 	 * @param {boolean} [player=false] - is the hitbox a player's hitbox
-	 * @param {(entity: Entity) => void} [command=function f(entity){}] - function executed when colliding with the an entity
+	 * @param {(entity: Entity, hitbox: Hitbox) => void} [command=function f(entity){}] - function executed when colliding with the an entity, the 'hitbox' argument refers to the actual hitbox object
 	 */
 	constructor(game, map, x, y, width, height, collision=false, player=false, command=function f(){}){
 		this.game = game
@@ -148,6 +148,8 @@ export class Hitbox {
 	}
 
 	destructor() {
-		this.game.collision_hitboxes.splice(collision_hitboxes.indexOf(this), 1)
+		this.game.collision_hitboxes.splice(this.game.collision_hitboxes.indexOf(this), 1)
+		this.game.hitboxes.splice(this.game.hitboxes.indexOf(this), 1)
+		this.game.combat_hitboxes.splice(this.game.combat_hitboxes.indexOf(this), 1)
 	}
 }

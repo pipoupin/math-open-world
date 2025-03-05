@@ -1,5 +1,5 @@
-import { Game } from "../core/game"
-import { Tileset } from "./tileset"
+import { Game } from "../core/game.js"
+import { Tileset } from "./tileset.js"
 
 export class Map {
 	/**
