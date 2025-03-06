@@ -7,34 +7,40 @@ export class Ui {
      * @param {Game} game
      * @param {Number} width
      * @param {Number} height
-     * @param {Array<Widget>} widgets
+     * @param {Array<Widget>} widgets 
+     * @param {(ui: Ui) => void} widgets_states_handler - method made to handle widgets states (like widgets being 'cliked' on 'focused-on'), executed at each update
      */
-    constructor(game, width, height, widgets){
+    constructor(game, width, height, widgets, widgets_states_handler){
         this.game = game
         this.width = width
         this.height = height
         this.widgets = widgets
+        this.ids = []
         this.widgets.forEach((widget) => {
+            if(this.ids.includes(widget.id))
+                console.error(`widget with id ${widget.id} already registered, this may cause widget traceabilty issues`)
             widget.ui = this
-            console.log(`registering ui for widget of type ${widget.type}:`)
-            console.log(widget)
+            this.ids.push(widget.id)
         })
         this.focused_widget = null
         this.is_finished = false
         /** @type {TextArea} */
         this.selected_textarea = null
+        this.widgets_states_handler = widgets_states_handler
     }
 
     /**
      * 
      * @param {Game} game 
-     * @param {String} src
-     * @param {Number} width
+     * @param {String} src 
+     * @param {Number} width 
      * @param {Number} height 
-     * @param {Array<Widget>} widgets
+     * @param {Array<Widget>} widgets 
+     * @param {(ui: Ui) => void} widgets_state_handler 
+     * @returns Ui
      */
-    static async create(game, src, width, height, widgets){
-        const ui = new Ui(game, width, height, widgets)
+    static async create(game, src, width, height, widgets, widgets_state_handler){
+        const ui = new Ui(game, width, height, widgets, widgets_state_handler)
         try {
 			await ui.load(src)
 		} catch (error) {
@@ -60,7 +66,6 @@ export class Ui {
     render(){
         this.game.ctx.drawImage(
             this.img,
-            0, 0, this.width, this.height,
             (this.game.canvas.width - this.width) / 2,
             (this.game.canvas.height - this.height) / 2,
             this.width, this.height
@@ -68,5 +73,51 @@ export class Ui {
         for(let i = 0; i < this.widgets.length; i++){
             this.widgets[i].render()
         }
+    }
+
+    /**
+     * 
+     * @param {Number} current_time 
+     */
+    update(current_time){
+        this.widgets_states_handler(this)
+    }
+
+    /**
+     * 
+     * @param {Widget} widget 
+     */
+    add_widget(widget){
+        this.widgets.push(widget)
+    }
+
+    /**
+     * 
+     * @param {Widget} widget 
+     */
+    remove_widget(widget){
+        if(widget in this.widgets){
+            this.widgets.slice(this.widgets.indexOf(widget), this.widgets.indexOf(widget) + 1)
+        } else {
+            console.error("not such widget in ui's widgets:")
+            console.log(this)
+            console.log(widget)
+        }
+    }
+
+    /**
+     * 
+     * @param {String} id 
+     * @returns Widget
+     */
+    get_widget(id){
+        var id_matching_widget = null
+        this.widgets.forEach((widget) => {
+            if (widget.id == id) {
+                id_matching_widget = widget
+            }
+        })
+        if(id_matching_widget) return id_matching_widget
+        console.error(`no such widget ${id} in this ui`)
     }
 }

@@ -4,10 +4,10 @@ import { Player } from '../entities/player.js'
 import { InputHandler } from './inputHandler.js'
 import { Entity } from '../entities/entity.js'
 import { Hitbox } from '../entities/hitbox.js'
-import { Problem } from '../ui/problem_ui_test.js'
+import { Problem } from '../ui/problem.js'
 import { Attack } from '../entities/attack.js'
 import { Ui } from '../ui/ui.js'
-import { Button, Label, TextArea } from '../ui/widgets.js'
+import { Button, Icon, Label, NumberArea, TextArea } from '../ui/widgets.js'
 
 export class Game {
 	constructor() {
@@ -78,24 +78,35 @@ export class Game {
 
 		// test problem
 		this.update()
-		var test_problem = await Problem.create(this, "images/parchment1.png", 300, 300, "oui",
+		var test_problem = await Problem.create(this, "images/parchment1.png", 500, 500, "123",
 					[
-						new Label(this, 625, 150, "coucou"),
-						new Label(this, 600, 175, "entre 'oui' dans la zone en bas:"),
-						new Button(this, 625, 300, 50, 50, (button) => {
+						new Label(this, "label1", 580, 100, "coucou", true, 50),
+						new Label(this, "label2", 560, 175, "entre '123' dans la zone en bas (digits only):", true),
+						new NumberArea(this, "numberarea", 600, 200, 100, 50, 15, true, (awnser, textarea) => {
+							if(textarea.ui.awnser === awnser){
+								textarea.ui.is_finished = true
+							}
+						}, 20),
+						new Label(this, "label3", 600, 280, "ceci est un bouton", true),
+						new Button(this, "button", 625, 300, 50, 50, true, (button) => {
 							button.ui.widgets.forEach((widget) => {
-								if(widget.type == "textarea"){
+								if(widget.type == "textarea" || widget.type == "numberarea"){
 									widget.submit()
 								}
 							})
 						}),
-						new TextArea(this, 625, 200, 100, 50, 10, (awnser, textarea) => {
-							console.log(awnser)
-							if(textarea.ui.awnser === awnser){
-								textarea.ui.is_finished = true
-							}
-						}, 10)
-					]
+						new Label(this, "label4", 600, 380, "ceci est une zone de texte (showcase purpose)", true),
+						new TextArea(this, "textarea", 625, 400, 100, 50, 15, true, (awnser, textarea) => {}),
+						new Icon(this, "icon", 480, 200, default_tileset, 3, false),
+						new Label(this, "label5", 600, 480, "full flmm de centrer alors que c juste une demo", true)
+					], (problem) => {
+						if(problem.get_widget("button").is_clicked){
+							problem.get_widget("icon").update_config(null, null, null, null, true)
+						} else {
+							problem.get_widget("icon").update_config(null, null, null, null, false)
+							console.log(problem.get_widget("icon"))
+						}
+					}
 				)
 		new Hitbox(this, this.maps[0], 200, 200, this.TILE_SIZE, this.TILE_SIZE, false, false, (entity, hitbox) => {
 			this.current_ui = test_problem
@@ -115,6 +126,7 @@ export class Game {
 			if(this.current_ui.is_finished){
 				this.current_ui = null
 			} else{
+				this.current_ui.update(current_time)
 				return
 			}
 		}

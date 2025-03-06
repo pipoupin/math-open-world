@@ -10,9 +10,10 @@ export class Problem extends Ui{
      * @param {Number} height
      * @param {String} awnser 
      * @param {Array<Widget>} widgets
+     * @param {(problem: Problem) => void} widgets_state_handler 
      */
-    constructor(game, width, height, awnser, widgets){
-        super(game, width, height, widgets)
+    constructor(game, width, height, awnser, widgets, widgets_state_handler){
+        super(game, width, height, widgets, widgets_state_handler)
         this.awnser= awnser
     }
 
@@ -24,9 +25,10 @@ export class Problem extends Ui{
      * @param {Number} height
      * @param {String} awnser 
      * @param {Array<Widget>} widgets
+     * @param {(problem: Problem) => void} widgets_state_handler 
      */
-    static async create(game, src, width, height, awnser, widgets){
-        const problem = new Problem(game, width, height, awnser, widgets)
+    static async create(game, src, width, height, awnser, widgets, widgets_state_handler){
+        const problem = new Problem(game, width, height, awnser, widgets, widgets_state_handler)
         try {
 			await problem.load(src)
 		} catch (error) {
