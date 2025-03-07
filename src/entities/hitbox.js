@@ -12,9 +12,9 @@ export class Hitbox {
 	 * @param {Number} height - hitbox height
 	 * @param {boolean} collision - is the hitbox a collision hitbox
 	 * @param {boolean} [player=false] - is the hitbox a player's hitbox
-	 * @param {(entity: Entity, hitbox: Hitbox) => void} [command=function f(entity){}] - function executed when colliding with the an entity, the 'hitbox' argument refers to the actual hitbox object
+	 * @param {(entity: Entity, hitbox: Hitbox) => void} [command=((entity) => {})] - function executed when colliding with the an entity, the 'hitbox' argument refers to the actual hitbox object
 	 */
-	constructor(game, map, x, y, width, height, collision=false, player=false, command=function f(){}){
+	constructor(game, map, x, y, width, height, collision=false, player=false, command=((entity) => {})){
 		this.game = game
 		this.map = map
 
@@ -119,12 +119,26 @@ export class Hitbox {
 	 * 
 	 * @param {Number} x 
 	 * @param {Number} y 
+	 * @param {Number} [width=null] 
+	 * @param {Number} [height=null] 
 	 */
-	set(x, y) {
+	set(x, y, width=null, height=null) {
 		this.x1 = x
 		this.y1 = y
+		if(width != null) this.width = width
+		if(height != null) this.height = height
 		this.x2 = x + this.width
 		this.y2 = y + this.height
+		if(this.x2 < this.x1){
+			this.x1 = this.x2
+			this.x2 = x
+			this.width *= -1
+		}
+		if(this.y2 < this.y1){
+			this.y1 = this.y2
+			this.y2 = y
+			this.height *= -1
+		}
 	}
 
 	/**

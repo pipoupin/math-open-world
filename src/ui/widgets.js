@@ -1,3 +1,4 @@
+import { constants } from "../constants.js"
 import { Game } from "../core/game.js"
 import { Tileset } from "../world/tileset.js"
 import { Ui } from "./ui.js"
@@ -41,7 +42,7 @@ export class Label extends Widget{
      * @param {string} [font="serif"]
      */
     constructor(game, id, x, y, text, rendered, fontsize=15, textcolor="black", font="arial"){
-        super(game, id, x, y, "label", rendered)
+        super(game, id, x, y, constants.LABEL_TYPE, rendered)
         this.text = text
         this.fontsize = fontsize
         this.textcolor = textcolor
@@ -90,7 +91,7 @@ export class Button extends Widget{
      * @param {(button: Button) => void} command - the 'button' parameter refers to the actual object, which is being clicked
      */
     constructor(game, id, x, y, width, height, rendered, command){
-        super(game, id, x, y, "button", rendered)
+        super(game, id, x, y, constants.BUTTON_TYPE, rendered)
         this.width = width
         this.height = height
         this.command = command
@@ -145,7 +146,7 @@ export class TextArea extends Widget{
      * @param {(textarea: TextArea) => void} [on_clicked=((textarea) => {})] 
      */
     constructor(game, id, x, y, width, height, max_char_number, rendered, command, fontsize=15, textcolor="black", font="arial", on_clicked=((textarea) => {})){
-        super(game, id, x, y, "textarea", rendered)
+        super(game, id, x, y, constants.TEXTAREA_TYPE, rendered)
         this.width = width
         this.height = height
         this.content = ""
@@ -226,7 +227,7 @@ export class NumberArea extends TextArea{
      */
     constructor(game, id, x, y, width, height, max_char_number, rendered, command, fontsize=15, textcolor="black", font="arial", on_clicked=((textarea) => {})){
         super(game, id, x, y, width, height, max_char_number, rendered, command, fontsize, textcolor, font)
-        this.type = "numberarea"
+        this.type = constants.NUMBERAREA_TYPE
     }
 }
 
@@ -241,7 +242,7 @@ export class Icon extends Widget{
      * @param {Number} tile_nb 
      */
     constructor(game, id, x, y, tileset, tile_nb, rendered){
-        super(game, id, x, y, "icon", rendered)
+        super(game, id, x, y, constants.ICON_TYPE, rendered)
         this.tileset = tileset
         this.tile_nb = tile_nb
     }

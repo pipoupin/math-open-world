@@ -24,6 +24,8 @@ export class Player extends Entity {
 		this.dash_cooldown = 3000
 		this.last_dash = -this.dash_cooldown
 		this.dash_duration = 150
+
+		this.raycast_hitbox = new Hitbox(game, game.get_current_map(), 400, 400, 0, 100, false, true)
 	}
 
 	/**
@@ -65,6 +67,14 @@ export class Player extends Entity {
 
 		this.collision_hitbox.set(this.worldX - this.game.TILE_SIZE / 2, this.worldY)
 		this.combat_hitbox.set(this.worldX - this.game.TILE_SIZE / 2, this.worldY - this.game.TILE_SIZE / 2)
+		if(this.direction == 0)
+			this.raycast_hitbox.set(this.worldX, this.worldY, 0, 100)
+		if(this.direction == 1)
+			this.raycast_hitbox.set(this.worldX, this.worldY, 0, -100)
+		if(this.direction == 2)
+			this.raycast_hitbox.set(this.worldX, this.worldY, 100, 0)
+		if(this.direction == 3)
+			this.raycast_hitbox.set(this.worldX, this.worldY, -100, 0)
 	}
 
 	/**
@@ -75,5 +85,6 @@ export class Player extends Entity {
 		this.map = new_map
 		this.collision_hitbox.set_map(new_map)
 		this.combat_hitbox.set_map(new_map)
+		this.raycast_hitbox.set_map(new_map)
 	}
 }

@@ -1,3 +1,4 @@
+import { constants } from "../constants.js"
 import { Game } from "./game.js"
 
 export class InputHandler {
@@ -34,13 +35,15 @@ export class InputHandler {
                         && (widget.x + widget.width) >= this.mouse_pos.x
                         && widget.y <= this.mouse_pos.y
                         && (widget.y + widget.height) >= this.mouse_pos.y){
-                            if(widget.type == "button" || widget.type == "textarea" || widget.type == "numberarea"){
+                            if(widget.type == constants.BUTTON_TYPE
+                                || widget.type == constants.TEXTAREA_TYPE
+                                || widget.type == constants.NUMBERAREA_TYPE){
 
-                                if(widget.type == "button") {
+                                if(widget.type == constants.BUTTON_TYPE) {
                                     widget.command(widget)
                                 }
 
-                                if(widget.type == "textarea" || widget.type == "numberarea"){
+                                if(widget.type == constants.TEXTAREA_TYPE || widget.type == constants.NUMBERAREA_TYPE){
                                     if(game.current_ui.selected_textarea)
                                         game.current_ui.selected_textarea.selected = false
                                     widget.selected = true
@@ -66,7 +69,7 @@ export class InputHandler {
         document.addEventListener("keypress", (e) => {
             if(game.current_ui && game.current_ui.selected_textarea && e.key.length == 1){
                 if(game.current_ui.selected_textarea.content.length != game.current_ui.selected_textarea.max_char_number){
-                    if(game.current_ui.selected_textarea.type == "numberarea"
+                    if(game.current_ui.selected_textarea.type == constants.NUMBERAREA_TYPE
                         && !(["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"].includes(e.key))) return
                     game.current_ui.selected_textarea.content += e.key
                 }
@@ -80,7 +83,9 @@ export class InputHandler {
                         && (widget.x + widget.width) >= this.mouse_pos.x
                         && widget.y <= this.mouse_pos.y
                         && (widget.y + widget.height) >= this.mouse_pos.y){
-                            if(widget.type == "button" || widget.type == "textarea" || widget.type == "numberarea"){
+                            if(widget.type == constants.BUTTON_TYPE
+                                || widget.type == constants.TEXTAREA_TYPE
+                                || widget.type == constants.NUMBERAREA_TYPE){
                                 widget.is_clicked = true
                                 widget.has_focus = true
                                 if(game.current_ui.focused_widget)
@@ -95,7 +100,9 @@ export class InputHandler {
         document.addEventListener("mouseup", (e) => {
             if(game.current_ui){
                 game.current_ui.widgets.forEach((widget) => {
-                    if(widget.type == "button" || widget.type == "textarea" || widget.type == "numberarea"){
+                    if(widget.type == constants.BUTTON_TYPE
+                        || widget.type == constants.TEXTAREA_TYPE
+                        || widget.type == constants.NUMBERAREA_TYPE){
                         widget.is_clicked = false
                     }
                 })

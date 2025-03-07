@@ -8,6 +8,7 @@ import { Problem } from '../ui/problem.js'
 import { Attack } from '../entities/attack.js'
 import { Ui } from '../ui/ui.js'
 import { Button, Icon, Label, NumberArea, TextArea } from '../ui/widgets.js'
+import { Talkable } from '../entities/talkable.js'
 
 export class Game {
 	constructor() {
@@ -43,6 +44,9 @@ export class Game {
 		/** @type {Array<Attack>} */
 		this.attacks = []
 
+		/** @type {Array<Talkable>} */
+		this.talkables = []
+
 		/** @type {Ui} */
 		this.current_ui = null
 
@@ -66,7 +70,7 @@ export class Game {
 		const player_tileset = await Tileset.create(this, 'images/spritesheet.png', 16, this.TILE_SIZE)
 		this.player = new Player(this, player_tileset)
 		this.entities.push(new Entity(this, this.get_current_map(), player_tileset,
-			new Hitbox(this, this.get_current_map(), 0, this.TILE_SIZE / 2, this.TILE_SIZE, this.TILE_SIZE /2, true, false ),
+			new Hitbox(this, this.get_current_map(), 0, this.TILE_SIZE / 2, this.TILE_SIZE, this.TILE_SIZE /2, true, false),
 			new Hitbox(this, this.get_current_map(), 0, 0, this.TILE_SIZE, this.TILE_SIZE, false, false),
 			this.TILE_SIZE /2, this.TILE_SIZE / 2, 200
 		  )
@@ -108,10 +112,11 @@ export class Game {
 						}
 					}
 				)
-		new Hitbox(this, this.maps[0], 200, 200, this.TILE_SIZE, this.TILE_SIZE, false, false, (entity, hitbox) => {
-			this.current_ui = test_problem
-			hitbox.destructor()
-		})
+
+		new Talkable(this, this.get_current_map(),
+			new Hitbox(this, this.get_current_map(), 200, 200, this.TILE_SIZE, this.TILE_SIZE, true, false, (entity, hitbox) => {}),
+			test_problem
+		)
 
 		requestAnimationFrame(this.loop.bind(this))
 	}
@@ -124,6 +129,7 @@ export class Game {
 	update(current_time) {
 		if(this.current_ui){
 			if(this.current_ui.is_finished){
+				this.current_ui.is_finished = false
 				this.current_ui = null
 			} else{
 				this.current_ui.update(current_time)
@@ -140,6 +146,8 @@ export class Game {
 				this.attacks.pop(attack)
 			}
 		})
+
+		this.talkables.forEach((talkable) => {talkable.update()})
 	}
 
 	render() {
@@ -149,6 +157,7 @@ export class Game {
 		this.player.render()
 
 		this.hitboxes.forEach(hitbox => {hitbox.render()})
+		this.talkables.forEach(talkable => {talkable.render()})
 
 		if(this.current_ui){
 			this.current_ui.render()
