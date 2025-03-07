@@ -69,12 +69,11 @@ export class Game {
 
 		const player_tileset = await Tileset.create(this, 'images/spritesheet.png', 16, this.TILE_SIZE)
 		this.player = new Player(this, player_tileset)
-		this.entities.push(new Entity(this, this.get_current_map(), player_tileset,
-			new Hitbox(this, this.get_current_map(), 0, this.TILE_SIZE / 2, this.TILE_SIZE, this.TILE_SIZE /2, true, false),
-			new Hitbox(this, this.get_current_map(), 0, 0, this.TILE_SIZE, this.TILE_SIZE, false, false),
-			this.TILE_SIZE /2, this.TILE_SIZE / 2, 200
-		  )
-		)
+		var test_entity = new Entity(this, this.get_current_map(), player_tileset,
+				new Hitbox(this, this.get_current_map(), 0, this.TILE_SIZE / 2, this.TILE_SIZE, this.TILE_SIZE / 2, true, false),
+				new Hitbox(this, this.get_current_map(), 0, 0, this.TILE_SIZE, this.TILE_SIZE, false, false),
+				this.TILE_SIZE /2, this.TILE_SIZE / 2, 200
+		  	)
 		
 		// test hitboxes for "command" parameter and for map switch
 		new Hitbox(this, this.get_current_map(), 1000, 1000 + this.TILE_SIZE / 2, this.TILE_SIZE, this.TILE_SIZE / 2, false, false, (e, h) => {this.set_map(1)})
@@ -115,7 +114,12 @@ export class Game {
 
 		new Talkable(this, this.get_current_map(),
 			new Hitbox(this, this.get_current_map(), 200, 200, this.TILE_SIZE, this.TILE_SIZE, true, false, (entity, hitbox) => {}),
-			test_problem
+			test_problem, null
+		)
+
+		new Talkable(this, this.get_current_map(),
+			new Hitbox(this, this.get_current_map(), 0, 0, this.TILE_SIZE, this.TILE_SIZE, false, false, (hitbox) => {}),
+			test_problem, test_entity
 		)
 
 		requestAnimationFrame(this.loop.bind(this))
@@ -140,6 +144,7 @@ export class Game {
 		this.player.update(current_time)
 		this.camera.x = this.player.worldX - this.canvas.width / 2
 		this.camera.y = this.player.worldY - this.canvas.height / 2
+
 		this.attacks.forEach(attack => {
 			if (current_time - attack.time_origin > attack.duration) {
 				attack.destroy()
@@ -147,15 +152,15 @@ export class Game {
 			}
 		})
 
-		this.talkables.forEach((talkable) => {talkable.update()})
+		this.talkables.forEach(talkable => {talkable.update()})
 	}
 
 	render() {
 		this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
 		this.map.render()
-		this.entities[0].render()
 		this.player.render()
 
+		this.entities.forEach(entity => {entity.render()})
 		this.hitboxes.forEach(hitbox => {hitbox.render()})
 		this.talkables.forEach(talkable => {talkable.render()})
 

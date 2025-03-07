@@ -36,6 +36,8 @@ export class Entity {
     this.last_time = 0
 
     this.life = life
+
+    this.game.entities.push(this)
   }
 
   /**
