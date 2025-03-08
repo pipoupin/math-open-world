@@ -3,9 +3,9 @@ import { Tileset } from "./tileset.js"
 
 export class Map {
 	/**
-	 * 
-	 * @param {Game} game
-	 * @param {Tileset} tileset
+	 * !!! One shouldn't use the constructor to make a map, use the static create method instead
+	 * @param {Game} game - The current game
+	 * @param {Tileset} tileset - The tileset used to render the map
 	 */
 	constructor(game, tileset) {
 		this.game = game
@@ -15,19 +15,19 @@ export class Map {
 	}
 
 	/**
-	 * 
-	 * @param {Game} game 
-	 * @param {String} src 
-	 * @param {Tileset} tileset 
-	 * @returns 
+	 * A scenery on which are put other objects (entities, hitboxes, ...). This method is async and static
+	 * @param {Game} game - The current game
+	 * @param {String} src - The path to the json file used as a reference to layout the map
+	 * @param {Tileset} tileset - The tileset used to render the map
+	 * @returns Map
 	 */
 	static async create(game, src, tileset) {
 		const map = new Map(game, tileset)
-    try {
+		try {
 			await map.load(src)
-    } catch (error) {
+		} catch (error) {
 			console.error(`Failed to load map "${src}": ${error.message}`);
-    }
+		}
 		return map
 	}
 

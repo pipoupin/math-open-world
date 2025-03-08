@@ -8,11 +8,11 @@ import { Entity } from "./entity.js";
 export class Talkable{
     /**
      * 
-     * @param {Game} game 
-     * @param {Map} map 
-     * @param {Hitbox} hitbox 
-     * @param {Ui} ui 
-     * @param {Entity} [entity=null] 
+     * @param {Game} game - The current game
+     * @param {Map} map - The map in which the talkable shows up
+     * @param {Hitbox} hitbox - the hitbox used for detecting when the player is facing the talkable
+     * @param {Ui} ui - The ui activated by this talkable
+     * @param {Entity} [entity=null] - The entity which the talkable should follow, left empty to make the talkable motionless
      */
     constructor(game, map, hitbox, ui, entity=null){
         this.game = game

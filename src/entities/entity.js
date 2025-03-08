@@ -6,14 +6,14 @@ import { Tileset } from "../world/tileset.js"
 export class Entity {
 
   /**
-   * @param {Game} game
-   * @param {Map} map 
-   * @param {Tileset} tileset
-   * @param {Hitbox} collision_hitbox
-   * @param {Hitbox} combat_hitbox
-   * @param {Number} worldX
-   * @param {Number} worldY
-   * @param {Number} animation_duration    
+   * @param {Game} game - The current game
+   * @param {Map} map - The map in which the entity should show up
+   * @param {Tileset} tileset - the tileset used to animate the entity
+   * @param {Hitbox} collision_hitbox - the entity's hitbox used for handling collision with the player
+   * @param {Hitbox} combat_hitbox - the entity's hitbox used for handling attacks
+   * @param {Number} worldX - the entity's x position in the world
+   * @param {Number} worldY - the entity's y position in the world
+   * @param {Number} animation_duration - the animation's frames' duration
    */
   constructor(game, map, tileset, collision_hitbox, combat_hitbox, worldX, worldY, animation_duration, life=-1) {
     this.game = game

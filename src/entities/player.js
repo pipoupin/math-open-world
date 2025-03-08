@@ -4,8 +4,8 @@ import { Hitbox } from './hitbox.js'
 
 export class Player extends Entity {
 	/**
-	 * @param {Game} game 
-	 * @param {TileSet} player_tileset 
+	 * @param {Game} game - The current game
+	 * @param {TileSet} player_tileset - the tileset used for animation the player
 	 */
 	constructor(game, player_tileset) {
 		super(

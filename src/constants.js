@@ -5,5 +5,6 @@ export const constants = {
     TEXTAREA_TYPE: "textarea",
     NUMBERAREA_TYPE: "numberarea",
     ICON_TYPE: "icon",
+    TEXTURE_TYPE: "texture",
     INTERACTION_KEY: "e"
 }

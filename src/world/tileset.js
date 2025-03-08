@@ -2,10 +2,10 @@ import { Game } from "../core/game.js"
 
 export class Tileset {
 	/**
-	 * 
-	 * @param {Game} game 
-	 * @param {Number} img_tile_size 
-	 * @param {Number} screen_tile_size 
+	 * !!! One shouldn't use the constructor to make a tileset, use the static create method instead
+	 * @param {Game} game - The current game
+	 * @param {Number} img_tile_size - The size of one tile in the source image (in pixels)
+	 * @param {Number} screen_tile_size - The size of one tile on the canvas
 	 */
 	constructor(game, img_tile_size, screen_tile_size) {
 		this.img_tile_size = img_tile_size
@@ -15,10 +15,10 @@ export class Tileset {
 
 	/**
 	 * 
-	 * @param {Game} game 
-	 * @param {String} src 
-	 * @param {Number} img_tile_size 
-	 * @param {Number} screen_tile_size 
+	 * @param {Game} game - The current game
+	 * @param {String} src - The path to the source image of the tileset
+	 * @param {Number} img_tile_size - The size of one tile in the source image (in pixels)
+	 * @param {Number} screen_tile_size - The size of one tile on the canvas
 	 * @returns Tileset
 	 */
 	static async create(game, src, img_tile_size, screen_tile_size) {

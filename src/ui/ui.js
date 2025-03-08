@@ -3,11 +3,11 @@ import { TextArea, Widget } from "./widgets.js";
 
 export class Ui {
     /**
-     * 
-     * @param {Game} game
-     * @param {Number} width
-     * @param {Number} height
-     * @param {Array<Widget>} widgets 
+     * !!! One shouldn't use the constructor to make an ui, use the static create method instead
+     * @param {Game} game - The current game
+     * @param {Number} width - The Ui's width on the screen
+     * @param {Number} height - The Ui's height on the screen
+     * @param {Array<Widget>} widgets - The list of widgets that shows up on the ui
      * @param {(ui: Ui) => void} widgets_states_handler - method made to handle widgets states (like widgets being 'cliked' on 'focused-on'), executed at each update
      */
     constructor(game, width, height, widgets, widgets_states_handler){
@@ -30,13 +30,13 @@ export class Ui {
     }
 
     /**
-     * 
-     * @param {Game} game 
-     * @param {String} src 
-     * @param {Number} width 
-     * @param {Number} height 
-     * @param {Array<Widget>} widgets 
-     * @param {(ui: Ui) => void} widgets_state_handler 
+     * Method used to build an ui. This method is async and static
+     * @param {Game} game - The current game
+     * @param {String} src - The path to the image used used as a background for the ui
+     * @param {Number} width - The Ui's width on the screen
+     * @param {Number} height - The Ui's height on the screen
+     * @param {Array<Widget>} widgets - The list of widgets that shows up on the ui
+     * @param {(ui: Ui) => void} widgets_state_handler - method made to handle widgets states (like widgets being 'cliked' on 'focused-on'), executed at each update
      * @returns Ui
      */
     static async create(game, src, width, height, widgets, widgets_state_handler){
