@@ -158,9 +158,11 @@ export class Game {
 	render() {
 		this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
 		this.map.render()
-		this.player.render()
 
 		this.entities.forEach(entity => {entity.render()})
+
+		this.player.render()
+		
 		this.hitboxes.forEach(hitbox => {hitbox.render()})
 		this.talkables.forEach(talkable => {talkable.render()})
 

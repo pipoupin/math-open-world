@@ -155,8 +155,6 @@ export class TextArea extends Widget{
         this.fontsize = fontsize
         this.textcolor = textcolor
         this.font = font
-        this.on_clicked = on_clicked
-        this.is_clicked = false
     }
 
     submit(){
