@@ -37,7 +37,7 @@ export class Ui {
      * @param {Number} height - The Ui's height on the screen
      * @param {Array<Widget>} widgets - The list of widgets that shows up on the ui
      * @param {(ui: Ui) => void} widgets_state_handler - method made to handle widgets states (like widgets being 'cliked' on 'focused-on'), executed at each update
-     * @returns Ui
+     * @returns {Ui}
      */
     static async create(game, src, width, height, widgets, widgets_state_handler){
         const ui = new Ui(game, width, height, widgets, widgets_state_handler)
@@ -108,7 +108,7 @@ export class Ui {
     /**
      * 
      * @param {String} id 
-     * @returns Widget
+     * @returns {Widget}
      */
     get_widget(id){
         var id_matching_widget = null

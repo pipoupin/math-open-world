@@ -293,7 +293,7 @@ export class Texture extends Widget{
      * @param {Number} width - The texture's width on the screen
      * @param {Number} height - The texture's height on the screen
      * @param {Boolean} rendered - Boolean refearing to if this widget should be rendered
-     * @returns Texture
+     * @returns {Texture}
      */
     static async create(game, id, src, x, y, width, height, rendered){
         var texture = new Texture(game, id, x, y, width, height, rendered)

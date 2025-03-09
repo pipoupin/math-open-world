@@ -10,6 +10,7 @@ export class Map {
 	constructor(game, tileset) {
 		this.game = game
 		this.tileset = tileset
+		/** @type {Array<Array<Number>>} */
 		this.layers = []
 		this.world = {}
 	}
@@ -19,7 +20,7 @@ export class Map {
 	 * @param {Game} game - The current game
 	 * @param {String} src - The path to the json file used as a reference to layout the map
 	 * @param {Tileset} tileset - The tileset used to render the map
-	 * @returns Map
+	 * @returns {Map}
 	 */
 	static async create(game, src, tileset) {
 		const map = new Map(game, tileset)
@@ -57,7 +58,7 @@ export class Map {
 	 * @param {Number} layer_i 
 	 * @param {Number} x 
 	 * @param {Number} y 
-	 * @returns 
+	 * @returns {Number}
 	 */
 	get_cell(layer_i, x, y) {
 		return this.layers[layer_i][y * this.width + x]

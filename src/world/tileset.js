@@ -19,7 +19,7 @@ export class Tileset {
 	 * @param {String} src - The path to the source image of the tileset
 	 * @param {Number} img_tile_size - The size of one tile in the source image (in pixels)
 	 * @param {Number} screen_tile_size - The size of one tile on the canvas
-	 * @returns Tileset
+	 * @returns {Tileset}
 	 */
 	static async create(game, src, img_tile_size, screen_tile_size) {
 		const tileset = new Tileset(game, img_tile_size, screen_tile_size)
