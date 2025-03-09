@@ -26,7 +26,12 @@ export class InputHandler {
             if(e.key == "Backspace") this.del_key_can_be_pressed = true
         })
 
-        document.onmousemove = (e) => this.mouse_pos = {x:e.x, y:e.y}
+        document.onmousemove = (e) => {
+            this.mouse_pos = {
+                    x: e.x - (game.canvas.width / 2), 
+                    y: e.y - (game.canvas.height / 2)
+                }
+        }
 
         document.addEventListener('click', (e) => {
             if(game.current_ui){
