@@ -53,7 +53,10 @@ export class Label extends Widget{
         if(this.rendered){
             this.game.ctx.font = `${this.fontsize}px ${this.font}`
             this.game.ctx.fillStyle = this.textcolor
-            this.game.ctx.fillText(this.text, this.x, this.y)
+            this.game.ctx.fillText(
+                this.text,
+                this.game.canvas.width / 2 + this.x,
+                this.game.canvas.height / 2 + this.y)
         }
     }
 
@@ -68,13 +71,13 @@ export class Label extends Widget{
      * @param {String} [font = null] - Label's text's font
      */
     update_config(x=null, y=null, text=null, rendered=null, fontsize=null, textcolor=null, font=null){
-        if(x) this.x = x
-        if(y) this.y = y
-        if(text) this.text = text
+        if(x != null) this.x = x
+        if(y != null) this.y = y
+        if(text != null) this.text = text
         if(rendered != null) this.rendered = rendered
-        if(fontsize) this.fontsize = fontsize
-        if(textcolor) this.textcolor = textcolor
-        if(font) this.font = font
+        if(fontsize != null) this.fontsize = fontsize
+        if(textcolor != null) this.textcolor = textcolor
+        if(font != null) this.font = font
     }
 }
 
@@ -102,7 +105,8 @@ export class Button extends Widget{
         if(this.rendered){
             this.game.ctx.strokeStyle = "blue"
             this.game.ctx.strokeRect(
-                this.x, this.y,
+                this.game.canvas.width / 2 + this.x,
+                this.game.canvas.height / 2 + this.y,
                 this.width, this.height
             )
         }
@@ -118,12 +122,12 @@ export class Button extends Widget{
      * @param {(button: Button) => void} [command = null] - Command executed when the button is being cliked, the 'button' parameter refers to the actual object, which is being clicked
      */
     update_config(x=null, y=null, width=null, height=null, rendered=null, command=null){
-        if(x) this.x = x
-        if(y) this.y = y
-        if(width) this.width = width
-        if(height) this.height = height
+        if(x != null) this.x = x
+        if(y != null) this.y = y
+        if(width != null) this.width = width
+        if(height != null) this.height = height
         if(rendered != null) this.rendered = rendered
-        if(command) this.command = command
+        if(command != null) this.command = command
     }
 }
 
@@ -165,12 +169,16 @@ export class TextArea extends Widget{
         if(this.rendered){
             this.game.ctx.strokeStyle = "blue"
             this.game.ctx.strokeRect(
-                this.x, this.y,
+                this.game.canvas.width / 2 + this.x,
+                this.game.canvas.height / 2 + this.y,
                 this.width, this.height
             )
             this.game.ctx.fillStyle = this.textcolor
             this.game.ctx.font = `${this.fontsize}px ${this.font}`
-            this.game.ctx.fillText(this.content, this.x, this.y + this.height / 2)
+            this.game.ctx.fillText(
+                this.content,
+                this.game.canvas.width / 2 + this.x,
+                this.y + (this.game.canvas.height + this.height) / 2)
         }
     }
 
@@ -189,17 +197,17 @@ export class TextArea extends Widget{
      * @param {String} [font = null] - The textarea's text font
      */
     update_config(x=null, y=null, width=null, height=null, content=null, max_char_number=null, rendered=null, command=null, fontsize=null, textcolor=null, font=null){
-        if(x) this.x = x
-        if(y) this.y = y
-        if(width) this.width = width
-        if(height) this.height = height
-        if(max_char_number) this.max_char_number = max_char_number
+        if(x != null) this.x = x
+        if(y != null) this.y = y
+        if(width != null) this.width = width
+        if(height != null) this.height = height
+        if(max_char_number != null) this.max_char_number = max_char_number
         if(rendered != null) this.rendered = rendered
-        if(content) this.content = content.slice(0, this.max_char_number)
-        if(command) this.command = command
-        if(fontsize) this.fontsize = fontsize
-        if(textcolor) this.textcolor = textcolor
-        if(font) this.font = font
+        if(content != null) this.content = content.slice(0, this.max_char_number)
+        if(command != null) this.command = command
+        if(fontsize != null) this.fontsize = fontsize
+        if(textcolor != null) this.textcolor = textcolor
+        if(font != null) this.font = font
     }
 }
 
@@ -244,7 +252,10 @@ export class Icon extends Widget{
 
     render(){
         if(this.rendered){
-            this.tileset.drawTile(this.tile_nb, this.x, this.y)
+            this.tileset.drawTile(
+                this.tile_nb,
+                this.game.canvas.width / 2 + this.x,
+                this.game.canvas.height / 2 + this.y)
         }
     }
 
@@ -257,10 +268,10 @@ export class Icon extends Widget{
      * @param {Boolean} rendered - Boolean refearing to if this widget should be rendered
      */
     update_config(x=null, y=null, tileset=null, tile_nb=null, rendered=null){
-        if(x) this.x = x
-        if(y) this.y = y
-        if(tileset) this.tileset = tileset
-        if(tile_nb) this.tile_nb = tile_nb
+        if(x != null) this.x = x
+        if(y != null) this.y = y
+        if(tileset != null) this.tileset = tileset
+        if(tile_nb != null) this.tile_nb = tile_nb
         if(rendered != null) this.rendered = rendered
     }
 }
@@ -324,7 +335,8 @@ export class Texture extends Widget{
         if(this.rendered){
             this.game.ctx.drawImage(
                 this.img,
-                this.x, this.y,
+                this.game.canvas.width / 2 + this.x,
+                this.game.canvas.height / 2 + this.y,
                 this.width, this.height
             )
         }
@@ -339,10 +351,10 @@ export class Texture extends Widget{
      * @param {Boolean} [rendered = null] - Boolean refearing to if this widget should be rendered
      */
     update_config(x=null, y=null, width=null, height=null, rendered=null){
-        if(x) this.x = x
-        if(y) this.y = y
-        if(width) this.width = width
-        if(height) this.height = height
+        if(x != null) this.x = x
+        if(y != null) this.y = y
+        if(width != null) this.width = width
+        if(height != null) this.height = height
         if(rendered != null) this.rendered = rendered
     }
 

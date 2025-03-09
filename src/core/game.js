@@ -83,31 +83,30 @@ export class Game {
 		this.update()
 		var test_problem = await Problem.create(this, "images/parchment1.png", 500, 500, "123",
 					[
-						new Label(this, "label1", 580, 100, "coucou", true, 50),
-						new Label(this, "label2", 560, 175, "entre '123' dans la zone en bas (digits only):", true),
-						new NumberArea(this, "numberarea", 600, 200, 100, 50, 15, true, (awnser, textarea) => {
+						new Label(this, "label1", -60, -180, "coucou", true, 50),
+						new Label(this, "label2", -120, -120, "entre '123' dans la zone en bas (digits only):", true),
+						new NumberArea(this, "numberarea", -50, -80, 100, 50, 15, true, (awnser, textarea) => {
 							if(textarea.ui.awnser === awnser){
 								textarea.ui.is_finished = true
 							}
 						}, 20),
-						new Label(this, "label3", 600, 280, "ceci est un bouton", true),
-						new Button(this, "button", 625, 300, 50, 50, true, (button) => {
+						new Label(this, "label3", -70, 0, "ceci est un bouton:", true),
+						new Button(this, "button", -25, 20, 50, 50, true, (button) => {
 							button.ui.widgets.forEach((widget) => {
 								if(widget.type == "textarea" || widget.type == "numberarea"){
 									widget.submit()
 								}
 							})
 						}),
-						new Label(this, "label4", 600, 380, "ceci est une zone de texte (showcase purpose)", true),
-						new TextArea(this, "textarea", 625, 400, 100, 50, 15, true, (awnser, textarea) => {}),
-						new Icon(this, "icon", 480, 200, default_tileset, 3, false),
-						new Label(this, "label5", 600, 480, "full flmm de centrer alors que c juste une demo", true)
+						new Icon(this, "icon", -180, -50, default_tileset, 3, false),
+						new Label(this, "label4", -150, 120, "ceci est une zone de texte (showcase purpose)", true),
+						new TextArea(this, "textarea", -75, 150, 150, 50, 15, true, (awnser, textarea) => {}),
+						new Label(this, "label5", -150, 250, "full flmm de centrer alors que c juste une demo", true)
 					], (problem) => {
 						if(problem.get_widget("button").is_clicked){
 							problem.get_widget("icon").update_config(null, null, null, null, true)
 						} else {
 							problem.get_widget("icon").update_config(null, null, null, null, false)
-							console.log(problem.get_widget("icon"))
 						}
 					}
 				)
