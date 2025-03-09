@@ -1,5 +1,6 @@
 import { Game } from "../core/game.js"
 import { Map } from "../world/map.js"
+import { Entity } from "./entity.js"
 
 export class Hitbox {
 	/**
@@ -11,9 +12,9 @@ export class Hitbox {
 	 * @param {Number} height - hitbox height
 	 * @param {boolean} collision - is the hitbox a collision hitbox
 	 * @param {boolean} [player=false] - is the hitbox a player's hitbox
-	 * @param {(entity) => void} [command=function f(entity){}] - function executed when colliding with the an entity
+	 * @param {(entity: Entity, hitbox: Hitbox) => void} [command=((entity) => {})] - function executed when colliding with the an entity, the 'hitbox' argument refers to the actual hitbox object
 	 */
-	constructor(game, map, x, y, width, height, collision=false, player=false, command=function f(){}){
+	constructor(game, map, x, y, width, height, collision=false, player=false, command=((entity) => {})){
 		this.game = game
 		this.map = map
 
@@ -60,7 +61,7 @@ export class Hitbox {
 
 
 	/**
-	 * @param {Hitbox} hitbox
+	 * @param {Hitbox} hitbox
 	 * @return {Boolean}
 	 */
 	is_colliding(hitbox) {
@@ -102,6 +103,11 @@ export class Hitbox {
 		return colliding_hitboxes
 	}
 
+	/**
+	 * 
+	 * @param {Number} x 
+	 * @param {Number} y 
+	 */
 	center_around(x, y) {
 		this.x1 = x - this.width / 2
 		this.x2 = x + this.width / 2
@@ -109,13 +115,37 @@ export class Hitbox {
 		this.y2 = y + this.height / 2
 	}
 
-	set(x, y) {
+	/**
+	 * 
+	 * @param {Number} x 
+	 * @param {Number} y 
+	 * @param {Number} [width=null] 
+	 * @param {Number} [height=null] 
+	 */
+	set(x, y, width=null, height=null) {
 		this.x1 = x
 		this.y1 = y
+		if(width != null) this.width = width
+		if(height != null) this.height = height
 		this.x2 = x + this.width
 		this.y2 = y + this.height
+		if(this.x2 < this.x1){
+			this.x1 = this.x2
+			this.x2 = x
+			this.width *= -1
+		}
+		if(this.y2 < this.y1){
+			this.y1 = this.y2
+			this.y2 = y
+			this.height *= -1
+		}
 	}
 
+	/**
+	 * 
+	 * @param {Number} dx 
+	 * @param {Number} dy 
+	 */
 	move_by(dx, dy) {
 		this.x1 += dx
 		this.x2 += dx
@@ -123,11 +153,17 @@ export class Hitbox {
 		this.y2 += dy
 	}
 
+	/**
+	 * 
+	 * @param {Map} new_map 
+	 */
 	set_map(new_map){
 		this.map = new_map
 	}
 
 	destructor() {
-		this.game.collision_hitboxes.splice(collision_hitboxes.indexOf(this), 1)
+		this.game.collision_hitboxes.splice(this.game.collision_hitboxes.indexOf(this), 1)
+		this.game.hitboxes.splice(this.game.hitboxes.indexOf(this), 1)
+		this.game.combat_hitboxes.splice(this.game.combat_hitboxes.indexOf(this), 1)
 	}
 }

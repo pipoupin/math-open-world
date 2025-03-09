@@ -6,14 +6,14 @@ import { Tileset } from "../world/tileset.js"
 export class Entity {
 
   /**
-   * @param {Game} game
-   * @param {Map} map 
-   * @param {Tileset} tileset
-   * @param {Hitbox} collision_hitbox
-   * @param {Hitbox} combat_hitbox
-   * @param {Number} worldX
-   * @param {Number} worldY
-   * @param {Number} animation_duration    
+   * @param {Game} game - The current game
+   * @param {Map} map - The map in which the entity should show up
+   * @param {Tileset} tileset - the tileset used to animate the entity
+   * @param {Hitbox} collision_hitbox - the entity's hitbox used for handling collision with the player
+   * @param {Hitbox} combat_hitbox - the entity's hitbox used for handling attacks
+   * @param {Number} worldX - the entity's x position in the world
+   * @param {Number} worldY - the entity's y position in the world
+   * @param {Number} animation_duration - the animation's frames' duration
    */
   constructor(game, map, tileset, collision_hitbox, combat_hitbox, worldX, worldY, animation_duration, life=-1) {
     this.game = game
@@ -36,8 +36,15 @@ export class Entity {
     this.last_time = 0
 
     this.life = life
+
+    this.game.entities.push(this)
   }
 
+  /**
+   * 
+   * @param {Number} current_time 
+   * @returns 
+   */
   update(current_time) {
     if(this.game.get_current_map() != this.map)
 			return
@@ -56,17 +63,17 @@ export class Entity {
       this.backPositionY()
 			this.dy = 0
     }
-    
+
     this.collision_hitbox.get_colliding_hitboxes(true, false).forEach(hitbox => {
-			hitbox.command(this)
+			hitbox.command(this, hitbox)
 		})
 
 		this.combat_hitbox.get_colliding_hitboxes(false, true).forEach(hitbox => {
-			hitbox.command(this)
+			hitbox.command(this, hitbox)
 		})
 
 		this.combat_hitbox.get_colliding_hitboxes(false, false).forEach(hitbox => {
-			hitbox.command(this)
+			hitbox.command(this, hitbox)
 		})
 
     this.handleAnimation(current_time)
@@ -74,7 +81,7 @@ export class Entity {
 
   updatePositionX() {
     const halfHitboxWidth = this.combat_hitbox.width / 2
-    this.worldX = this.clamp(
+    this.worldX = Entity.clamp(
       this.worldX + this.dx,
       halfHitboxWidth,
       this.game.map.world.width - halfHitboxWidth
@@ -83,7 +90,7 @@ export class Entity {
 
   updatePositionY() {
     const halfHitboxHeight = this.combat_hitbox.height / 2
-    this.worldY = this.clamp(
+    this.worldY = Entity.clamp(
       this.worldY + this.dy,
       halfHitboxHeight,
       this.game.map.world.height - halfHitboxHeight
@@ -94,7 +101,14 @@ export class Entity {
 		this.collision_hitbox.set(this.worldX - this.collision_hitbox.width / 2, this.worldY)
 	}
 
-  clamp(value, min, max) {
+  /**
+   * 
+   * @param {Number} value 
+   * @param {Number} min 
+   * @param {Number} max 
+   * @returns {Number}
+   */
+  static clamp(value, min, max) {
     return Math.max(min, Math.min(max, value))
   }
 
@@ -112,12 +126,19 @@ export class Entity {
 
   backPositionX() {
     this.worldX -= this.dx
+    this.dx = 0
   }
 
   backPositionY() {
     this.worldY -= this.dy
+    this.dy = 0
   }
 
+  /**
+   * 
+   * @param {Number} current_time 
+   * @returns 
+   */
   handleAnimation(current_time) {
     if (current_time - this.last_time < this.animation_duration) return
 

@@ -1,21 +1,41 @@
+import { Game } from "../core/game.js"
+import { Tileset } from "./tileset.js"
+
 export class Map {
-	constructor(game, tileset) {
+	/**
+	 * !!! One shouldn't use the constructor to make a map, use the static create method instead
+	 * @param {Game} game - The current game
+	 * @param {Tileset} tileset - The tileset used to render the map
+	 */
+	constructor(game, tileset) {
 		this.game = game
 		this.tileset = tileset
+		/** @type {Array<Array<Number>>} */
 		this.layers = []
 		this.world = {}
 	}
 
-	static async create(game, src, tileset) {
+	/**
+	 * A scenery on which are put other objects (entities, hitboxes, ...). This method is async and static
+	 * @param {Game} game - The current game
+	 * @param {String} src - The path to the json file used as a reference to layout the map
+	 * @param {Tileset} tileset - The tileset used to render the map
+	 * @returns {Map}
+	 */
+	static async create(game, src, tileset) {
 		const map = new Map(game, tileset)
-    try {
+		try {
 			await map.load(src)
-    } catch (error) {
+		} catch (error) {
 			console.error(`Failed to load map "${src}": ${error.message}`);
-    }
+		}
 		return map
 	}
 
+	/**
+	 * 
+	 * @param {String} src 
+	 */
 	async load(src) {
 			// extract json
 			const response = await fetch(src)
@@ -27,12 +47,19 @@ export class Map {
 			this.height = body.height
 			this.world.width = this.width * this.game.TILE_SIZE
 			this.world.height = this.height * this.game.TILE_SIZE
-			for (let layer of body.layers) {
+			for (let layer of body.layers) {
 				if (layer.type === "tilelayer")
 					this.layers.push(layer.data)
 			}
 	}
 
+	/**
+	 * 
+	 * @param {Number} layer_i 
+	 * @param {Number} x 
+	 * @param {Number} y 
+	 * @returns {Number}
+	 */
 	get_cell(layer_i, x, y) {
 		return this.layers[layer_i][y * this.width + x]
 	}
