@@ -85,9 +85,9 @@ export class Game {
 					[
 						new Label(this, "label1", -60, -180, "coucou", true, 50),
 						new Label(this, "label2", -120, -120, "entre '123' dans la zone en bas (digits only):", true),
-						new NumberArea(this, "numberarea", -50, -80, 100, 50, 15, true, (awnser, textarea) => {
-							if(textarea.ui.awnser === awnser){
-								textarea.ui.is_finished = true
+						new NumberArea(this, "numberarea", -50, -80, 100, 50, 15, true, (awnser, numberarea) => {
+							if(numberarea.ui.awnser === awnser){
+								numberarea.ui.is_finished = true
 							}
 						}, 20),
 						new Label(this, "label3", -70, 0, "ceci est un bouton:", true),
