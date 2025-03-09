@@ -31,7 +31,6 @@ export class InputHandler {
                     x: e.x - (game.canvas.width / 2), 
                     y: e.y - (game.canvas.height / 2)
                 }
-                console.log(this.mouse_pos)
         }
 
         document.addEventListener('click', (e) => {

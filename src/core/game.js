@@ -7,7 +7,7 @@ import { Hitbox } from '../entities/hitbox.js'
 import { Problem } from '../ui/problem.js'
 import { Attack } from '../entities/attack.js'
 import { Ui } from '../ui/ui.js'
-import { Button, Icon, Label, NumberArea, TextArea } from '../ui/widgets.js'
+import { Button, Icon, Label, NumberArea, TextArea, Texture } from '../ui/widgets.js'
 import { Talkable } from '../entities/talkable.js'
 
 export class Game {
@@ -84,6 +84,7 @@ export class Game {
 		var test_problem = await Problem.create(this, "images/parchment1.png", 500, 500, "123",
 					[
 						new Label(this, "label1", -60, -180, "coucou", true, 50),
+						await Texture.create(this, "texture", "images/coin-logo.png", -130, -220, 50, 50, true),
 						new Label(this, "label2", -120, -120, "entre '123' dans la zone en bas (digits only):", true),
 						new NumberArea(this, "numberarea", -50, -80, 100, 50, 15, true, (awnser, numberarea) => {
 							if(numberarea.ui.awnser === awnser){
