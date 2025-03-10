@@ -8,6 +8,8 @@ export class Map {
 	 * !!! One shouldn't use the constructor to make a map, use the static create method instead
 	 * @param {Game} game - The current game
 	 * @param {Tileset} tileset - The tileset used to render the map
+	 * @param {String} background - The color of the tileless background
+	 * @param {Object} player_pos - The position of the player on this specific map
 	 */
 	constructor(game, tileset, background, player_pos) {
 		this.game = game
@@ -24,6 +26,8 @@ export class Map {
 	 * @param {Game} game - The current game
 	 * @param {String} src - The path to the json file used as a reference to layout the map
 	 * @param {Tileset} tileset - The tileset used to render the map
+	 * @param {String} background - The color of the tileless background
+	 * @param {Object} player_pos - The position of the player on this specific map
 	 * @returns {Map}
 	 */
 	static async create(game, src, tileset, background, player_pos) {
@@ -58,7 +62,7 @@ export class Map {
 					// create hitboxes
 					if (layer.name === "Blocks") {
 						for (let i = 0; i < layer.data.length; i++) {
-							if (!layer.data[i])
+							if ((! layer.data[i]) || constants.DOORS_TILES.includes(layer.data[i]))
 								continue
 
 							const tileX = (i % layer.width) * this.game.TILE_SIZE;

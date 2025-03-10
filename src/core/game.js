@@ -125,16 +125,22 @@ export class Game {
 			colors_problem, null
 		)
 
+		// house borders hitboxes
+		new Hitbox(this, this.get_current_map(), 0, 5 * constants.TILE_SIZE, 3 * constants.TILE_SIZE, constants.TILE_SIZE, true, false, null, (e, h) => {})
+		new Hitbox(this, this.get_current_map(), 5 * constants.TILE_SIZE, 5 * constants.TILE_SIZE, 3 * constants.TILE_SIZE, constants.TILE_SIZE, true, false, null, (e, h) => {})
+
+		// Door hitboxes
+		new Hitbox(this, this.maps[1], 15 * constants.TILE_SIZE, 13 * constants.TILE_SIZE, constants.TILE_SIZE, constants.TILE_SIZE / 2, true, false, null, (e, h) => {})
 
 		// switch map hitboxes
-		new Hitbox(this, this.get_current_map(), 3.5 * constants.TILE_SIZE, 4.5 * constants.TILE_SIZE, constants.TILE_SIZE, constants.TILE_SIZE / 2, false, false, null, (e, h) => {
+		new Hitbox(this, this.get_current_map(), 3 * constants.TILE_SIZE, 5.5 * constants.TILE_SIZE, 2 * constants.TILE_SIZE, constants.TILE_SIZE / 2, false, false, null, (e, h) => {
 			this.get_current_map().player_pos.x = this.player.worldX;
 			this.get_current_map().player_pos.y = this.player.worldY - constants.TILE_SIZE / 2;
 			this.set_map(1)
 			this.player.set_map(this.get_current_map())
 		})
 
-		new Hitbox(this, this.maps[1], 15 * constants.TILE_SIZE, 14 * constants.TILE_SIZE, constants.TILE_SIZE, constants.TILE_SIZE / 2, false, false, null, (e, h) => {
+		new Hitbox(this, this.maps[1], 15 * constants.TILE_SIZE, 13.5 * constants.TILE_SIZE, constants.TILE_SIZE, constants.TILE_SIZE / 2, false, false, null, (e, h) => {
 			this.set_map(0)
 			this.player.set_map(this.get_current_map())
 		})

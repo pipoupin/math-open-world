@@ -1,3 +1,4 @@
+import { constants } from '../constants.js'
 import { Game } from '../core/game.js'
 import { Entity } from './entity.js'
 import { Hitbox } from './hitbox.js'
@@ -5,7 +6,7 @@ import { Hitbox } from './hitbox.js'
 export class Player extends Entity {
 	/**
 	 * @param {Game} game - The current game
-	 * @param {TileSet} player_tileset - the tileset used for animation the player
+	 * @param {TileSet} player_tileset - the tileset used for animating the player
 	 */
 	constructor(game, player_tileset) {
 		super(
@@ -37,7 +38,7 @@ export class Player extends Entity {
 	 */
 	update(current_time) {
 		// Handle player movement
-		if (this.inputHandler.isKeyPressed(' ') && current_time - this.last_dash >= this.dash_cooldown) {
+		if (this.inputHandler.isKeyPressed(constants.DASH_KEY) && current_time - this.last_dash >= this.dash_cooldown) {
 			this.acceleration = 10
 			this.fullSpeed = 30
 			this.last_dash = current_time
@@ -46,15 +47,15 @@ export class Player extends Entity {
 				this.acceleration = 4
 			}, this.dash_duration)
 		}
-		if (this.inputHandler.isKeyPressed('z')) this.dy -= this.acceleration
-		if (this.inputHandler.isKeyPressed('s')) this.dy += this.acceleration
-		if (this.inputHandler.isKeyPressed('q')) this.dx -= this.acceleration
-		if (this.inputHandler.isKeyPressed('d')) this.dx += this.acceleration
+		if (this.inputHandler.isKeyPressed(constants.UP_KEY)) this.dy -= this.acceleration
+		if (this.inputHandler.isKeyPressed(constants.DOWN_KEY)) this.dy += this.acceleration
+		if (this.inputHandler.isKeyPressed(constants.LEFT_KEY)) this.dx -= this.acceleration
+		if (this.inputHandler.isKeyPressed(constants.RIGHT_KEY)) this.dx += this.acceleration
 
 		// Handle deceleration
-		if (!this.inputHandler.isKeyPressed('z') && !this.inputHandler.isKeyPressed('s'))
+		if (!this.inputHandler.isKeyPressed(constants.UP_KEY) && !this.inputHandler.isKeyPressed(constants.DOWN_KEY))
 			this.dy = Math.sign(this.dy) * Math.max(Math.abs(this.dy) - this.acceleration, 0)
-		if (!this.inputHandler.isKeyPressed('q') && !this.inputHandler.isKeyPressed('d'))
+		if (!this.inputHandler.isKeyPressed(constants.LEFT_KEY) && !this.inputHandler.isKeyPressed(constants.RIGHT_KEY))
 			this.dx = Math.sign(this.dx) * Math.max(Math.abs(this.dx) - this.acceleration, 0)
 
 		// Apply diagonal speed limitation

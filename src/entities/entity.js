@@ -2,7 +2,7 @@ import { Game } from "../core/game.js"
 import { Hitbox } from "./hitbox.js"
 import { Map } from "../world/map.js"
 import { Tileset } from "../world/tileset.js"
-import { constants } from "../constants.js"
+import { constants } from "../constants.js"
 
 export class Entity {
 
@@ -148,10 +148,11 @@ export class Entity {
     if (this.dy === 0 && this.dx === 0) return
 
     if (Math.abs(this.dy) > Math.abs(this.dx)) {
-      this.direction = this.dy > 0 ? 0 : 1
+      this.direction = this.game.inputHandler.isKeyPressed(constants.DOWN_KEY) ? 0 : 1
     } else {
-      this.direction = this.dx > 0 ? 2 : 3
+      this.direction = this.game.inputHandler.isKeyPressed(constants.RIGHT_KEY) ? 2 : 3
     }
+
   }
 
   render() {
