@@ -68,7 +68,7 @@ export class Game {
 		const pretty_face_tileset = await Tileset.create(this, "images/pretty_face_tileset.png", 16, this.TILE_SIZE, 1)
 		this.maps = [
 			await Map.create(this, 'house.json', pretty_face_tileset, "black", {x: 4 * constants.TILE_SIZE, y: 2.5 * constants.TILE_SIZE}),
-			await Map.create(this, 'map.json', default_tileset, "black", {x: 100, y: 100}),
+			//await Map.create(this, 'map.json', default_tileset, "black", {x: 100, y: 100}),
 			//await Map.create(this, 'map copy.json', alternative_tileset, "black"),
 			await Map.create(this, 'main_map.json', default_tileset, "grey", {x: 15 * constants.TILE_SIZE, y: 16 * constants.TILE_SIZE})
 		]
@@ -129,11 +129,11 @@ export class Game {
 		new Hitbox(this, this.get_current_map(), 3.5 * constants.TILE_SIZE, 4.5 * constants.TILE_SIZE, constants.TILE_SIZE, constants.TILE_SIZE / 2, false, false, () => {
 			this.get_current_map().player_pos.x = this.player.worldX;
 			this.get_current_map().player_pos.y = this.player.worldY - constants.TILE_SIZE / 2;
-			this.set_map(2)
+			this.set_map(1)
 			this.player.set_map(this.get_current_map())
 		})
 
-		new Hitbox(this, this.maps[2], 15 * constants.TILE_SIZE, 14 * constants.TILE_SIZE, constants.TILE_SIZE, constants.TILE_SIZE / 2, false, false, () => {
+		new Hitbox(this, this.maps[1], 15 * constants.TILE_SIZE, 14 * constants.TILE_SIZE, constants.TILE_SIZE, constants.TILE_SIZE / 2, false, false, () => {
 			this.set_map(0)
 			this.player.set_map(this.get_current_map())
 		})
