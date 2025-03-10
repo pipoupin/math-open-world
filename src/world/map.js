@@ -64,19 +64,7 @@ export class Map {
 							const tileX = (i % layer.width) * this.game.TILE_SIZE;
 							const tileY = Math.floor(i / layer.width) * this.game.TILE_SIZE;
 
-							// Create hitbox
-							new Hitbox(
-								this.game,
-								this,
-								tileX,
-								tileY,
-								this.game.TILE_SIZE,
-								this.game.TILE_SIZE,
-								true, // isCollidable
-								false, // isCombat
-								() => {} // command callback
-							);
-
+							new Hitbox(this.game, this, tileX, tileY, this.game.TILE_SIZE, this.game.TILE_SIZE, true, false, () => {});
 						}
 					}
 				}

@@ -83,22 +83,21 @@ export class Game {
 		//new Hitbox(this, this.get_current_map(), 1000, 1000 + this.TILE_SIZE / 2, this.TILE_SIZE, this.TILE_SIZE / 2, false, false, (e, h) => {this.set_map(1)})
 		//new Hitbox(this, this.maps[1], 500, 500 + this.TILE_SIZE / 2, this.TILE_SIZE, this.TILE_SIZE / 2, false, false, (e, h) => {this.set_map(0)})
 
-		// test problem
 		this.update()
 
 		const colors_problem = await Problem.create(
 			this, "images/parchment1.png", 500, 500, "colors",
 			[
-				new Label(this, "labelRouge", -150, -150, "Rouge:", true, 30),
+				new Label(this, "label-red", -150, -150, "Rouge:", true, 30),
 				new NumberArea(this, "numberarea-red", -50, -150, 100, 50, 15, true, (answer, numberarea) => {}, 20),
 
-				new Label(this, "labelVert", -150, -50, "Vert:", true, 30),
+				new Label(this, "label-green", -150, -50, "Vert:", true, 30),
 				new NumberArea(this, "numberarea-green", -50, -50, 100, 50, 15, true, (answer, numberarea) => {}, 20),
 
-				new Label(this, "labelJaune", -150, 50, "Jaune:", true, 30),
+				new Label(this, "label-yellow", -150, 50, "Jaune:", true, 30),
 				new NumberArea(this, "numberarea-yellow", -50, 50, 100, 50, 15, true, (answer, numberarea) => {}, 20),
 
-				new Button(this, "buttonSubmit", -25, 150, 100, 50, true, (button) => {
+				new Button(this, "button-submit", -25, 150, 100, 50, true, (button) => {
 					const numberarea_red = button.ui.get_widget("numberarea-red");
 					const numberarea_green = button.ui.get_widget("numberarea-green");
 					const numberarea_yellow = button.ui.get_widget("numberarea-yellow");
@@ -113,7 +112,7 @@ export class Game {
 				})
 			],
 			(problem) => {
-				if (problem.get_widget("buttonSubmit").is_clicked) {
+				if (problem.get_widget("button-submit").is_clicked) {
 					console.log("button cliked");
 				}
 			}
