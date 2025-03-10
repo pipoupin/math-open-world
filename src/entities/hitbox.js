@@ -33,6 +33,7 @@ export class Hitbox {
 		this.game.hitboxes.push(this)
 		
 		this.player = player
+		this.owner = owner
 
 		this.command = command
 	}
