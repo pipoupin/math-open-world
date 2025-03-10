@@ -70,6 +70,7 @@ export class Game {
 			await Map.create(this, 'house.json', pretty_face_tileset, "black", {x: 4 * constants.TILE_SIZE, y: 2.5 * constants.TILE_SIZE}),
 			await Map.create(this, 'map.json', default_tileset, "black", {x: 100, y: 100}),
 			//await Map.create(this, 'map copy.json', alternative_tileset, "black"),
+			await Map.create(this, 'main_map.json', default_tileset, "grey", {x: 15 * constants.TILE_SIZE, y: 16 * constants.TILE_SIZE})
 		]
 		this.current_map = 0 // "scene"
 		this.map = this.maps[this.current_map]
@@ -105,6 +106,7 @@ export class Game {
 					if (numberarea_red.content === "3" && numberarea_green.content === "2" && numberarea_yellow.content === "3") {
 						button.ui.is_finished = true;
 						console.log("bonnes réponses");
+						//colors_problem.destroy()
 					} else {
 						console.log("mauvaises réponses [debug: bonnes réponses sont 3, 2, 3]");
 						console.log(numberarea_red.content, numberarea_green.content , numberarea_yellow.content );
@@ -122,8 +124,17 @@ export class Game {
 			colors_problem, null
 		)
 
+
+		// switch map hitboxes
 		new Hitbox(this, this.get_current_map(), 3.5 * constants.TILE_SIZE, 4.5 * constants.TILE_SIZE, constants.TILE_SIZE, constants.TILE_SIZE / 2, false, false, () => {
-			this.set_map(1)
+			this.get_current_map().player_pos.x = this.player.worldX;
+			this.get_current_map().player_pos.y = this.player.worldY - constants.TILE_SIZE / 2;
+			this.set_map(2)
+			this.player.set_map(this.get_current_map())
+		})
+
+		new Hitbox(this, this.maps[2], 15 * constants.TILE_SIZE, 14 * constants.TILE_SIZE, constants.TILE_SIZE, constants.TILE_SIZE / 2, false, false, () => {
+			this.set_map(0)
 			this.player.set_map(this.get_current_map())
 		})
 
@@ -175,11 +186,13 @@ export class Game {
 
 	render() {
 		this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
-		this.map.render()
+		this.get_current_map().render_ground_blocks()
 
 		this.entities.forEach(entity => {entity.render()})
 
 		this.player.render()
+
+		this.get_current_map().render_perspective()
 		
 		this.hitboxes.forEach(hitbox => {hitbox.render()})
 		this.talkables.forEach(talkable => {talkable.render()})
