@@ -9,6 +9,7 @@ import { Attack } from '../entities/attack.js'
 import { Ui } from '../ui/ui.js'
 import { Button, Icon, Label, NumberArea, TextArea, Texture } from '../ui/widgets.js'
 import { Talkable } from '../entities/talkable.js'
+import { constants } from "../constants.js"
 
 export class Game {
 	constructor() {
@@ -31,6 +32,11 @@ export class Game {
 			this.ctx.imageSmoothingEnabled = false
 		})
 
+		// prevent right-click (as it provokes bugs)
+		document.addEventListener('contextmenu', (event) => {
+			event.preventDefault()
+		})
+
 		// initialize attributes
 		/** @type {Array<Hitbox>} */
 		this.hitboxes = []
@@ -50,77 +56,77 @@ export class Game {
 		/** @type {Ui} */
 		this.current_ui = null
 
-		this.camera = { x: 100, y: 105.3 }
+		this.camera = { x: -1000, y: -1000 }
 		this.TILE_SIZE = 128
 	}
 
 	async run() {
 		// create class objects
 		this.inputHandler = new InputHandler(this)
-		const default_tileset = await Tileset.create(this, "images/map.png", 16, this.TILE_SIZE)
-		const alternative_tileset = await Tileset.create(this, "images/floor.png", 16, this.TILE_SIZE)
+		const default_tileset = await Tileset.create(this, "images/map.png", 16, this.TILE_SIZE, 0)
+		const alternative_tileset = await Tileset.create(this, "images/floor.png", 16, this.TILE_SIZE, 0)
+		const pretty_face_tileset = await Tileset.create(this, "images/pretty_face_tileset.png", 16, this.TILE_SIZE, 1)
 		this.maps = [
-			await Map.create(this, 'map.json', default_tileset),
-			await Map.create(this, 'map copy.json', alternative_tileset)
+			await Map.create(this, 'house.json', pretty_face_tileset, "black", {x: 4 * constants.TILE_SIZE, y: 2.5 * constants.TILE_SIZE}),
+			await Map.create(this, 'map.json', default_tileset, "black", {x: 100, y: 100}),
+			//await Map.create(this, 'map copy.json', alternative_tileset, "black"),
 		]
 		this.current_map = 0 // "scene"
 		this.map = this.maps[this.current_map]
 
 
-		const player_tileset = await Tileset.create(this, 'images/spritesheet.png', 16, this.TILE_SIZE)
+		const player_tileset = await Tileset.create(this, 'images/spritesheet.png', 16, this.TILE_SIZE, 0)
 		this.player = new Player(this, player_tileset)
-		var test_entity = new Entity(this, this.get_current_map(), player_tileset,
-				new Hitbox(this, this.get_current_map(), 0, this.TILE_SIZE / 2, this.TILE_SIZE, this.TILE_SIZE / 2, true, false),
-				new Hitbox(this, this.get_current_map(), 0, 0, this.TILE_SIZE, this.TILE_SIZE, false, false),
-				this.TILE_SIZE /2, this.TILE_SIZE / 2, 200
-		  	)
+		this.player.set_map(this.get_current_map())
 		
 		// test hitboxes for "command" parameter and for map switch
-		new Hitbox(this, this.get_current_map(), 1000, 1000 + this.TILE_SIZE / 2, this.TILE_SIZE, this.TILE_SIZE / 2, false, false, (e, h) => {this.set_map(1)})
-		new Hitbox(this, this.maps[1], 500, 500 + this.TILE_SIZE / 2, this.TILE_SIZE, this.TILE_SIZE / 2, false, false, (e, h) => {this.set_map(0)})
+		//new Hitbox(this, this.get_current_map(), 1000, 1000 + this.TILE_SIZE / 2, this.TILE_SIZE, this.TILE_SIZE / 2, false, false, (e, h) => {this.set_map(1)})
+		//new Hitbox(this, this.maps[1], 500, 500 + this.TILE_SIZE / 2, this.TILE_SIZE, this.TILE_SIZE / 2, false, false, (e, h) => {this.set_map(0)})
 
 		// test problem
 		this.update()
-		var test_problem = await Problem.create(this, "images/parchment1.png", 500, 500, "123",
-					[
-						new Label(this, "label1", -60, -180, "coucou", true, 50),
-						await Texture.create(this, "texture", "images/coin-logo.png", -130, -220, 50, 50, true),
-						new Label(this, "label2", -120, -120, "entre '123' dans la zone en bas (digits only):", true),
-						new NumberArea(this, "numberarea", -50, -80, 100, 50, 15, true, (awnser, numberarea) => {
-							if(numberarea.ui.awnser === awnser){
-								numberarea.ui.is_finished = true
-							}
-						}, 20),
-						new Label(this, "label3", -70, 0, "ceci est un bouton:", true),
-						new Button(this, "button", -25, 20, 50, 50, true, (button) => {
-							button.ui.widgets.forEach((widget) => {
-								if(widget.type == "textarea" || widget.type == "numberarea"){
-									widget.submit()
-								}
-							})
-						}),
-						new Icon(this, "icon", -180, -50, default_tileset, 3, false),
-						new Label(this, "label4", -150, 120, "ceci est une zone de texte (showcase purpose)", true),
-						new TextArea(this, "textarea", -75, 150, 150, 50, 15, true, (awnser, textarea) => {}),
-						new Label(this, "label5", -150, 250, "full flmm de centrer alors que c juste une demo", true)
-					], (problem) => {
-						if(problem.get_widget("button").is_clicked){
-							problem.get_widget("icon").update_config(null, null, null, null, true)
-						} else {
-							problem.get_widget("icon").update_config(null, null, null, null, false)
-						}
+
+		const colors_problem = await Problem.create(
+			this, "images/parchment1.png", 500, 500, "colors",
+			[
+				new Label(this, "labelRouge", -150, -150, "Rouge:", true, 30),
+				new NumberArea(this, "numberarea-red", -50, -150, 100, 50, 15, true, (answer, numberarea) => {}, 20),
+
+				new Label(this, "labelVert", -150, -50, "Vert:", true, 30),
+				new NumberArea(this, "numberarea-green", -50, -50, 100, 50, 15, true, (answer, numberarea) => {}, 20),
+
+				new Label(this, "labelJaune", -150, 50, "Jaune:", true, 30),
+				new NumberArea(this, "numberarea-yellow", -50, 50, 100, 50, 15, true, (answer, numberarea) => {}, 20),
+
+				new Button(this, "buttonSubmit", -25, 150, 100, 50, true, (button) => {
+					const numberarea_red = button.ui.get_widget("numberarea-red");
+					const numberarea_green = button.ui.get_widget("numberarea-green");
+					const numberarea_yellow = button.ui.get_widget("numberarea-yellow");
+
+					if (numberarea_red.content === "3" && numberarea_green.content === "2" && numberarea_yellow.content === "3") {
+						button.ui.is_finished = true;
+						console.log("bonnes réponses");
+					} else {
+						console.log("mauvaises réponses [debug: bonnes réponses sont 3, 2, 3]");
+						console.log(numberarea_red.content, numberarea_green.content , numberarea_yellow.content );
 					}
-				)
-
+				})
+			],
+			(problem) => {
+				if (problem.get_widget("buttonSubmit").is_clicked) {
+					console.log("button cliked");
+				}
+			}
+		)
 		new Talkable(this, this.get_current_map(),
-			new Hitbox(this, this.get_current_map(), 200, 200, this.TILE_SIZE, this.TILE_SIZE, true, false, (entity, hitbox) => {}),
-			test_problem, null
+			new Hitbox(this, this.get_current_map(), 0, constants.TILE_SIZE * 2, this.TILE_SIZE, this.TILE_SIZE, true, false, (entity, hitbox) => {}),
+			colors_problem, null
 		)
 
-		new Talkable(this, this.get_current_map(),
-			new Hitbox(this, this.get_current_map(), 0, 0, this.TILE_SIZE, this.TILE_SIZE, false, false, (hitbox) => {}),
-			test_problem, test_entity
-		)
+		new Hitbox(this, this.get_current_map(), 3.5 * constants.TILE_SIZE, 4.5 * constants.TILE_SIZE, constants.TILE_SIZE, constants.TILE_SIZE / 2, false, false, () => {
+			this.set_map(1)
+			this.player.set_map(this.get_current_map())
+		})
 
 		requestAnimationFrame(this.loop.bind(this))
 	}
@@ -144,6 +150,19 @@ export class Game {
 		this.player.update(current_time)
 		this.camera.x = this.player.worldX - this.canvas.width / 2
 		this.camera.y = this.player.worldY - this.canvas.height / 2
+
+		if (this.get_current_map().world.width <= this.canvas.width) {
+			this.camera.x = (this.get_current_map().world.width - this.canvas.width) / 2;
+		} else {
+			this.camera.x = Math.max(0, Math.min(this.camera.x, this.get_current_map().world.width - this.canvas.width));
+		}
+
+		if (this.get_current_map().world.height <= this.canvas.height) {
+			this.camera.y = (this.get_current_map().world.height - this.canvas.height) / 2;
+		} else {
+			this.camera.y = Math.max(0, Math.min(this.camera.y, this.get_current_map().world.height - this.canvas.height));
+		}
+
 
 		this.attacks.forEach(attack => {
 			if (current_time - attack.time_origin > attack.duration) {

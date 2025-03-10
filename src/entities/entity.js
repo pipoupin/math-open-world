@@ -2,6 +2,7 @@ import { Game } from "../core/game.js"
 import { Hitbox } from "./hitbox.js"
 import { Map } from "../world/map.js"
 import { Tileset } from "../world/tileset.js"
+import { constants } from "../constants.js"
 
 export class Entity {
 
@@ -41,7 +42,6 @@ export class Entity {
   }
 
   /**
-   * 
    * @param {Number} current_time 
    * @returns 
    */
@@ -114,12 +114,8 @@ export class Entity {
 
   colliding() {
     for (let collision_hitbox of this.game.collision_hitboxes) {
-      if (collision_hitbox === this.collision_hitbox) {
-        continue
-      }
-      if (this.collision_hitbox.is_colliding(collision_hitbox)) {
-        return true
-      }
+      if (collision_hitbox === this.collision_hitbox) continue
+      if (this.collision_hitbox.is_colliding(collision_hitbox)) return true
     }
     return false
   }
@@ -149,23 +145,25 @@ export class Entity {
   }
 
   updateDirection() {
-    if (this.dy > 0) this.direction = 0
-    else if (this.dy < 0) this.direction = 1
-    else if (this.dx > 0) this.direction = 2
-    else if (this.dx < 0) this.direction = 3
+    if (this.dy === 0 && this.dx === 0) return
+
+    if (Math.abs(this.dy) > Math.abs(this.dx)) {
+      this.direction = this.dy > 0 ? 0 : 1
+    } else {
+      this.direction = this.dx > 0 ? 2 : 3
+    }
   }
 
   render() {
-    if(this.game.get_current_map() != this.map)
-			return
+    if (this.game.get_current_map() !== this.map) return;
 
-		if (this.isWithinCameraView()) {
-			this.tileset.drawTile(
-				4 * this.direction + (this.animation_step !== -1 ? this.animation_step : 0) + 1,
-				this.worldX - this.game.camera.x - this.game.TILE_SIZE / 2,
-				this.worldY - this.game.camera.y - this.game.TILE_SIZE / 2
-			)
-		}
+    if (this.isWithinCameraView()) {
+      const tileNum = 4 * this.direction + (this.animation_step !== -1 ? this.animation_step : 0) + 1;
+      const screenX = this.worldX - this.game.camera.x - constants.TILE_SIZE / 2;
+      const screenY = this.worldY - this.game.camera.y - constants.TILE_SIZE / 2;
+
+      this.tileset.drawTile(tileNum, screenX, screenY);
+    }
   }
 
   isWithinCameraView() {

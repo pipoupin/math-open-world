@@ -1,5 +1,7 @@
 import { Game } from "../core/game.js"
 import { Tileset } from "./tileset.js"
+import { Hitbox } from "../entities/hitbox.js"
+import { constants } from "../constants.js"
 
 export class Map {
 	/**
@@ -7,12 +9,14 @@ export class Map {
 	 * @param {Game} game - The current game
 	 * @param {Tileset} tileset - The tileset used to render the map
 	 */
-	constructor(game, tileset) {
+	constructor(game, tileset, background, player_pos) {
 		this.game = game
 		this.tileset = tileset
 		/** @type {Array<Array<Number>>} */
 		this.layers = []
 		this.world = {}
+		this.background = background
+		this.player_pos = player_pos
 	}
 
 	/**
@@ -22,8 +26,8 @@ export class Map {
 	 * @param {Tileset} tileset - The tileset used to render the map
 	 * @returns {Map}
 	 */
-	static async create(game, src, tileset) {
-		const map = new Map(game, tileset)
+	static async create(game, src, tileset, background, player_pos) {
+		const map = new Map(game, tileset, background, player_pos)
 		try {
 			await map.load(src)
 		} catch (error) {
@@ -48,8 +52,34 @@ export class Map {
 			this.world.width = this.width * this.game.TILE_SIZE
 			this.world.height = this.height * this.game.TILE_SIZE
 			for (let layer of body.layers) {
-				if (layer.type === "tilelayer")
+				if (layer.type === "tilelayer") {
 					this.layers.push(layer.data)
+
+					// create hitboxes
+					if (layer.name === "Blocks") {
+						for (let i = 0; i < layer.data.length; i++) {
+							if (!layer.data[i])
+								continue
+
+							const tileX = (i % layer.width) * this.game.TILE_SIZE;
+							const tileY = Math.floor(i / layer.width) * this.game.TILE_SIZE;
+
+							// Create hitbox
+							new Hitbox(
+								this.game,
+								this,
+								tileX,
+								tileY,
+								this.game.TILE_SIZE,
+								this.game.TILE_SIZE,
+								true, // isCollidable
+								false, // isCombat
+								() => {} // command callback
+							);
+
+						}
+					}
+				}
 			}
 	}
 
@@ -65,18 +95,24 @@ export class Map {
 	}
 
 	render() {
-		const startTileX = Math.max(0, Math.floor(this.game.camera.x / this.game.TILE_SIZE))
-		const startTileY = Math.max(0, Math.floor(this.game.camera.y / this.game.TILE_SIZE))
-		const endTileX = Math.min(this.width, Math.ceil((this.game.camera.x + this.game.canvas.width) / this.game.TILE_SIZE))
-		const endTileY = Math.min(this.height, Math.ceil((this.game.camera.y + this.game.canvas.height) / this.game.TILE_SIZE))
+		this.game.ctx.fillStyle = this.background
+		this.game.ctx.fillRect(0, 0, this.game.canvas.width, this.game.canvas.height)
+		const startTileX = Math.max(0, Math.floor(this.game.camera.x / this.game.TILE_SIZE));
+		const startTileY = Math.max(0, Math.floor(this.game.camera.y / this.game.TILE_SIZE));
+		const endTileX = Math.min(this.width, Math.ceil((this.game.camera.x + this.game.canvas.width) / this.game.TILE_SIZE));
+		const endTileY = Math.min(this.height, Math.ceil((this.game.camera.y + this.game.canvas.height) / this.game.TILE_SIZE));
 
 		for (let y = startTileY; y < endTileY; y++) {
 			for (let x = startTileX; x < endTileX; x++) {
-				const screenX = x * this.game.TILE_SIZE - this.game.camera.x
-				const screenY = y * this.game.TILE_SIZE - this.game.camera.y
+				const screenX = x * this.game.TILE_SIZE - this.game.camera.x;
+				const screenY = y * this.game.TILE_SIZE - this.game.camera.y;
 
-				for (let i = 0; i < this.layers.length; i++)
-					this.tileset.drawTile(this.get_cell(i,x,y), screenX, screenY)
+				for (let i = 0; i < this.layers.length; i++) {
+					const tile_num = this.get_cell(i, x, y);
+					if (tile_num !== 0) // skips empty tiles 
+						this.tileset.drawTile(tile_num, screenX, screenY);
+
+				}
 			}
 		}
 	}

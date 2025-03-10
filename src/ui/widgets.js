@@ -143,7 +143,7 @@ export class TextArea extends Widget{
      * @param {Number} height - The textarea's height
      * @param {Number} max_char_number - The maximum of character tou can type in
      * @param {Boolean} rendered - Boolean refearing to if this widget should be rendered
-     * @param {(awnser: String, textarea: TextArea) => void} command - Command executed when the submit method is called, 'awnser' refers to what has been typed in the textarea, 'textarea' refers to the textarea itself
+     * @param {(answer: String, textarea: TextArea) => void} command - Command executed when the submit method is called, 'answer' refers to what has been typed in the textarea, 'textarea' refers to the textarea itself
      * @param {Number} [fontsize=5] - The textarea's text fontsize
      * @param {String} [textcolor="black"] - The textarea's text color
      * @param {String} [font="arial"] - The textarea's text font
@@ -191,7 +191,7 @@ export class TextArea extends Widget{
      * @param {String} [content = null] - The textarea's content, what has been typed in it
      * @param {Number} [max_char_number = null] - The maximum of character tou can type in
      * @param {Boolean} [rendered=null] - Boolean refearing to if this widget should be rendered
-     * @param {(awnser: String, textarea: TextArea) => void} [command = null] - Command executed when the submit method is called, 'awnser' refers to what has been typed in the textarea, 'textarea' refers to the textarea itself
+     * @param {(answer: String, textarea: TextArea) => void} [command = null] - Command executed when the submit method is called, 'answer' refers to what has been typed in the textarea, 'textarea' refers to the textarea itself
      * @param {Number} [fontsize = null] - The textarea's text fontsize
      * @param {String} [textcolor = null] - The textarea's text color
      * @param {String} [font = null] - The textarea's text font
@@ -222,7 +222,7 @@ export class NumberArea extends TextArea{
      * @param {Number} height - The numberarea's height
      * @param {Number} max_char_number - The maximum of character tou can type in
      * @param {Boolean} rendered - Boolean refearing to if this widget should be rendered
-     * @param {(awnser: String, numberarea: NumberArea) => void} command - Command executed when the submit method is called, 'awnser' refers to what has been typed in the numberarea, 'numberarea' refers to the numberarea itself
+     * @param {(answer: String, numberarea: NumberArea) => void} command - Command executed when the submit method is called, 'answer' refers to what has been typed in the numberarea, 'numberarea' refers to the numberarea itself
      * @param {Number} [fontsize=5] - The numberarea's text fontsize
      * @param {String} [textcolor="black"] - The numberarea's text color
      * @param {String} [font="serif"] - The numberarea's text font
@@ -277,8 +277,7 @@ export class Icon extends Widget{
 }
 
 export class Texture extends Widget{
-    
-    /**
+    /*
      * !!! One shouldn't use the constructor to make a texture widget, use the static create method instead
      * @param {Game} game - The current game
      * @param {String} id - The widget's Id

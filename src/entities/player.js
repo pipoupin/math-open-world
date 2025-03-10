@@ -10,8 +10,8 @@ export class Player extends Entity {
 	constructor(game, player_tileset) {
 		super(
 			game, game.get_current_map(), player_tileset,
-			new Hitbox(game, game.get_current_map(), 400, 400 + game.TILE_SIZE / 2, game.TILE_SIZE, game.TILE_SIZE / 2, true, true),
-			new Hitbox(game, game.get_current_map(), 400, 400, game.TILE_SIZE, game.TILE_SIZE, false, true),
+			new Hitbox(game, game.get_current_map(), 400, 400 + game.TILE_SIZE / 2, 2 * game.TILE_SIZE / 3, game.TILE_SIZE / 2, true, true),
+			new Hitbox(game, game.get_current_map(), 400, 400, 2 * game.TILE_SIZE / 3, game.TILE_SIZE, false, true),
 			600, 600, 175
 		)
 
@@ -65,8 +65,8 @@ export class Player extends Entity {
 
 		super.update(current_time)
 
-		this.collision_hitbox.set(this.worldX - this.game.TILE_SIZE / 2, this.worldY)
-		this.combat_hitbox.set(this.worldX - this.game.TILE_SIZE / 2, this.worldY - this.game.TILE_SIZE / 2)
+		this.collision_hitbox.set(this.worldX - this.collision_hitbox.width / 2, this.worldY)
+		this.combat_hitbox.center_around(this.worldX, this.worldY)
 		if(this.direction == 0)
 			this.raycast_hitbox.set(this.worldX, this.worldY, 0, 100)
 		if(this.direction == 1)
@@ -83,6 +83,8 @@ export class Player extends Entity {
 	 */
 	set_map(new_map){
 		this.map = new_map
+		this.worldX = new_map.player_pos.x
+		this.worldY = new_map.player_pos.y
 		this.collision_hitbox.set_map(new_map)
 		this.combat_hitbox.set_map(new_map)
 		this.raycast_hitbox.set_map(new_map)
