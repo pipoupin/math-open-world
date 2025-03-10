@@ -64,7 +64,7 @@ export class Map {
 							const tileX = (i % layer.width) * this.game.TILE_SIZE;
 							const tileY = Math.floor(i / layer.width) * this.game.TILE_SIZE;
 
-							new Hitbox(this.game, this, tileX, tileY, this.game.TILE_SIZE, this.game.TILE_SIZE, true, false, () => {});
+							new Hitbox(this.game, this, tileX, tileY, this.game.TILE_SIZE, this.game.TILE_SIZE, true, false, this, (e, h) => {});
 						}
 					}
 				}

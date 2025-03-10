@@ -9,7 +9,7 @@ import { Attack } from '../entities/attack.js'
 import { Ui } from '../ui/ui.js'
 import { Button, Icon, Label, NumberArea, TextArea, Texture } from '../ui/widgets.js'
 import { Talkable } from '../entities/talkable.js'
-import { constants } from "../constants.js"
+import { constants } from "../constants.js"
 
 export class Game {
 	constructor() {
@@ -120,20 +120,20 @@ export class Game {
 			}
 		)
 		new Talkable(this, this.get_current_map(),
-			new Hitbox(this, this.get_current_map(), 0, constants.TILE_SIZE * 2, this.TILE_SIZE, this.TILE_SIZE, true, false, (entity, hitbox) => {}),
+			new Hitbox(this, this.get_current_map(), 0, constants.TILE_SIZE * 2, this.TILE_SIZE, this.TILE_SIZE, true, false, null, (e, h) => {}),
 			colors_problem, null
 		)
 
 
 		// switch map hitboxes
-		new Hitbox(this, this.get_current_map(), 3.5 * constants.TILE_SIZE, 4.5 * constants.TILE_SIZE, constants.TILE_SIZE, constants.TILE_SIZE / 2, false, false, () => {
+		new Hitbox(this, this.get_current_map(), 3.5 * constants.TILE_SIZE, 4.5 * constants.TILE_SIZE, constants.TILE_SIZE, constants.TILE_SIZE / 2, false, false, null, (e, h) => {
 			this.get_current_map().player_pos.x = this.player.worldX;
 			this.get_current_map().player_pos.y = this.player.worldY - constants.TILE_SIZE / 2;
 			this.set_map(1)
 			this.player.set_map(this.get_current_map())
 		})
 
-		new Hitbox(this, this.maps[1], 15 * constants.TILE_SIZE, 14 * constants.TILE_SIZE, constants.TILE_SIZE, constants.TILE_SIZE / 2, false, false, () => {
+		new Hitbox(this, this.maps[1], 15 * constants.TILE_SIZE, 14 * constants.TILE_SIZE, constants.TILE_SIZE, constants.TILE_SIZE / 2, false, false, null, (e, h) => {
 			this.set_map(0)
 			this.player.set_map(this.get_current_map())
 		})

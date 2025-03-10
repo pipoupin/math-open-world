@@ -22,7 +22,7 @@ export class Attack {
   }
 
   // specific to the attack
-  udpateCombatHitboxes() {
+  updateCombatHitboxes() {
   }
 
   update() {
@@ -30,7 +30,7 @@ export class Attack {
   }
 
   destroy() {
-    super.destroy()
+    this.game.attacks.slice(this.game.attacks.indexOf(this, 1))
   }
 }
 
@@ -43,12 +43,12 @@ export class ProjectileAttack extends Attack {
     this.dy = dy
     this.touched = []
     this.hitbox.push(
-      new Hitbox(game, map, x, y, width, height, false, false, (entity) => {
-        if (entity.life > 0 || entity in this.touched)
+      new Hitbox(game, map, x, y, width, height, false, false, this, (entity, hitbox) => {
+        if (entity.life > 0 || entity in hitbox.owner.touched)
           return
 
-        entity.life -= this.damage
-        this.touched.push(entity)
+        entity.life -= hitbox.owner.damage
+        hitbox.owner.touched.push(entity)
       })
     )
   }
@@ -68,9 +68,9 @@ export class MeleeAttack extends Attack {
     this.height = height
 
     this.hitboxes.push(
-      new Hitbox(game, map, x, y, width, height, false, false, (entity) => {
+      new Hitbox(game, map, x, y, width, height, false, false, this, (entity) => {
         if (entity.life > 0) {
-          entity.life -= this.damage
+          entity.life -= hitbox.owner.damage
         }
       })
     )
