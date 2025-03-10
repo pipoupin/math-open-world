@@ -277,7 +277,7 @@ export class Icon extends Widget{
 }
 
 export class Texture extends Widget{
-    /*
+    /**
      * !!! One shouldn't use the constructor to make a texture widget, use the static create method instead
      * @param {Game} game - The current game
      * @param {String} id - The widget's Id
