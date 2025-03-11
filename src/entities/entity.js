@@ -136,9 +136,10 @@ export class Entity {
    * @returns 
    */
   handleAnimation(current_time) {
+    this.updateDirection()
+    
     if (current_time - this.last_time < this.animation_duration) return
 
-    this.updateDirection()
     this.animation_step = (this.dx || this.dy) ? (this.animation_step + 1) % 4 : 0
 
     this.last_time = current_time
@@ -148,9 +149,9 @@ export class Entity {
     if (this.dy === 0 && this.dx === 0) return
 
     if (Math.abs(this.dy) > Math.abs(this.dx)) {
-      this.direction = this.game.inputHandler.isKeyPressed(constants.DOWN_KEY) ? 0 : 1
+      this.direction = this.dy > 0 ? 0 : 1
     } else {
-      this.direction = this.game.inputHandler.isKeyPressed(constants.RIGHT_KEY) ? 2 : 3
+      this.direction = this.dx > 0 ? 2 : 3
     }
 
   }
