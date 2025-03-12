@@ -81,6 +81,9 @@ export class Ui {
      */
     update(current_time){
         this.widgets_states_handler(this)
+        this.widgets.forEach(widget => {
+            widget.update(current_time)
+        });
     }
 
     /**

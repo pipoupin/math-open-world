@@ -35,6 +35,7 @@ export class InputHandler {
 
         document.addEventListener('click', (e) => {
             if(game.current_ui){
+                var widget_clicked = false
                 game.current_ui.widgets.forEach(widget => {
                     if(widget.x <= this.mouse_pos.x
                         && (widget.x + widget.width) >= this.mouse_pos.x
@@ -59,15 +60,18 @@ export class InputHandler {
                                         game.current_ui.selected_textarea = null
                                     }
                                 }
-
-                                return
+                                console.log("ceci est un test")
+                                widget_clicked = true
                             }
                     }
                 })
-                game.selected_textarea = null
-                if(game.current_ui.focused_widget)
-                    game.current_ui.focused_widget.has_focus = false
-                game.current_ui.focused_widget = null
+                if(!widget_clicked){
+                    console.log("test")
+                    game.selected_textarea = null
+                    if(game.current_ui.focused_widget)
+                        game.current_ui.focused_widget.has_focus = false
+                    game.current_ui.focused_widget = null
+                }
             }
         })
 

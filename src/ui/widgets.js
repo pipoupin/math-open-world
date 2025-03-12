@@ -26,6 +26,7 @@ export class Widget{
     }
     render(){}
     update_config(){}
+    update(current_time){}
 }
 
 export class Label extends Widget{
@@ -159,6 +160,8 @@ export class TextArea extends Widget{
         this.fontsize = fontsize
         this.textcolor = textcolor
         this.font = font
+        this.last_blink = 0
+        this.has_bar = false
     }
 
     submit(){
@@ -176,10 +179,20 @@ export class TextArea extends Widget{
             this.game.ctx.fillStyle = this.textcolor
             this.game.ctx.font = `${this.fontsize}px ${this.font}`
             this.game.ctx.fillText(
-                this.content,
+                this.content + (this.has_bar ? "|": ""),
                 this.game.canvas.width / 2 + this.x,
                 this.y + (this.game.canvas.height + this.height) / 2)
         }
+    }
+
+    update(current_time){
+        if(this.has_focus){
+            if(this.last_blink + 500 < current_time){
+                if(this.has_bar) this.has_bar = false
+                else this.has_bar = true
+                this.last_blink = current_time
+            }
+        } else this.has_bar = false
     }
 
     /**
