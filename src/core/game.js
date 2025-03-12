@@ -128,25 +128,50 @@ export class Game {
 			colors_problem, null
 		)
 
-		// house borders hitboxes
-		new Hitbox(this, this.get_current_map(), 0, 5 * constants.TILE_SIZE, 3 * constants.TILE_SIZE, constants.TILE_SIZE, true, false, null, (e, h, t) => {})
-		new Hitbox(this, this.get_current_map(), 5 * constants.TILE_SIZE, 5 * constants.TILE_SIZE, 3 * constants.TILE_SIZE, constants.TILE_SIZE, true, false, null, (e, h, t) => {})
-
-		// Door hitboxes
-		new Hitbox(this, this.maps[1], 15 * constants.TILE_SIZE, 13 * constants.TILE_SIZE, constants.TILE_SIZE, constants.TILE_SIZE / 2, true, false, null, (e, h, t) => {})
-
-		// switch map hitboxes
-		new Hitbox(this, this.get_current_map(), 3 * constants.TILE_SIZE, 5.5 * constants.TILE_SIZE, 2 * constants.TILE_SIZE, constants.TILE_SIZE / 2, false, false, null, (e, h, time) => {
-			this.maps[1].player_pos.x = 1985
-			this.maps[1].player_pos.y = 1800
-			this.get_current_map().player_pos.x = this.player.worldX
-			this.get_current_map().player_pos.y = this.player.worldY - constants.TILE_SIZE / 3
+		// SWITCH MAP HITBOXES
+		// -- from the house (manual)
+		new Hitbox(this, this.get_current_map(), 3 * constants.TILE_SIZE, 5 * constants.TILE_SIZE, 2 * constants.TILE_SIZE, constants.TILE_SIZE, false, false, null, (e, h, time) => {
+			if (!this.inputHandler.isKeyPressed(constants.INTERACTION_KEY)) return // one must press INTERACTION_KEY to switch map
+			this.maps[0].player_pos = {x: 4 * constants.TILE_SIZE, y: 5 * constants.TILE_SIZE}
 			this.set_map(1)
+
+			this.player.set_map(this.maps[1])
+			this.player.direction = 0
+
+			black_transition.start(time)
+		})
+		// -- from the house (auto)
+		new Hitbox(this, this.get_current_map(), 3 * constants.TILE_SIZE, 5.75 * constants.TILE_SIZE, 2 * constants.TILE_SIZE, constants.TILE_SIZE / 4, false, false, null, (e, h, time) => {
+			this.maps[0].player_pos = {x: 4 * constants.TILE_SIZE, y: 5 * constants.TILE_SIZE}
+			this.set_map(1)
+
+			this.player.set_map(this.maps[1])
+			this.player.direction = 0
+
 			black_transition.start(time)
 		})
 
+		// -- from the outside (manually activated)
 		new Hitbox(this, this.maps[1], 15 * constants.TILE_SIZE, 13.5 * constants.TILE_SIZE, constants.TILE_SIZE, constants.TILE_SIZE / 2, false, false, null, (e, h, time) => {
+						if (!this.inputHandler.isKeyPressed(constants.INTERACTION_KEY)) return
+			this.maps[1].player_pos = {x: 15.5 * constants.TILE_SIZE, y: 14.01 * constants.TILE_SIZE}
+
 			this.set_map(0)
+
+			this.player.set_map(this.maps[0])
+			this.player.direction = 1
+
+			black_transition.start(time)
+		})
+		// -- from the outside (automatic)
+		new Hitbox(this, this.maps[1], 15 * constants.TILE_SIZE, 13 * constants.TILE_SIZE, constants.TILE_SIZE, constants.TILE_SIZE / 4, false, false, null, (e, h, time) => {
+			this.maps[1].player_pos = {x: 15.5 * constants.TILE_SIZE, y: 14.01 * constants.TILE_SIZE}
+
+			this.set_map(0)
+
+			this.player.set_map(this.maps[0])
+			this.player.direction = 1
+
 			black_transition.start(time)
 		})
 
@@ -231,7 +256,6 @@ export class Game {
 	set_map(new_map_nb){
 		this.current_map = new_map_nb
 		this.map = this.maps[this.current_map]
-		this.player.set_map(this.map)
 	}
 
 	get_current_map(){

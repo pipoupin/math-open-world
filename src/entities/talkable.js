@@ -41,7 +41,7 @@ export class Talkable{
 	}
 
     update(){
-        if(this.game.inputHandler.keys[constants.INTERACTION_KEY]){
+        if(this.game.inputHandler.keys_down[constants.INTERACTION_KEY]){
             if(this.game.player.raycast_hitbox.is_colliding(this.hitbox)){
                 this.on_interact()
             }

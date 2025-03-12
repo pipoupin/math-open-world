@@ -1,0 +1,6 @@
+- add on key interaction tp 
+- move "clamp" to utils
+- border hitboxes loaded directly during the load of the map
+
+#TODO: implement fully working attacks
+#TODO: implement the "block" tiles classes (so that they are not fully blocking the tile)

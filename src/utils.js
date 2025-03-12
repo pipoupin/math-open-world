@@ -1,0 +1,11 @@
+/*
+ * @param {Number} value 
+ * @param {Number} min 
+ * @param {Number} max 
+ * @returns {Number}
+*/
+export const clamp = (x, min, max) => {
+	if (x < min) return min
+	if (x > max) return max
+	return x
+}

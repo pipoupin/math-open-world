@@ -2,6 +2,7 @@ import { constants } from '../constants.js'
 import { Game } from '../core/game.js'
 import { Entity } from './entity.js'
 import { Hitbox } from './hitbox.js'
+import { clamp } from '../utils.js'
 
 export class Player extends Entity {
 	/**
@@ -38,7 +39,7 @@ export class Player extends Entity {
 	 */
 	update(current_time) {
 		// Handle player movement
-		if (this.inputHandler.isKeyPressed(constants.DASH_KEY) && current_time - this.last_dash >= this.dash_cooldown) {
+		if (this.inputHandler.isKeyDown(constants.DASH_KEY) && current_time - this.last_dash >= this.dash_cooldown) {
 			this.acceleration = 10
 			this.fullSpeed = 30
 			this.last_dash = current_time
@@ -47,15 +48,15 @@ export class Player extends Entity {
 				this.acceleration = 4
 			}, this.dash_duration)
 		}
-		if (this.inputHandler.isKeyPressed(constants.UP_KEY)) this.dy -= this.acceleration
-		if (this.inputHandler.isKeyPressed(constants.DOWN_KEY)) this.dy += this.acceleration
-		if (this.inputHandler.isKeyPressed(constants.LEFT_KEY)) this.dx -= this.acceleration
-		if (this.inputHandler.isKeyPressed(constants.RIGHT_KEY)) this.dx += this.acceleration
+		if (this.inputHandler.isKeyDown(constants.UP_KEY)) this.dy -= this.acceleration
+		if (this.inputHandler.isKeyDown(constants.DOWN_KEY)) this.dy += this.acceleration
+		if (this.inputHandler.isKeyDown(constants.LEFT_KEY)) this.dx -= this.acceleration
+		if (this.inputHandler.isKeyDown(constants.RIGHT_KEY)) this.dx += this.acceleration
 
 		// Handle deceleration
-		if (!this.inputHandler.isKeyPressed(constants.UP_KEY) && !this.inputHandler.isKeyPressed(constants.DOWN_KEY))
+		if (!this.inputHandler.isKeyDown(constants.UP_KEY) && !this.inputHandler.isKeyDown(constants.DOWN_KEY))
 			this.dy = Math.sign(this.dy) * Math.max(Math.abs(this.dy) - this.acceleration, 0)
-		if (!this.inputHandler.isKeyPressed(constants.LEFT_KEY) && !this.inputHandler.isKeyPressed(constants.RIGHT_KEY))
+		if (!this.inputHandler.isKeyDown(constants.LEFT_KEY) && !this.inputHandler.isKeyDown(constants.RIGHT_KEY))
 			this.dx = Math.sign(this.dx) * Math.max(Math.abs(this.dx) - this.acceleration, 0)
 
 		// Apply diagonal speed limitation
@@ -86,11 +87,13 @@ export class Player extends Entity {
 	 * @param {Map} new_map 
 	 */
 	set_map(new_map){
-		this.map = new_map
+		super.set_map(new_map)
 		this.worldX = new_map.player_pos.x
 		this.worldY = new_map.player_pos.y
-		this.collision_hitbox.set_map(new_map)
-		this.combat_hitbox.set_map(new_map)
-		this.raycast_hitbox.set_map(new_map)
+	}
+
+	set_pos(x, y) {
+		this.worldX = clamp(x, constants.PLAYER_COMBAT_BOX_WIDTH/ 2, this.map.world.width - constants.PLAYER_COMBAT_BOX_WIDTH/2)
+		this.worldY = clamp(y, constants.PLAYER_COMBAT_BOX_HEIGHT/2, this.map.world.height - constants.PLAYER_COMBAT_BOX_HEIGHT/2)
 	}
 }

@@ -3,16 +3,19 @@ import { Game } from "./game.js"
 
 export class InputHandler {
     /**
-     * 
      * @param {Game} game 
      */
     constructor(game) {
-        this.keys = {}
+        this.keys_down = {}
+        this.keys_pressed = {}
         this.del_key_can_be_pressed = true
         this.mouse_pos = {x:null, y:null}
 
         document.addEventListener('keydown', (e) => {
-            this.keys[e.key.toLowerCase()] = true
+            if (!this.keys_down[e.key.toLowerCase()]) {
+                this.keys_pressed[e.key.toLowerCase()] = true
+            }
+            this.keys_down[e.key.toLowerCase()] = true
             if(e.key == "Backspace" && this.del_key_can_be_pressed){
                 if(game.current_ui && game.current_ui.selected_textarea){
                     game.current_ui.selected_textarea.content = game.current_ui.selected_textarea.content.slice(0, -1)
@@ -22,7 +25,8 @@ export class InputHandler {
         })
 
         document.addEventListener('keyup', (e) => {
-            this.keys[e.key.toLowerCase()] = false
+            this.keys_down[e.key.toLowerCase()] = false
+            this.keys_pressed[e.key.toLowerCase()] = false
             if(e.key == "Backspace") this.del_key_can_be_pressed = true
         })
 
@@ -117,5 +121,13 @@ export class InputHandler {
         })
     }
 
-    isKeyPressed(key) { return this.keys[key] }
+    isKeyDown(key) { return this.keys_down[key] }
+    isKeyPressed(key) {
+        if (this.keys_pressed[key]) {
+            this.keys_pressed[key] = false
+            return true
+        } else {
+            return false
+        }
+    }
 }
