@@ -15,5 +15,5 @@ export const constants = {
     INTERACTION_KEY: "e",
     DASH_KEY: " ",
 
-    DOORS_TILES: [169]
+    ACTIVE_TILES: [169]
 }

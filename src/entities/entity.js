@@ -65,15 +65,15 @@ export class Entity {
     }
 
     this.collision_hitbox.get_colliding_hitboxes(true, false).forEach(hitbox => {
-			hitbox.command(this, hitbox)
+			hitbox.command(this, hitbox, current_time)
 		})
 
 		this.combat_hitbox.get_colliding_hitboxes(false, true).forEach(hitbox => {
-			hitbox.command(this, hitbox)
+			hitbox.command(this, hitbox, current_time)
 		})
 
 		this.combat_hitbox.get_colliding_hitboxes(false, false).forEach(hitbox => {
-			hitbox.command(this, hitbox)
+			hitbox.command(this, hitbox, current_time)
 		})
 
     this.handleAnimation(current_time)

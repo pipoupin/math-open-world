@@ -12,7 +12,7 @@ export class InputHandler {
         this.mouse_pos = {x:null, y:null}
 
         document.addEventListener('keydown', (e) => {
-            this.keys[e.key] = true
+            this.keys[e.key.toLowerCase()] = true
             if(e.key == "Backspace" && this.del_key_can_be_pressed){
                 if(game.current_ui && game.current_ui.selected_textarea){
                     game.current_ui.selected_textarea.content = game.current_ui.selected_textarea.content.slice(0, -1)
@@ -22,7 +22,7 @@ export class InputHandler {
         })
 
         document.addEventListener('keyup', (e) => {
-            this.keys[e.key] = false
+            this.keys[e.key.toLowerCase()] = false
             if(e.key == "Backspace") this.del_key_can_be_pressed = true
         })
 

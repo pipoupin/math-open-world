@@ -10,6 +10,7 @@ import { Ui } from '../ui/ui.js'
 import { Button, Icon, Label, NumberArea, TextArea, Texture } from '../ui/widgets.js'
 import { Talkable } from '../entities/talkable.js'
 import { constants } from "../constants.js"
+import { Transition, UnicoloreTransition } from '../ui/transition.js'
 
 export class Game {
 	constructor() {
@@ -53,7 +54,7 @@ export class Game {
 		/** @type {Array<Talkable>} */
 		this.talkables = []
 
-		/** @type {Ui} */
+		/** @type {Ui | Transition} */
 		this.current_ui = null
 
 		this.camera = { x: -1000, y: -1000 }
@@ -86,6 +87,8 @@ export class Game {
 
 		// used to place the player correctly
 		this.update()
+
+		const black_transition = new UnicoloreTransition(this, 500, "black")
 
 		const colors_problem = await Problem.create(
 			this, "images/parchment1.png", 500, 500, "colors",
@@ -121,28 +124,31 @@ export class Game {
 			}
 		)
 		new Talkable(this, this.get_current_map(),
-			new Hitbox(this, this.get_current_map(), 0, constants.TILE_SIZE * 2, this.TILE_SIZE, this.TILE_SIZE, true, false, null, (e, h) => {}),
+			new Hitbox(this, this.get_current_map(), 0, constants.TILE_SIZE * 2, this.TILE_SIZE, this.TILE_SIZE, true, false, null, (e, h, t) => {}),
 			colors_problem, null
 		)
 
 		// house borders hitboxes
-		new Hitbox(this, this.get_current_map(), 0, 5 * constants.TILE_SIZE, 3 * constants.TILE_SIZE, constants.TILE_SIZE, true, false, null, (e, h) => {})
-		new Hitbox(this, this.get_current_map(), 5 * constants.TILE_SIZE, 5 * constants.TILE_SIZE, 3 * constants.TILE_SIZE, constants.TILE_SIZE, true, false, null, (e, h) => {})
+		new Hitbox(this, this.get_current_map(), 0, 5 * constants.TILE_SIZE, 3 * constants.TILE_SIZE, constants.TILE_SIZE, true, false, null, (e, h, t) => {})
+		new Hitbox(this, this.get_current_map(), 5 * constants.TILE_SIZE, 5 * constants.TILE_SIZE, 3 * constants.TILE_SIZE, constants.TILE_SIZE, true, false, null, (e, h, t) => {})
 
 		// Door hitboxes
-		new Hitbox(this, this.maps[1], 15 * constants.TILE_SIZE, 13 * constants.TILE_SIZE, constants.TILE_SIZE, constants.TILE_SIZE / 2, true, false, null, (e, h) => {})
+		new Hitbox(this, this.maps[1], 15 * constants.TILE_SIZE, 13 * constants.TILE_SIZE, constants.TILE_SIZE, constants.TILE_SIZE / 2, true, false, null, (e, h, t) => {})
 
 		// switch map hitboxes
-		new Hitbox(this, this.get_current_map(), 3 * constants.TILE_SIZE, 5.5 * constants.TILE_SIZE, 2 * constants.TILE_SIZE, constants.TILE_SIZE / 2, false, false, null, (e, h) => {
-			this.get_current_map().player_pos.x = this.player.worldX;
-			this.get_current_map().player_pos.y = this.player.worldY - constants.TILE_SIZE / 2;
+		new Hitbox(this, this.get_current_map(), 3 * constants.TILE_SIZE, 5.5 * constants.TILE_SIZE, 2 * constants.TILE_SIZE, constants.TILE_SIZE / 2, false, false, null, (e, h, time) => {
+			this.maps[1].player_pos.x = 1985
+			this.maps[1].player_pos.y = 1800
+			this.get_current_map().player_pos.x = this.player.worldX
+			this.get_current_map().player_pos.y = this.player.worldY - constants.TILE_SIZE / 3
+			console.log(this.player)
 			this.set_map(1)
-			this.player.set_map(this.get_current_map())
+			black_transition.start(time)
 		})
 
-		new Hitbox(this, this.maps[1], 15 * constants.TILE_SIZE, 13.5 * constants.TILE_SIZE, constants.TILE_SIZE, constants.TILE_SIZE / 2, false, false, null, (e, h) => {
+		new Hitbox(this, this.maps[1], 15 * constants.TILE_SIZE, 13.5 * constants.TILE_SIZE, constants.TILE_SIZE, constants.TILE_SIZE / 2, false, false, null, (e, h, time) => {
 			this.set_map(0)
-			this.player.set_map(this.get_current_map())
+			black_transition.start(time)
 		})
 
 		requestAnimationFrame(this.loop.bind(this))

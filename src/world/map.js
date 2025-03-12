@@ -1,7 +1,7 @@
 import { Game } from "../core/game.js"
 import { Tileset } from "./tileset.js"
-import { Hitbox } from "../entities/hitbox.js"
-import { constants } from "../constants.js"
+import { Hitbox } from "../entities/hitbox.js"
+import { constants } from "../constants.js"
 
 export class Map {
 	/**
@@ -62,13 +62,13 @@ export class Map {
 					// create hitboxes
 					if (layer.name === "Blocks") {
 						for (let i = 0; i < layer.data.length; i++) {
-							if ((! layer.data[i]) || constants.DOORS_TILES.includes(layer.data[i]))
+							if ((! layer.data[i]) || constants.ACTIVE_TILES.includes(layer.data[i]))
 								continue
 
 							const tileX = (i % layer.width) * this.game.TILE_SIZE;
 							const tileY = Math.floor(i / layer.width) * this.game.TILE_SIZE;
 
-							new Hitbox(this.game, this, tileX, tileY, this.game.TILE_SIZE, this.game.TILE_SIZE, true, false, this, (e, h) => {});
+							new Hitbox(this.game, this, tileX, tileY, this.game.TILE_SIZE, this.game.TILE_SIZE, true, false, this, (e, h, t) => {});
 						}
 					}
 				}

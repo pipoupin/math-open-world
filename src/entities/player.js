@@ -11,8 +11,8 @@ export class Player extends Entity {
 	constructor(game, player_tileset) {
 		super(
 			game, game.get_current_map(), player_tileset,
-			new Hitbox(game, game.get_current_map(), 400, 400 + game.TILE_SIZE / 2, 2 * game.TILE_SIZE / 3, game.TILE_SIZE / 2, true, true, null, (e, h) => {}),
-			new Hitbox(game, game.get_current_map(), 400, 400, 2 * game.TILE_SIZE / 3, game.TILE_SIZE, false, true, null, (e, h) => {}),
+			new Hitbox(game, game.get_current_map(), 400, 400 + game.TILE_SIZE / 2, 2 * game.TILE_SIZE / 3, game.TILE_SIZE / 2, true, true, null, (e, h, t) => {}),
+			new Hitbox(game, game.get_current_map(), 400, 400, 2 * game.TILE_SIZE / 3, game.TILE_SIZE, false, true, null, (e, h, t) => {}),
 			600, 600, 175
 		)
 
@@ -29,7 +29,7 @@ export class Player extends Entity {
 		this.last_dash = -this.dash_cooldown
 		this.dash_duration = 150
 
-		this.raycast_hitbox = new Hitbox(game, game.get_current_map(), 400, 400, 0, 100, false, true, this, (e, h) => {})
+		this.raycast_hitbox = new Hitbox(game, game.get_current_map(), 400, 400, 0, 100, false, true, this, (e, h, t) => {})
 	}
 
 	/**

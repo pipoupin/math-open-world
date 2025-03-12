@@ -67,7 +67,7 @@ export class ProjectileAttack extends Attack {
     /** @type {Array<Entity>} */
     this.touched = []
     this.hitbox.push(
-      new Hitbox(game, map, x, y, width, height, false, false, this, (entity, hitbox) => {
+      new Hitbox(game, map, x, y, width, height, false, false, this, (entity, hitbox, time) => {
         if (entity.life > 0 || entity in hitbox.owner.touched)
           return
 
@@ -92,7 +92,7 @@ export class MeleeAttack extends Attack {
     this.height = height
 
     this.hitboxes.push(
-      new Hitbox(game, map, x, y, width, height, false, false, this, (entity, hitbox) => {
+      new Hitbox(game, map, x, y, width, height, false, false, this, (entity, hitbox, time) => {
         if (entity.life > 0) {
           entity.life -= hitbox.owner.damage
         }
