@@ -148,8 +148,9 @@ export class TextArea extends Widget{
      * @param {Number} [fontsize=5] - The textarea's text fontsize
      * @param {String} [textcolor="black"] - The textarea's text color
      * @param {String} [font="arial"] - The textarea's text font
+     * @param {String} [blink_bar="I"] - The blinking bar when the textarea is selected
      */
-    constructor(game, id, x, y, width, height, max_char_number, rendered, command, fontsize=15, textcolor="black", font="arial"){
+    constructor(game, id, x, y, width, height, max_char_number, rendered, command, fontsize=15, textcolor="black", font="arial", blink_bar="I"){
         super(game, id, x, y, constants.TEXTAREA_TYPE, rendered)
         this.width = width
         this.height = height
@@ -162,6 +163,7 @@ export class TextArea extends Widget{
         this.font = font
         this.last_blink = 0
         this.has_bar = false
+        this.blink_bar = blink_bar
     }
 
     submit(){
@@ -179,7 +181,7 @@ export class TextArea extends Widget{
             this.game.ctx.fillStyle = this.textcolor
             this.game.ctx.font = `${this.fontsize}px ${this.font}`
             this.game.ctx.fillText(
-                this.content + (this.has_bar ? "|": ""),
+                this.content + (this.has_bar ? this.blink_bar: ""),
                 this.game.canvas.width / 2 + this.x,
                 this.y + (this.game.canvas.height + this.height) / 2)
         }
@@ -208,8 +210,9 @@ export class TextArea extends Widget{
      * @param {Number} [fontsize = null] - The textarea's text fontsize
      * @param {String} [textcolor = null] - The textarea's text color
      * @param {String} [font = null] - The textarea's text font
+     * @param {String} [blink_bar=null] - The blinking bar when the textarea is selected
      */
-    update_config(x=null, y=null, width=null, height=null, content=null, max_char_number=null, rendered=null, command=null, fontsize=null, textcolor=null, font=null){
+    update_config(x=null, y=null, width=null, height=null, content=null, max_char_number=null, rendered=null, command=null, fontsize=null, textcolor=null, font=null, blink_bar=null){
         if(x != null) this.x = x
         if(y != null) this.y = y
         if(width != null) this.width = width
@@ -239,9 +242,10 @@ export class NumberArea extends TextArea{
      * @param {Number} [fontsize=5] - The numberarea's text fontsize
      * @param {String} [textcolor="black"] - The numberarea's text color
      * @param {String} [font="serif"] - The numberarea's text font
+     * @param {String} [blink_bar="I"] - The blinking bar when the numberarea is selected
      */
-    constructor(game, id, x, y, width, height, max_char_number, rendered, command, fontsize=15, textcolor="black", font="arial"){
-        super(game, id, x, y, width, height, max_char_number, rendered, command, fontsize, textcolor, font)
+    constructor(game, id, x, y, width, height, max_char_number, rendered, command, fontsize=15, textcolor="black", font="arial", blink_bar="I"){
+        super(game, id, x, y, width, height, max_char_number, rendered, command, fontsize, textcolor, font, blink_bar)
         this.type = constants.NUMBERAREA_TYPE
     }
 }
