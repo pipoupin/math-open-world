@@ -2,7 +2,7 @@ import { Game } from "../core/game.js"
 import { Hitbox } from "./hitbox.js"
 import { Map } from "../world/map.js"
 import { Tileset } from "../world/tileset.js"
-import { constants } from "../constants.js"
+import { constants } from "../constants.js"
 
 export class Entity {
 
@@ -65,15 +65,15 @@ export class Entity {
     }
 
     this.collision_hitbox.get_colliding_hitboxes(true, false).forEach(hitbox => {
-			hitbox.command(this, hitbox)
+			hitbox.command(this, hitbox, current_time)
 		})
 
 		this.combat_hitbox.get_colliding_hitboxes(false, true).forEach(hitbox => {
-			hitbox.command(this, hitbox)
+			hitbox.command(this, hitbox, current_time)
 		})
 
 		this.combat_hitbox.get_colliding_hitboxes(false, false).forEach(hitbox => {
-			hitbox.command(this, hitbox)
+			hitbox.command(this, hitbox, current_time)
 		})
 
     this.handleAnimation(current_time)
@@ -136,9 +136,10 @@ export class Entity {
    * @returns 
    */
   handleAnimation(current_time) {
+    this.updateDirection()
+    
     if (current_time - this.last_time < this.animation_duration) return
 
-    this.updateDirection()
     this.animation_step = (this.dx || this.dy) ? (this.animation_step + 1) % 4 : 0
 
     this.last_time = current_time
@@ -152,6 +153,7 @@ export class Entity {
     } else {
       this.direction = this.dx > 0 ? 2 : 3
     }
+
   }
 
   render() {

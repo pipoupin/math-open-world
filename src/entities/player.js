@@ -1,3 +1,4 @@
+import { constants } from '../constants.js'
 import { Game } from '../core/game.js'
 import { Entity } from './entity.js'
 import { Hitbox } from './hitbox.js'
@@ -5,15 +6,18 @@ import { Hitbox } from './hitbox.js'
 export class Player extends Entity {
 	/**
 	 * @param {Game} game - The current game
-	 * @param {TileSet} player_tileset - the tileset used for animation the player
+	 * @param {TileSet} player_tileset - the tileset used for animating the player
 	 */
 	constructor(game, player_tileset) {
 		super(
 			game, game.get_current_map(), player_tileset,
-			new Hitbox(game, game.get_current_map(), 400, 400 + game.TILE_SIZE / 2, 2 * game.TILE_SIZE / 3, game.TILE_SIZE / 2, true, true),
-			new Hitbox(game, game.get_current_map(), 400, 400, 2 * game.TILE_SIZE / 3, game.TILE_SIZE, false, true),
+			new Hitbox(game, game.get_current_map(), 400, 400 + game.TILE_SIZE / 2, 2 * game.TILE_SIZE / 3, game.TILE_SIZE / 2, true, true, null, (e, h, t) => {}),
+			new Hitbox(game, game.get_current_map(), 400, 400, 2 * game.TILE_SIZE / 3, game.TILE_SIZE, false, true, null, (e, h, t) => {}),
 			600, 600, 175
 		)
+
+		this.collision_hitbox.owner = this
+		this.combat_hitbox.owner = this
 
 		this.player = true
 
@@ -25,7 +29,7 @@ export class Player extends Entity {
 		this.last_dash = -this.dash_cooldown
 		this.dash_duration = 150
 
-		this.raycast_hitbox = new Hitbox(game, game.get_current_map(), 400, 400, 0, 100, false, true)
+		this.raycast_hitbox = new Hitbox(game, game.get_current_map(), 400, 400, 0, 100, false, true, this, (e, h, t) => {})
 	}
 
 	/**
@@ -34,7 +38,7 @@ export class Player extends Entity {
 	 */
 	update(current_time) {
 		// Handle player movement
-		if (this.inputHandler.isKeyPressed(' ') && current_time - this.last_dash >= this.dash_cooldown) {
+		if (this.inputHandler.isKeyPressed(constants.DASH_KEY) && current_time - this.last_dash >= this.dash_cooldown) {
 			this.acceleration = 10
 			this.fullSpeed = 30
 			this.last_dash = current_time
@@ -43,15 +47,15 @@ export class Player extends Entity {
 				this.acceleration = 4
 			}, this.dash_duration)
 		}
-		if (this.inputHandler.isKeyPressed('z')) this.dy -= this.acceleration
-		if (this.inputHandler.isKeyPressed('s')) this.dy += this.acceleration
-		if (this.inputHandler.isKeyPressed('q')) this.dx -= this.acceleration
-		if (this.inputHandler.isKeyPressed('d')) this.dx += this.acceleration
+		if (this.inputHandler.isKeyPressed(constants.UP_KEY)) this.dy -= this.acceleration
+		if (this.inputHandler.isKeyPressed(constants.DOWN_KEY)) this.dy += this.acceleration
+		if (this.inputHandler.isKeyPressed(constants.LEFT_KEY)) this.dx -= this.acceleration
+		if (this.inputHandler.isKeyPressed(constants.RIGHT_KEY)) this.dx += this.acceleration
 
 		// Handle deceleration
-		if (!this.inputHandler.isKeyPressed('z') && !this.inputHandler.isKeyPressed('s'))
+		if (!this.inputHandler.isKeyPressed(constants.UP_KEY) && !this.inputHandler.isKeyPressed(constants.DOWN_KEY))
 			this.dy = Math.sign(this.dy) * Math.max(Math.abs(this.dy) - this.acceleration, 0)
-		if (!this.inputHandler.isKeyPressed('q') && !this.inputHandler.isKeyPressed('d'))
+		if (!this.inputHandler.isKeyPressed(constants.LEFT_KEY) && !this.inputHandler.isKeyPressed(constants.RIGHT_KEY))
 			this.dx = Math.sign(this.dx) * Math.max(Math.abs(this.dx) - this.acceleration, 0)
 
 		// Apply diagonal speed limitation

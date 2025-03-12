@@ -26,6 +26,7 @@ export class Widget{
     }
     render(){}
     update_config(){}
+    update(current_time){}
 }
 
 export class Label extends Widget{
@@ -141,14 +142,15 @@ export class TextArea extends Widget{
      * @param {Number} y - the y coordinates of the top-left corner of the widget
      * @param {Number} width - The textarea's width
      * @param {Number} height - The textarea's height
-     * @param {Number} max_char_number - The maximum of character tou can type in
+     * @param {Number} max_char_number - The maximum of character you can type in
      * @param {Boolean} rendered - Boolean refearing to if this widget should be rendered
      * @param {(answer: String, textarea: TextArea) => void} command - Command executed when the submit method is called, 'answer' refers to what has been typed in the textarea, 'textarea' refers to the textarea itself
      * @param {Number} [fontsize=5] - The textarea's text fontsize
      * @param {String} [textcolor="black"] - The textarea's text color
      * @param {String} [font="arial"] - The textarea's text font
+     * @param {String} [blink_bar="I"] - The blinking bar when the textarea is selected
      */
-    constructor(game, id, x, y, width, height, max_char_number, rendered, command, fontsize=15, textcolor="black", font="arial"){
+    constructor(game, id, x, y, width, height, max_char_number, rendered, command, fontsize=15, textcolor="black", font="arial", blink_bar="I"){
         super(game, id, x, y, constants.TEXTAREA_TYPE, rendered)
         this.width = width
         this.height = height
@@ -159,6 +161,9 @@ export class TextArea extends Widget{
         this.fontsize = fontsize
         this.textcolor = textcolor
         this.font = font
+        this.last_blink = 0
+        this.has_bar = false
+        this.blink_bar = blink_bar
     }
 
     submit(){
@@ -176,10 +181,20 @@ export class TextArea extends Widget{
             this.game.ctx.fillStyle = this.textcolor
             this.game.ctx.font = `${this.fontsize}px ${this.font}`
             this.game.ctx.fillText(
-                this.content,
+                this.content + (this.has_bar ? this.blink_bar: ""),
                 this.game.canvas.width / 2 + this.x,
                 this.y + (this.game.canvas.height + this.height) / 2)
         }
+    }
+
+    update(current_time){
+        if(this.has_focus){
+            if(this.last_blink + 500 < current_time){
+                if(this.has_bar) this.has_bar = false
+                else this.has_bar = true
+                this.last_blink = current_time
+            }
+        } else this.has_bar = false
     }
 
     /**
@@ -189,14 +204,15 @@ export class TextArea extends Widget{
      * @param {Number} [width = null] - The textarea's width
      * @param {Number} [height = null] - The textarea's height
      * @param {String} [content = null] - The textarea's content, what has been typed in it
-     * @param {Number} [max_char_number = null] - The maximum of character tou can type in
+     * @param {Number} [max_char_number = null] - The maximum of character you can type in
      * @param {Boolean} [rendered=null] - Boolean refearing to if this widget should be rendered
      * @param {(answer: String, textarea: TextArea) => void} [command = null] - Command executed when the submit method is called, 'answer' refers to what has been typed in the textarea, 'textarea' refers to the textarea itself
      * @param {Number} [fontsize = null] - The textarea's text fontsize
      * @param {String} [textcolor = null] - The textarea's text color
      * @param {String} [font = null] - The textarea's text font
+     * @param {String} [blink_bar=null] - The blinking bar when the textarea is selected
      */
-    update_config(x=null, y=null, width=null, height=null, content=null, max_char_number=null, rendered=null, command=null, fontsize=null, textcolor=null, font=null){
+    update_config(x=null, y=null, width=null, height=null, content=null, max_char_number=null, rendered=null, command=null, fontsize=null, textcolor=null, font=null, blink_bar=null){
         if(x != null) this.x = x
         if(y != null) this.y = y
         if(width != null) this.width = width
@@ -208,6 +224,7 @@ export class TextArea extends Widget{
         if(fontsize != null) this.fontsize = fontsize
         if(textcolor != null) this.textcolor = textcolor
         if(font != null) this.font = font
+        if(blink_bar != null) this.blink_bar = blink_bar
     }
 }
 
@@ -220,15 +237,16 @@ export class NumberArea extends TextArea{
      * @param {Number} y - the y coordinates of the top-left corner of the widget
      * @param {Number} width - The numberarea's width
      * @param {Number} height - The numberarea's height
-     * @param {Number} max_char_number - The maximum of character tou can type in
+     * @param {Number} max_char_number - The maximum of character you can type in
      * @param {Boolean} rendered - Boolean refearing to if this widget should be rendered
      * @param {(answer: String, numberarea: NumberArea) => void} command - Command executed when the submit method is called, 'answer' refers to what has been typed in the numberarea, 'numberarea' refers to the numberarea itself
      * @param {Number} [fontsize=5] - The numberarea's text fontsize
      * @param {String} [textcolor="black"] - The numberarea's text color
      * @param {String} [font="serif"] - The numberarea's text font
+     * @param {String} [blink_bar="I"] - The blinking bar when the numberarea is selected
      */
-    constructor(game, id, x, y, width, height, max_char_number, rendered, command, fontsize=15, textcolor="black", font="arial"){
-        super(game, id, x, y, width, height, max_char_number, rendered, command, fontsize, textcolor, font)
+    constructor(game, id, x, y, width, height, max_char_number, rendered, command, fontsize=15, textcolor="black", font="arial", blink_bar="I"){
+        super(game, id, x, y, width, height, max_char_number, rendered, command, fontsize, textcolor, font, blink_bar)
         this.type = constants.NUMBERAREA_TYPE
     }
 }
@@ -277,7 +295,7 @@ export class Icon extends Widget{
 }
 
 export class Texture extends Widget{
-    /*
+    /**
      * !!! One shouldn't use the constructor to make a texture widget, use the static create method instead
      * @param {Game} game - The current game
      * @param {String} id - The widget's Id
