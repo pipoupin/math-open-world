@@ -141,7 +141,6 @@ export class Game {
 			this.maps[1].player_pos.y = 1800
 			this.get_current_map().player_pos.x = this.player.worldX
 			this.get_current_map().player_pos.y = this.player.worldY - constants.TILE_SIZE / 3
-			console.log(this.player)
 			this.set_map(1)
 			black_transition.start(time)
 		})

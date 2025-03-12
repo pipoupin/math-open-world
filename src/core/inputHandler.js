@@ -60,13 +60,11 @@ export class InputHandler {
                                         game.current_ui.selected_textarea = null
                                     }
                                 }
-                                console.log("ceci est un test")
                                 widget_clicked = true
                             }
                     }
                 })
                 if(!widget_clicked){
-                    console.log("test")
                     game.selected_textarea = null
                     if(game.current_ui.focused_widget)
                         game.current_ui.focused_widget.has_focus = false
