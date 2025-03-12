@@ -142,7 +142,7 @@ export class TextArea extends Widget{
      * @param {Number} y - the y coordinates of the top-left corner of the widget
      * @param {Number} width - The textarea's width
      * @param {Number} height - The textarea's height
-     * @param {Number} max_char_number - The maximum of character tou can type in
+     * @param {Number} max_char_number - The maximum of character you can type in
      * @param {Boolean} rendered - Boolean refearing to if this widget should be rendered
      * @param {(answer: String, textarea: TextArea) => void} command - Command executed when the submit method is called, 'answer' refers to what has been typed in the textarea, 'textarea' refers to the textarea itself
      * @param {Number} [fontsize=5] - The textarea's text fontsize
@@ -204,7 +204,7 @@ export class TextArea extends Widget{
      * @param {Number} [width = null] - The textarea's width
      * @param {Number} [height = null] - The textarea's height
      * @param {String} [content = null] - The textarea's content, what has been typed in it
-     * @param {Number} [max_char_number = null] - The maximum of character tou can type in
+     * @param {Number} [max_char_number = null] - The maximum of character you can type in
      * @param {Boolean} [rendered=null] - Boolean refearing to if this widget should be rendered
      * @param {(answer: String, textarea: TextArea) => void} [command = null] - Command executed when the submit method is called, 'answer' refers to what has been typed in the textarea, 'textarea' refers to the textarea itself
      * @param {Number} [fontsize = null] - The textarea's text fontsize
@@ -224,6 +224,7 @@ export class TextArea extends Widget{
         if(fontsize != null) this.fontsize = fontsize
         if(textcolor != null) this.textcolor = textcolor
         if(font != null) this.font = font
+        if(blink_bar != null) this.blink_bar = blink_bar
     }
 }
 
@@ -236,7 +237,7 @@ export class NumberArea extends TextArea{
      * @param {Number} y - the y coordinates of the top-left corner of the widget
      * @param {Number} width - The numberarea's width
      * @param {Number} height - The numberarea's height
-     * @param {Number} max_char_number - The maximum of character tou can type in
+     * @param {Number} max_char_number - The maximum of character you can type in
      * @param {Boolean} rendered - Boolean refearing to if this widget should be rendered
      * @param {(answer: String, numberarea: NumberArea) => void} command - Command executed when the submit method is called, 'answer' refers to what has been typed in the numberarea, 'numberarea' refers to the numberarea itself
      * @param {Number} [fontsize=5] - The numberarea's text fontsize
