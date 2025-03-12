@@ -2,9 +2,9 @@ import { Game } from "../core/game.js"
 
 export class Transition{
     /**
-     * 
-     * @param {Game} game 
-     * @param {Number} duration 
+     * !!! One shouldn't create a transition by using this constructor, use subclass transtions instead
+     * @param {Game} game - The current game
+     * @param {Number} duration - The duration of the transition
      */
     constructor(game, duration){
         this.game = game
@@ -38,9 +38,9 @@ export class UnicoloreTransition extends Transition{
 
     /**
      * 
-     * @param {Game} game 
-     * @param {Number} duration 
-     * @param {String} color 
+     * @param {Game} game - The current game
+     * @param {Number} duration - The duration of the transition
+     * @param {String} color - The color of the screen during the transition
      */
     constructor(game, duration, color){
         super(game, duration)
