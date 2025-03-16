@@ -93,16 +93,16 @@ export class Game {
 		const colors_problem = await Problem.create(
 			this, "images/parchment1.png", 500, 500, "colors",
 			[
-				new Label(this, "label-red", -150, -150, "Rouge:", true, 30),
-				new NumberArea(this, "numberarea-red", -50, -150, 100, 50, 15, true, (answer, numberarea) => {}, 20),
+				new Label(this, "label-red", -150, -78, "Rouge:", true, 30),
+				new NumberArea(this, "numberarea-red", -50, -110, 100, 50, 15, true, (answer, numberarea) => {}, 20),
 
-				new Label(this, "label-green", -150, -50, "Vert:", true, 30),
-				new NumberArea(this, "numberarea-green", -50, -50, 100, 50, 15, true, (answer, numberarea) => {}, 20),
+				new Label(this, "label-green", -130, 4, "Vert:", true, 30),
+				new NumberArea(this, "numberarea-green", -50, -30, 100, 50, 15, true, (answer, numberarea) => {}, 20),
 
-				new Label(this, "label-yellow", -150, 50, "Jaune:", true, 30),
+				new Label(this, "label-yellow", -150, 82, "Jaune:", true, 30),
 				new NumberArea(this, "numberarea-yellow", -50, 50, 100, 50, 15, true, (answer, numberarea) => {}, 20),
 
-				new Button(this, "button-submit", -25, 150, 100, 50, true, (button) => {
+				new Button(this, "button-submit", -50, 155, 100, 50, true, (button) => {
 					const numberarea_red = button.ui.get_widget("numberarea-red");
 					const numberarea_green = button.ui.get_widget("numberarea-green");
 					const numberarea_yellow = button.ui.get_widget("numberarea-yellow");
@@ -115,6 +115,9 @@ export class Game {
 						console.log("mauvaises réponses [debug: bonnes réponses sont 3, 2, 3]");
 						console.log(numberarea_red.content, numberarea_green.content , numberarea_yellow.content );
 					}
+				}),
+				new Button(this,"button-undo",125,-211,50,50,true,(button)=>{
+					button.ui.is_finished=true
 				})
 			],
 			(problem) => {
