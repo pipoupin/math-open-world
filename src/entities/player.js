@@ -2,7 +2,7 @@ import { constants } from '../constants.js'
 import { Game } from '../core/game.js'
 import { Entity } from './entity.js'
 import { Hitbox } from './hitbox.js'
-import { clamp } from '../utils.js'
+import { clamp } from '../utils.js'
 
 export class Player extends Entity {
 	/**
@@ -26,11 +26,18 @@ export class Player extends Entity {
 
 		this.fullSpeed = 10
 		this.acceleration = 4
-		this.dash_cooldown = 3000
-		this.last_dash = -this.dash_cooldown
-		this.dash_duration = 150
+		this.last_dash = -constants.PLAYER_DASH_COOLDOWN // used both for during the dash and for waiting state
+		this.dash_reset = false
+		this.dashing = false
 
 		this.raycast_hitbox = new Hitbox(game, game.get_current_map(), 400, 400, 0, 100, false, true, this, (e, h, t) => {})
+	}
+
+	reset_dash_cooldown() {
+		if (this.dashing)
+			this.dash_reset = true;
+		else
+			this.last_dash = -constants.PLAYER_DASH_COOLDOWN
 	}
 
 	/**
@@ -39,15 +46,22 @@ export class Player extends Entity {
 	 */
 	update(current_time) {
 		// Handle player movement
-		if (this.inputHandler.isKeyDown(constants.DASH_KEY) && current_time - this.last_dash >= this.dash_cooldown) {
+		
+		if (!this.dashing && this.inputHandler.isKeyDown(constants.DASH_KEY) && current_time - this.last_dash >= constants.PLAYER_DASH_COOLDOWN) {
+			this.dashing = true
 			this.acceleration = 10
 			this.fullSpeed = 30
 			this.last_dash = current_time
-			setTimeout(() => {
-				this.fullSpeed = 10
-				this.acceleration = 4
-			}, this.dash_duration)
 		}
+
+		if (this.dashing && current_time - this.last_dash >= constants.PLAYER_DASH_DURATION) {
+			this.last_dash = this.dash_reset ? 0 : current_time
+			this.dash_reset = false
+			this.dashing = false
+			this.fullSpeed = 10
+			this.acceleration = 4
+		}
+	
 		if (this.inputHandler.isKeyDown(constants.UP_KEY)) this.dy -= this.acceleration
 		if (this.inputHandler.isKeyDown(constants.DOWN_KEY)) this.dy += this.acceleration
 		if (this.inputHandler.isKeyDown(constants.LEFT_KEY)) this.dx -= this.acceleration

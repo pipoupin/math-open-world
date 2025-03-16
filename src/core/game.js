@@ -9,7 +9,7 @@ import { Attack } from '../entities/attack.js'
 import { Ui } from '../ui/ui.js'
 import { Button, Icon, Label, NumberArea, TextArea, Texture } from '../ui/widgets.js'
 import { Talkable } from '../entities/talkable.js'
-import { constants } from "../constants.js"
+import { config, constants } from "../constants.js"
 import { Transition, UnicoloreTransition } from '../ui/transition.js'
 
 export class Game {
@@ -64,34 +64,28 @@ export class Game {
 	async run() {
 		// create class objects
 		this.inputHandler = new InputHandler(this)
-		const default_tileset = await Tileset.create(this, "images/map.png", 16, this.TILE_SIZE, 0)
-		const alternative_tileset = await Tileset.create(this, "images/floor.png", 16, this.TILE_SIZE, 0)
-		const pretty_face_tileset = await Tileset.create(this, "images/pretty_face_tileset.png", 16, this.TILE_SIZE, 1)
+		const default_tileset = await Tileset.create(this, config.IMG_DIR + "map.png", 16, this.TILE_SIZE, 0)
+		const pretty_face_tileset = await Tileset.create(this, config.IMG_DIR + "pretty_face_tileset.png", 16, this.TILE_SIZE, 1)
 		this.maps = [
-			await Map.create(this, 'house.json', pretty_face_tileset, "black", {x: 4 * constants.TILE_SIZE, y: 2.5 * constants.TILE_SIZE}),
-			//await Map.create(this, 'map.json', default_tileset, "black", {x: 100, y: 100}),
-			//await Map.create(this, 'map copy.json', alternative_tileset, "black"),
-			await Map.create(this, 'main_map.json', default_tileset, "grey", {x: 15 * constants.TILE_SIZE, y: 16 * constants.TILE_SIZE})
+			await Map.create(this, config.MAP_DIR + 'house.json', pretty_face_tileset, "black", {x: 4 * constants.TILE_SIZE, y: 2.5 * constants.TILE_SIZE}),
+			await Map.create(this, config.MAP_DIR + 'map.json', default_tileset, "grey", {x: 15.5 * constants.TILE_SIZE, y: 14.01 * constants.TILE_SIZE})
+
 		]
 		this.current_map = 0 // "scene"
 		this.map = this.maps[this.current_map]
 
 
-		const player_tileset = await Tileset.create(this, 'images/spritesheet.png', 16, this.TILE_SIZE, 0)
+		const player_tileset = await Tileset.create(this, config.IMG_DIR + 'spritesheet.png', 16, this.TILE_SIZE, 0)
 		this.player = new Player(this, player_tileset)
 		this.player.set_map(this.get_current_map())
 		
-		// test hitboxes for "command" parameter and for map switch
-		//new Hitbox(this, this.get_current_map(), 1000, 1000 + this.TILE_SIZE / 2, this.TILE_SIZE, this.TILE_SIZE / 2, false, false, (e, h) => {this.set_map(1)})
-		//new Hitbox(this, this.maps[1], 500, 500 + this.TILE_SIZE / 2, this.TILE_SIZE, this.TILE_SIZE / 2, false, false, (e, h) => {this.set_map(0)})
-
 		// used to place the player correctly
 		this.update()
 
 		const black_transition = new UnicoloreTransition(this, 500, "black")
 
 		const colors_problem = await Problem.create(
-			this, "images/parchment1.png", 500, 500, "colors",
+			this, config.IMG_DIR + "parchment1.png", 500, 500, "colors",
 			[
 				new Label(this, "label-red", -150, -78, "Rouge:", true, 30),
 				new NumberArea(this, "numberarea-red", -50, -110, 100, 50, 15, true, (answer, numberarea) => {}, 20),
@@ -141,6 +135,13 @@ export class Game {
 			this.player.set_map(this.maps[1])
 			this.player.direction = 0
 
+			// reset dash
+			if (this.player.dashing)
+				this.player.dash_reset = true
+			else
+				this.player.last_dash = -constants.PLAYER_DASH_COOLDOWN
+
+
 			black_transition.start(time)
 		})
 		// -- from the house (auto)
@@ -151,32 +152,62 @@ export class Game {
 			this.player.set_map(this.maps[1])
 			this.player.direction = 0
 
+			// reset dash
+			if (this.player.dashing)
+				this.player.dash_reset = true
+			else
+				this.player.last_dash = -constants.PLAYER_DASH_COOLDOWN
+
 			black_transition.start(time)
 		})
 
 		// -- from the outside (manually activated)
-		new Hitbox(this, this.maps[1], 15 * constants.TILE_SIZE, 13.5 * constants.TILE_SIZE, constants.TILE_SIZE, constants.TILE_SIZE / 2, false, false, null, (e, h, time) => {
-						if (!this.inputHandler.isKeyPressed(constants.INTERACTION_KEY)) return
-			this.maps[1].player_pos = {x: 15.5 * constants.TILE_SIZE, y: 14.01 * constants.TILE_SIZE}
+		new Hitbox(this,
+			this.maps[1],
+			15 * constants.TILE_SIZE,
+			13.5 * constants.TILE_SIZE,
+			constants.TILE_SIZE,
+			constants.TILE_SIZE / 2,
+			false,
+			false,
+			null,
+			(e, h, time) => {
+				if (!this.inputHandler.isKeyPressed(constants.INTERACTION_KEY)) return
+				this.maps[1].player_pos = {x: 15.5 * constants.TILE_SIZE, y: 14.01 * constants.TILE_SIZE}
 
-			this.set_map(0)
+				this.set_map(0)
 
-			this.player.set_map(this.maps[0])
-			this.player.direction = 1
+				this.player.set_map(this.maps[0])
+				this.player.direction = 1
 
-			black_transition.start(time)
-		})
+				this.player.reset_dash_cooldown()
+
+				black_transition.start(time)
+			}
+		)
 		// -- from the outside (automatic)
-		new Hitbox(this, this.maps[1], 15 * constants.TILE_SIZE, 13 * constants.TILE_SIZE, constants.TILE_SIZE, constants.TILE_SIZE / 4, false, false, null, (e, h, time) => {
-			this.maps[1].player_pos = {x: 15.5 * constants.TILE_SIZE, y: 14.01 * constants.TILE_SIZE}
+		new Hitbox(this,
+			this.maps[1],
+			15 * constants.TILE_SIZE,
+			13 * constants.TILE_SIZE,
+			constants.TILE_SIZE,
+			constants.TILE_SIZE / 4, 
+			false, 
+			false, 
+			null, 
+			(e, h, time) => {
+				this.maps[1].player_pos = {x: 15.5 * constants.TILE_SIZE, y: 14.01 * constants.TILE_SIZE}
 
-			this.set_map(0)
+				this.set_map(0)
 
-			this.player.set_map(this.maps[0])
-			this.player.direction = 1
+				this.player.set_map(this.maps[0])
+				this.player.direction = 1
 
-			black_transition.start(time)
-		})
+				this.player.reset_dash_cooldown()
+
+				black_transition.start(time)
+			}
+		)
 
 		requestAnimationFrame(this.loop.bind(this))
 	}
@@ -265,3 +296,5 @@ export class Game {
 		return this.maps[this.current_map]
 	}
 }
+
+

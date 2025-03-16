@@ -4,3 +4,5 @@
 
 #TODO: implement fully working attacks
 #TODO: implement the "block" tiles classes (so that they are not fully blocking the tile)
+#TODO: implement in-game ui (inventory, message box, chat with npcs)
+#TODO: add problems
