@@ -32,11 +32,11 @@ export class Map {
 	 */
 	static async create(game, src, tileset, background, player_pos) {
 		const map = new Map(game, tileset, background, player_pos)
-		// try {
+		try {
 			await map.load(src)
-		// } catch (error) {
-		// 	console.error(`Failed to load map "${src}": ${error.message}`);
-		// }
+		} catch (error) {
+			console.error(`Failed to load map "${src}": ${error.message}`);
+		}
 		return map
 	}
 
