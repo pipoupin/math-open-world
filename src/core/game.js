@@ -167,7 +167,7 @@ export class Game {
 			15 * constants.TILE_SIZE,
 			13.5 * constants.TILE_SIZE,
 			constants.TILE_SIZE,
-			constants.TILE_SIZE / 2,
+			constants.TILE_SIZE / 2 - 18,
 			false,
 			false,
 			null,

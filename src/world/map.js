@@ -70,25 +70,24 @@ export class Map {
 							const tileX = (i % layer.width) * this.game.TILE_SIZE;
 							const tileY = Math.floor(i / layer.width) * this.game.TILE_SIZE;
 
-							if(layer.data[i] in collisions[src]){
-								var new_x = 0
-								var new_y = 0
-								var new_width = constants.TILE_SIZE
-								var new_height = constants.TILE_SIZE
+							var new_x = 0
+							var new_y = 0
+							var new_width = constants.TILE_SIZE
+							var new_height = constants.TILE_SIZE
 
-								if(collisions[src][layer.data[i]].x)
-									new_x = collisions[src][layer.data[i]].x
-								if(collisions[src][layer.data[i]].y)
-									new_y = collisions[src][layer.data[i]].y
-								if(collisions[src][layer.data[i]].width)
-									new_width = collisions[src][layer.data[i]].width
-								if(collisions[src][layer.data[i]].height)
-									new_height = collisions[src][layer.data[i]].height
-
-								new Hitbox(this.game, this, tileX + new_x, tileY + new_y, new_width, new_height, true, false, null, (e, h, t) => {})
-							} else {
-								new Hitbox(this.game, this, tileX, tileY, constants.TILE_SIZE, constants.TILE_SIZE, true, false, null, (e, h, t) => {});
+							if(src in collisions){
+								if(layer.data[i] in collisions[src]){
+									if(collisions[src][layer.data[i]].x)
+										new_x = collisions[src][layer.data[i]].x
+									if(collisions[src][layer.data[i]].y)
+										new_y = collisions[src][layer.data[i]].y
+									if(collisions[src][layer.data[i]].width)
+										new_width = collisions[src][layer.data[i]].width
+									if(collisions[src][layer.data[i]].height)
+										new_height = collisions[src][layer.data[i]].height
+								}
 							}
+							new Hitbox(this.game, this, tileX + new_x, tileY + new_y, new_width, new_height, true, false, null, (e, h, t) => {});
 						}
 					} else if (layer.name == "Ground") { // create hitboxes for void tiles
 						for (let i = 0; i < layer.data.length; i++) {
@@ -99,25 +98,24 @@ export class Map {
 							const tileY = Math.floor(i / layer.width) * this.game.TILE_SIZE;
 
 
-							if(layer.data[i] in collisions[src]){
-								var new_x = 0
-								var new_y = 0
-								var new_width = constants.TILE_SIZE
-								var new_height = constants.TILE_SIZE
+							var new_x = 0
+							var new_y = 0
+							var new_width = constants.TILE_SIZE
+							var new_height = constants.TILE_SIZE
 
-								if(collisions[src][layer.data[i]].x)
-									new_x = collisions[src][layer.data[i]].x
-								if(collisions[src][layer.data[i]].y)
-									new_y = collisions[src][layer.data[i]].y
-								if(collisions[src][layer.data[i]].width)
-									new_width = collisions[src][layer.data[i]].width
-								if(collisions[src][layer.data[i]].height)
-									new_height = collisions[src][layer.data[i]].height
-
-								new Hitbox(this.game, this, tileX + new_x, tileY + new_y, new_width, new_height, true, false, null, (e, h, t) => {})
-							} else {
-								new Hitbox(this.game, this, tileX, tileY, constants.TILE_SIZE, constants.TILE_SIZE, true, false, null, (e, h, t) => {});
+							if(src in collisions){
+								if(layer.data[i] in collisions[src]){
+									if(collisions[src][layer.data[i]].x)
+										new_x = collisions[src][layer.data[i]].x
+									if(collisions[src][layer.data[i]].y)
+										new_y = collisions[src][layer.data[i]].y
+									if(collisions[src][layer.data[i]].width)
+										new_width = collisions[src][layer.data[i]].width
+									if(collisions[src][layer.data[i]].height)
+										new_height = collisions[src][layer.data[i]].height
+								}
 							}
+							new Hitbox(this.game, this, tileX + new_x, tileY + new_y, new_width, new_height, true, false, null, (e, h, t) => {});
 						}
 					}
 				}
