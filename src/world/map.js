@@ -1,7 +1,7 @@
 import { Game } from "../core/game.js"
 import { Tileset } from "./tileset.js"
 import { Hitbox } from "../entities/hitbox.js"
-import { constants } from "../constants.js"
+import { collisions, constants, config } from "../constants.js"
 
 export class Map {
 	/**
@@ -32,11 +32,11 @@ export class Map {
 	 */
 	static async create(game, src, tileset, background, player_pos) {
 		const map = new Map(game, tileset, background, player_pos)
-		try {
+		// try {
 			await map.load(src)
-		} catch (error) {
-			console.error(`Failed to load map "${src}": ${error.message}`);
-		}
+		// } catch (error) {
+		// 	console.error(`Failed to load map "${src}": ${error.message}`);
+		// }
 		return map
 	}
 
@@ -46,7 +46,7 @@ export class Map {
 	 */
 	async load(src) {
 			// extract json
-			const response = await fetch(src)
+			const response = await fetch(config.MAP_DIR + src)
 			if (!response.ok) {
 					throw new Error(`HTTP error! Status: ${response.status}`)
 			}
@@ -70,7 +70,25 @@ export class Map {
 							const tileX = (i % layer.width) * this.game.TILE_SIZE;
 							const tileY = Math.floor(i / layer.width) * this.game.TILE_SIZE;
 
-							new Hitbox(this.game, this, tileX, tileY, constants.TILE_SIZE, constants.TILE_SIZE, true, false, this, (e, h, t) => {});
+							if(layer.data[i] in collisions[src]){
+								var new_x = 0
+								var new_y = 0
+								var new_width = constants.TILE_SIZE
+								var new_height = constants.TILE_SIZE
+
+								if(collisions[src][layer.data[i]].x)
+									new_x = collisions[src][layer.data[i]].x
+								if(collisions[src][layer.data[i]].y)
+									new_y = collisions[src][layer.data[i]].y
+								if(collisions[src][layer.data[i]].width)
+									new_width = collisions[src][layer.data[i]].width
+								if(collisions[src][layer.data[i]].height)
+									new_height = collisions[src][layer.data[i]].height
+
+								new Hitbox(this.game, this, tileX + new_x, tileY + new_y, new_width, new_height, true, false, null, (e, h, t) => {})
+							} else {
+								new Hitbox(this.game, this, tileX, tileY, constants.TILE_SIZE, constants.TILE_SIZE, true, false, null, (e, h, t) => {});
+							}
 						}
 					} else if (layer.name == "Ground") { // create hitboxes for void tiles
 						for (let i = 0; i < layer.data.length; i++) {
@@ -80,7 +98,26 @@ export class Map {
 							const tileX = (i % layer.width) * this.game.TILE_SIZE;
 							const tileY = Math.floor(i / layer.width) * this.game.TILE_SIZE;
 
-							new Hitbox(this.game, this, tileX, tileY, constants.TILE_SIZE, constants.TILE_SIZE, true, false, this, (e, h, t) => {});
+
+							if(layer.data[i] in collisions[src]){
+								var new_x = 0
+								var new_y = 0
+								var new_width = constants.TILE_SIZE
+								var new_height = constants.TILE_SIZE
+
+								if(collisions[src][layer.data[i]].x)
+									new_x = collisions[src][layer.data[i]].x
+								if(collisions[src][layer.data[i]].y)
+									new_y = collisions[src][layer.data[i]].y
+								if(collisions[src][layer.data[i]].width)
+									new_width = collisions[src][layer.data[i]].width
+								if(collisions[src][layer.data[i]].height)
+									new_height = collisions[src][layer.data[i]].height
+
+								new Hitbox(this.game, this, tileX + new_x, tileY + new_y, new_width, new_height, true, false, null, (e, h, t) => {})
+							} else {
+								new Hitbox(this.game, this, tileX, tileY, constants.TILE_SIZE, constants.TILE_SIZE, true, false, null, (e, h, t) => {});
+							}
 						}
 					}
 				}

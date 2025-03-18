@@ -67,8 +67,8 @@ export class Game {
 		const default_tileset = await Tileset.create(this, config.IMG_DIR + "map.png", 16, this.TILE_SIZE, 0)
 		const pretty_face_tileset = await Tileset.create(this, config.IMG_DIR + "pretty_face_tileset.png", 16, this.TILE_SIZE, 1)
 		this.maps = [
-			await Map.create(this, config.MAP_DIR + 'house.json', pretty_face_tileset, "black", {x: 4 * constants.TILE_SIZE, y: 2.5 * constants.TILE_SIZE}),
-			await Map.create(this, config.MAP_DIR + 'map.json', default_tileset, "grey", {x: 15.5 * constants.TILE_SIZE, y: 14.01 * constants.TILE_SIZE})
+			await Map.create(this, 'house.json', pretty_face_tileset, "black", {x: 4 * constants.TILE_SIZE, y: 2.5 * constants.TILE_SIZE}),
+			await Map.create(this, 'map.json', default_tileset, "grey", {x: 15.5 * constants.TILE_SIZE, y: 14.01 * constants.TILE_SIZE})
 
 		]
 		this.current_map = 0 // "scene"
@@ -87,14 +87,14 @@ export class Game {
 		const colors_problem = await Problem.create(
 			this, config.IMG_DIR + "parchment1.png", 500, 500, "colors",
 			[
-				new Label(this, "label-red", -150, -78, "Rouge:", true, 30),
-				new NumberArea(this, "numberarea-red", -50, -110, 100, 50, 15, true, (answer, numberarea) => {}, 20),
+				new Label(this, "label-red", -150, -78, "Rouge:", true, 30, "black", "Times New Roman"),
+				new NumberArea(this, "numberarea-red", -50, -110, 100, 50, 1, true, (answer, numberarea) => {}, 20, "black", "Times New Roman"),
 
-				new Label(this, "label-green", -130, 4, "Vert:", true, 30),
-				new NumberArea(this, "numberarea-green", -50, -30, 100, 50, 15, true, (answer, numberarea) => {}, 20),
+				new Label(this, "label-green", -130, 4, "Vert:", true, 30, "black", "Times New Roman"),
+				new NumberArea(this, "numberarea-green", -50, -30, 100, 50, 1, true, (answer, numberarea) => {}, 20, "black", "Times New Roman"),
 
-				new Label(this, "label-yellow", -150, 82, "Jaune:", true, 30),
-				new NumberArea(this, "numberarea-yellow", -50, 50, 100, 50, 15, true, (answer, numberarea) => {}, 20),
+				new Label(this, "label-yellow", -150, 82, "Jaune:", true, 30, "black", "Times New Roman"),
+				new NumberArea(this, "numberarea-yellow", -50, 50, 100, 50, 1, true, (answer, numberarea) => {}, 20, "black", "Times New Roman"),
 
 				new Button(this, "button-submit", -50, 155, 100, 50, true, (button) => {
 					const numberarea_red = button.ui.get_widget("numberarea-red");

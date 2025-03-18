@@ -1,4 +1,4 @@
-/*
+/**
  * @param {Number} value 
  * @param {Number} min 
  * @param {Number} max 
