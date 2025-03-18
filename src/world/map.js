@@ -77,14 +77,24 @@ export class Map {
 
 							if(src in collisions){
 								if(layer.data[i] in collisions[src]){
+
 									if(collisions[src][layer.data[i]].x)
 										new_x = collisions[src][layer.data[i]].x
+
 									if(collisions[src][layer.data[i]].y)
 										new_y = collisions[src][layer.data[i]].y
+
 									if(collisions[src][layer.data[i]].width)
 										new_width = collisions[src][layer.data[i]].width
+
+									if(new_x + new_width > 128)
+										new_width = 128 - new_x
+
 									if(collisions[src][layer.data[i]].height)
 										new_height = collisions[src][layer.data[i]].height
+
+									if(new_y + new_height > 128)
+										new_height = 128 - new_y
 								}
 							}
 							new Hitbox(this.game, this, tileX + new_x, tileY + new_y, new_width, new_height, true, false, null, (e, h, t) => {});
