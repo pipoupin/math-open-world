@@ -91,7 +91,7 @@ export class Game {
 				new NumberArea(this, "numberarea-red", -50, -110, 100, 50, 1, true, (answer, numberarea) => {}, 20, "black", "Times New Roman"),
 
 				new Label(this, "label-green", -130, 4, "Vert:", true, 30, "black", "Times New Roman"),
-				new NumberArea(this, "numberarea-green", -50, -30, 100, 50, 1, true, (answer, numberarea) => {}, 20, "black", "Times New Roman"),
+				new NumberArea(this, "numberarea-green", -50, -30, 100, 50, 10, true, (answer, numberarea) => {}, 20, "black", "Times New Roman"),
 
 				new Label(this, "label-yellow", -150, 82, "Jaune:", true, 30, "black", "Times New Roman"),
 				new NumberArea(this, "numberarea-yellow", -50, 50, 100, 50, 1, true, (answer, numberarea) => {}, 20, "black", "Times New Roman"),
@@ -265,8 +265,10 @@ export class Game {
 
 		this.get_current_map().render_perspective()
 		
-		this.hitboxes.forEach(hitbox => {hitbox.render()})
-		this.talkables.forEach(talkable => {talkable.render()})
+		if(constants.DEBUG){
+			this.hitboxes.forEach(hitbox => {hitbox.render()})
+			this.talkables.forEach(talkable => {talkable.render()})
+		}
 
 		if(this.current_ui){
 			this.current_ui.render()
