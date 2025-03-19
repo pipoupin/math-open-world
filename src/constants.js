@@ -35,9 +35,16 @@ export const constants = {
     ACTIVE_TILES: [169]
 }
 
-// TODO: hopefully in a near-by future, ...
+// TODO: The future has arrived
+// still need a bit cleaner way to do it tho
 export const collisions = {
     "map.json": {
+        127: {x: 56, width: 72},
+        131: {width: 72},
+        167: {x: 56, width: 72, height: 110},
+        168: {height: 110},
+        170: {height: 110},
+        171: {width: 72, height: 110}
     },
     "house.json": {
     }
