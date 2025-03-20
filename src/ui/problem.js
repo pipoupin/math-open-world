@@ -1,4 +1,6 @@
 import { Game } from "../core/game.js";
+import { Hitbox } from "../entities/hitbox.js";
+import { Talkable } from "../entities/talkable.js";
 import { Ui } from "./ui.js";
 
 export class Problem extends Ui{
@@ -14,7 +16,7 @@ export class Problem extends Ui{
      */
     constructor(game, width, height, answer, widgets, widgets_state_handler){
         super(game, width, height, widgets, widgets_state_handler)
-        this.answer= answer
+        this.answer = answer
     }
 
     /**
