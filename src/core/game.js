@@ -87,11 +87,11 @@ export class Game {
 		const colors_problem = await Problem.create(
 			this, config.IMG_DIR + "book_ui.png", 440, 580, "colors",
 			[
-				new NumberArea(this, "numberarea-red", -100, -110, 60, 80, 1, true, (answer, numberarea) => {}, 80, "black", "Times New Roman"),
+				new NumberArea(this, "numberarea-red", -100, -110, 60, 80, 1, true, (answer, numberarea) => {}, 80, "black", "Times New Roman", ""),
 
-				new NumberArea(this, "numberarea-green", -20, -110, 60, 80, 1, true, (answer, numberarea) => {}, 80, "black", "Times New Roman"),
+				new NumberArea(this, "numberarea-green", -20, -110, 60, 80, 1, true, (answer, numberarea) => {}, 80, "black", "Times New Roman", ""),
 
-				new NumberArea(this, "numberarea-yellow", 60, -110, 60, 80, 1, true, (answer, numberarea) => {}, 80, "black", "Times New Roman"),
+				new NumberArea(this, "numberarea-yellow", 60, -110, 60, 80, 1, true, (answer, numberarea) => {}, 80, "black", "Times New Roman", ""),
 
 				// No more needed but I leave it there in case
 				// new Button(this, "button-submit", -50, 155, 100, 50, true, (button) => {
@@ -111,9 +111,12 @@ export class Game {
 				})
 			],
 			(problem) => {
-				// if (problem.get_widget("button-submit").is_clicked) {
-				// 	console.log("button cliked");
-				// }
+				if(problem.get_widget("number-area-red").has_focus){
+
+				} else {
+					
+				}
+
 				const numberarea_red = problem.get_widget("numberarea-red");
 				const numberarea_green = problem.get_widget("numberarea-green");
 				const numberarea_yellow = problem.get_widget("numberarea-yellow");

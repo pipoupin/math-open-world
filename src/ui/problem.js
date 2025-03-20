@@ -1,6 +1,4 @@
 import { Game } from "../core/game.js";
-import { Hitbox } from "../entities/hitbox.js";
-import { Talkable } from "../entities/talkable.js";
 import { Ui } from "./ui.js";
 
 export class Problem extends Ui{
