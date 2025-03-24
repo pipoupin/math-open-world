@@ -307,5 +307,3 @@ export class Game {
 		return this.maps[this.current_map]
 	}
 }
-
-
