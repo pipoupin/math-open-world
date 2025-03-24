@@ -111,7 +111,7 @@ export class Game {
 				})
 			],
 			(problem) => {
-				if(problem.get_widget("number-area-red").has_focus){
+				if(problem.get_widget("numberarea-red").has_focus){
 
 				} else {
 					
