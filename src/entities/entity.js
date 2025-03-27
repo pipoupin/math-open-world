@@ -26,8 +26,8 @@ export class Entity {
     this.worldX = worldX
     this.worldY = worldY
 
-    this.dx = 1
-    this.dy = 1
+    this.dx = 5
+    this.dy = 10
 
     this.tileset = tileset
     this.collision_hitbox = collision_hitbox
@@ -84,21 +84,25 @@ export class Entity {
   }
 
   updatePositionX() {
-    const halfHitboxWidth = this.combat_hitbox.width / 2
+    const halfHitboxWidth = this.combat_hitbox.width / 2 + this.hitboxes_offset.combat.x
     this.worldX = clamp(
       this.worldX + this.dx,
       halfHitboxWidth,
       this.game.map.world.width - halfHitboxWidth
     )
+    if(this.worldX === this.game.map.world.width - halfHitboxWidth || this.worldX === halfHitboxWidth)
+      this.dx = 0
   }
 
   updatePositionY() {
-    const halfHitboxHeight = this.combat_hitbox.height / 2
+    const halfHitboxHeight = this.combat_hitbox.height / 2 + this.hitboxes_offset.combat.y
     this.worldY = clamp(
       this.worldY + this.dy,
       halfHitboxHeight,
       this.game.map.world.height - halfHitboxHeight
     )
+    if(this.worldY === this.game.map.world.height - halfHitboxHeight || this.worldY === halfHitboxHeight)
+      this.dy = 0
   }
 
 	updateHitboxes() {
