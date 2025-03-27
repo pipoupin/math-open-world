@@ -3,7 +3,7 @@ import { Hitbox } from "./hitbox.js"
 import { Map } from "../world/map.js"
 import { Tileset } from "../world/tileset.js"
 import { constants } from "../constants.js"
-import { clamp } from "../utils.js"
+import { clamp } from "../utils.js"
 
 export class Entity {
 
@@ -16,8 +16,9 @@ export class Entity {
    * @param {Number} worldX - the entity's x position in the world
    * @param {Number} worldY - the entity's y position in the world
    * @param {Number} animation_duration - the animation's frames' duration
+   * @param {{ combat: { x: number; y: number; }; collision: { x: number; y: number; }; }} [hitboxes_offset={combat: {x: 0, y: 0}, collision: {x: 0, y: 0}}] 
    */
-  constructor(game, map, tileset, collision_hitbox, combat_hitbox, worldX, worldY, animation_duration, life=-1) {
+  constructor(game, map, tileset, collision_hitbox, combat_hitbox, worldX, worldY, animation_duration, life=-1, hitboxes_offset={combat: {x: 0, y: 0}, collision: {x: 0, y: 0}}) {
     this.game = game
     this.map = map
 
@@ -39,6 +40,8 @@ export class Entity {
 
     this.life = life
 
+    this.hitboxes_offset = hitboxes_offset
+
     this.game.entities.push(this)
   }
 
@@ -52,14 +55,14 @@ export class Entity {
 
     // Split movement into X and Y components to handle collisions separately
     this.updatePositionX()
-		this.updateCollisionHitbox()
+		this.updateHitboxes()
     if (this.colliding()) {
       this.backPositionX()
 			this.dx = 0
     }
     
     this.updatePositionY()
-		this.updateCollisionHitbox()
+		this.updateHitboxes()
     if (this.colliding()) {
       this.backPositionY()
 			this.dy = 0
@@ -98,9 +101,10 @@ export class Entity {
     )
   }
 
-	updateCollisionHitbox() {
-		this.collision_hitbox.set(this.worldX - this.collision_hitbox.width / 2, this.worldY)
-	}
+	updateHitboxes() {
+		this.collision_hitbox.center_around(this.worldX + this.hitboxes_offset.collision.x, this.worldY + this.hitboxes_offset.collision.y)
+    this.combat_hitbox.center_around(this.worldX + this.hitboxes_offset.combat.x, this.worldY + this.hitboxes_offset.combat.y)
+  }
 
   colliding() {
     for (let collision_hitbox of this.game.collision_hitboxes) {
@@ -149,10 +153,26 @@ export class Entity {
   render() {
     if (this.game.get_current_map() !== this.map) return;
 
+    if(constants.DEBUG){
+      this.game.ctx.beginPath()
+      this.game.ctx.arc(this.worldX - this.game.camera.x, this.worldY - this.game.camera.y, 3, 0, Math.PI * 2)
+      this.game.ctx.fillStyle = this.player ? "blue": "red"
+      this.game.ctx.fill()
+
+      this.collision_hitbox.render()
+      this.combat_hitbox.render()
+
+      if(!this.player){
+        console.log(this.worldX - this.game.camera.x, this.worldY - this.game.camera.y)
+        console.log(this.worldX, this.worldY)
+        console.log(this.game.camera)
+      }
+    }
+
     if (this.isWithinCameraView()) {
       const tileNum = 4 * this.direction + (this.animation_step !== -1 ? this.animation_step : 0) + 1;
-      const screenX = this.worldX - this.game.camera.x - constants.TILE_SIZE / 2;
-      const screenY = this.worldY - this.game.camera.y - constants.TILE_SIZE / 2;
+      const screenX = this.worldX - this.game.camera.x - this.tileset.screen_tile_size / 2;
+      const screenY = this.worldY - this.game.camera.y - this.tileset.screen_tile_size / 2;
 
       this.tileset.drawTile(tileNum, screenX, screenY);
     }

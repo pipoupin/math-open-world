@@ -58,14 +58,14 @@ export class Game {
 		this.current_ui = null
 
 		this.camera = { x: -1000, y: -1000 }
-		this.TILE_SIZE = 128
 	}
 
 	async run() {
 		// create class objects
 		this.inputHandler = new InputHandler(this)
-		const default_tileset = await Tileset.create(this, config.IMG_DIR + "map.png", 16, this.TILE_SIZE, 0)
-		const pretty_face_tileset = await Tileset.create(this, config.IMG_DIR + "pretty_face_tileset.png", 16, this.TILE_SIZE, 1)
+		const default_tileset = await Tileset.create(this, config.IMG_DIR + "map.png", 16, constants.TILE_SIZE, 0)
+		const pretty_face_tileset = await Tileset.create(this, config.IMG_DIR + "pretty_face_tileset.png", 16, constants.TILE_SIZE, 1)
+		const spider_tile_set = await Tileset.create(this, config.IMG_DIR + "spider_tileset.png", 100, constants.TILE_SIZE * 4, 0)
 		this.maps = [
 			await Map.create(this, 'house.json', pretty_face_tileset, "black", {x: 4 * constants.TILE_SIZE, y: 2.5 * constants.TILE_SIZE}),
 			await Map.create(this, 'map.json', default_tileset, "grey", {x: 15.5 * constants.TILE_SIZE, y: 14.01 * constants.TILE_SIZE})
@@ -74,8 +74,14 @@ export class Game {
 		this.current_map = 0 // "scene"
 		this.map = this.maps[this.current_map]
 
+		const test_spider_entity = new Entity(this, this.maps[1], spider_tile_set,
+			new Hitbox(this, this.maps[1], 0, 0, constants.TILE_SIZE * 2, constants.TILE_SIZE * 2.5, true, false, null, (e, h, t) => {}),
+			new Hitbox(this, this.maps[1], 0, 0, constants.TILE_SIZE * 2, constants.TILE_SIZE * 2.5, false, false, null, (e, h, t) => {}),
+			200, 200, 150, 10, {combat: {x: 0, y: -20}, collision: {x: 0, y: -20}}
+		)
 
-		const player_tileset = await Tileset.create(this, config.IMG_DIR + 'spritesheet.png', 16, this.TILE_SIZE, 0)
+
+		const player_tileset = await Tileset.create(this, config.IMG_DIR + 'spritesheet.png', 16, constants.TILE_SIZE, 0)
 		this.player = new Player(this, player_tileset)
 		this.player.set_map(this.get_current_map())
 		
@@ -129,7 +135,7 @@ export class Game {
 			}
 		)
 		const colors_problem_shelf = new Talkable(this, this.get_current_map(),
-			new Hitbox(this, this.get_current_map(), 0, constants.TILE_SIZE * 2, this.TILE_SIZE, this.TILE_SIZE, true, false, null, (e, h, t) => {}),
+			new Hitbox(this, this.get_current_map(), 0, constants.TILE_SIZE * 2, constants.TILE_SIZE, constants.TILE_SIZE, true, false, null, (e, h, t) => {}),
 			colors_problem, null
 		)
 		colors_problem.set_source(colors_problem_shelf)
@@ -237,7 +243,8 @@ export class Game {
 			}
 		}
 
-		this.player.update(current_time)
+		this.entities.forEach(entity => {entity.update(current_time)})
+
 		this.camera.x = this.player.worldX - this.canvas.width / 2
 		this.camera.y = this.player.worldY - this.canvas.height / 2
 

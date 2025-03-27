@@ -55,8 +55,8 @@ export class Map {
 			const body = await response.json()
 			this.width = body.width
 			this.height = body.height
-			this.world.width = this.width * this.game.TILE_SIZE
-			this.world.height = this.height * this.game.TILE_SIZE
+			this.world.width = this.width * constants.TILE_SIZE
+			this.world.height = this.height * constants.TILE_SIZE
 			for (let layer of body.layers) {
 				if (layer.type === "tilelayer") {
 
@@ -73,8 +73,8 @@ export class Map {
 							if ((! layer.data[i]) || constants.ACTIVE_TILES.includes(layer.data[i]))
 								continue
 
-							const tileX = (i % layer.width) * this.game.TILE_SIZE;
-							const tileY = Math.floor(i / layer.width) * this.game.TILE_SIZE;
+							const tileX = (i % layer.width) * constants.TILE_SIZE;
+							const tileY = Math.floor(i / layer.width) * constants.TILE_SIZE;
 
 							var new_x = 0
 							var new_y = 0
@@ -110,8 +110,8 @@ export class Map {
 							if (layer.data[i] != -1)
 								continue
 
-							const tileX = (i % layer.width) * this.game.TILE_SIZE;
-							const tileY = Math.floor(i / layer.width) * this.game.TILE_SIZE;
+							const tileX = (i % layer.width) * constants.TILE_SIZE;
+							const tileY = Math.floor(i / layer.width) * constants.TILE_SIZE;
 
 
 							var new_x = 0
@@ -168,15 +168,15 @@ export class Map {
 	render_ground_blocks() {
 		this.game.ctx.fillStyle = this.background
 		this.game.ctx.fillRect(0, 0, this.game.canvas.width, this.game.canvas.height)
-		const startTileX = Math.max(0, Math.floor(this.game.camera.x / this.game.TILE_SIZE));
-		const startTileY = Math.max(0, Math.floor(this.game.camera.y / this.game.TILE_SIZE));
-		const endTileX = Math.min(this.width, Math.ceil((this.game.camera.x + this.game.canvas.width) / this.game.TILE_SIZE));
-		const endTileY = Math.min(this.height, Math.ceil((this.game.camera.y + this.game.canvas.height) / this.game.TILE_SIZE));
+		const startTileX = Math.max(0, Math.floor(this.game.camera.x / constants.TILE_SIZE));
+		const startTileY = Math.max(0, Math.floor(this.game.camera.y / constants.TILE_SIZE));
+		const endTileX = Math.min(this.width, Math.ceil((this.game.camera.x + this.game.canvas.width) / constants.TILE_SIZE));
+		const endTileY = Math.min(this.height, Math.ceil((this.game.camera.y + this.game.canvas.height) / constants.TILE_SIZE));
 
 		for (let y = startTileY; y < endTileY; y++) {
 			for (let x = startTileX; x < endTileX; x++) {
-				const screenX = x * this.game.TILE_SIZE - this.game.camera.x;
-				const screenY = y * this.game.TILE_SIZE - this.game.camera.y;
+				const screenX = x * constants.TILE_SIZE - this.game.camera.x;
+				const screenY = y * constants.TILE_SIZE - this.game.camera.y;
 
 				for (let i = 0; i < this.layers.length; i++) {
 					const tile_num = this.get_cell(i, x, y);
@@ -194,8 +194,8 @@ export class Map {
 	render_perspective() {
 		const startTileX = Math.max(0, Math.floor(this.game.camera.x / constants.TILE_SIZE));
 		const startTileY = Math.max(0, Math.floor(this.game.camera.y / constants.TILE_SIZE));
-		const endTileX = Math.min(this.width, Math.ceil((this.game.camera.x + this.game.canvas.width) / this.game.TILE_SIZE));
-		const endTileY = Math.min(this.height, Math.ceil((this.game.camera.y + this.game.canvas.height) / this.game.TILE_SIZE));
+		const endTileX = Math.min(this.width, Math.ceil((this.game.camera.x + this.game.canvas.width) / constants.TILE_SIZE));
+		const endTileY = Math.min(this.height, Math.ceil((this.game.camera.y + this.game.canvas.height) / constants.TILE_SIZE));
 
 		for (let y = startTileY; y < endTileY; y++) {
 			for (let x = startTileX; x < endTileX; x++) {

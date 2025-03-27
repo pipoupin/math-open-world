@@ -12,9 +12,9 @@ export class Player extends Entity {
 	constructor(game, player_tileset) {
 		super(
 			game, game.get_current_map(), player_tileset,
-			new Hitbox(game, game.get_current_map(), 400, 400 + game.TILE_SIZE / 2, 2 * game.TILE_SIZE / 3, game.TILE_SIZE / 2, true, true, null, (e, h, t) => {}),
-			new Hitbox(game, game.get_current_map(), 400, 400, 2 * game.TILE_SIZE / 3, game.TILE_SIZE, false, true, null, (e, h, t) => {}),
-			600, 600, 175
+			new Hitbox(game, game.get_current_map(), 400, 400 + constants.TILE_SIZE / 2, 2 * constants.TILE_SIZE / 3, constants.TILE_SIZE / 2, true, true, null, (e, h, t) => {}),
+			new Hitbox(game, game.get_current_map(), 400, 400, 2 * constants.TILE_SIZE / 3, constants.TILE_SIZE, false, true, null, (e, h, t) => {}),
+			600, 600, 175, -1, {combat: {x: 0, y: 0}, collision: {x: 0, y: constants.TILE_SIZE / 4}}
 		)
 
 		this.collision_hitbox.owner = this
@@ -84,8 +84,8 @@ export class Player extends Entity {
 
 		super.update(current_time)
 
-		this.collision_hitbox.set(this.worldX - this.collision_hitbox.width / 2, this.worldY)
-		this.combat_hitbox.center_around(this.worldX, this.worldY)
+		super.updateHitboxes()
+
 		if(this.direction == 0)
 			this.raycast_hitbox.set(this.worldX, this.worldY, 0, 100)
 		if(this.direction == 1)
