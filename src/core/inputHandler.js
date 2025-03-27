@@ -121,7 +121,18 @@ export class InputHandler {
         })
     }
 
+    /**
+     * 
+     * @param {String} key 
+     * @returns {Boolean}
+     */
     isKeyDown(key) { return this.keys_down[key] }
+
+    /**
+     * 
+     * @param {String} key 
+     * @returns {Boolean}
+     */
     isKeyPressed(key) {
         if (this.keys_pressed[key]) {
             this.keys_pressed[key] = false

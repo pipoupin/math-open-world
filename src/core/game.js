@@ -310,6 +310,10 @@ export class Game {
 		this.map = this.maps[this.current_map]
 	}
 
+	/**
+	 * 
+	 * @returns {Map}
+	 */
 	get_current_map(){
 		return this.maps[this.current_map]
 	}

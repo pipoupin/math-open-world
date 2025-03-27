@@ -106,6 +106,11 @@ export class Player extends Entity {
 		this.worldY = new_map.player_pos.y
 	}
 
+	/**
+	 * 
+	 * @param {Number} x 
+	 * @param {Number} y 
+	 */
 	set_pos(x, y) {
 		this.worldX = clamp(x, constants.PLAYER_COMBAT_BOX_WIDTH/ 2, this.map.world.width - constants.PLAYER_COMBAT_BOX_WIDTH/2)
 		this.worldY = clamp(y, constants.PLAYER_COMBAT_BOX_HEIGHT/2, this.map.world.height - constants.PLAYER_COMBAT_BOX_HEIGHT/2)
