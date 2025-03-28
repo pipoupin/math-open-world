@@ -11,6 +11,7 @@ import { Button, Icon, Label, NumberArea, TextArea, Texture } from '../ui/widget
 import { Talkable } from '../entities/talkable.js'
 import { config, constants } from "../constants.js"
 import { Transition, UnicoloreTransition } from '../ui/transition.js'
+import { Dialogue } from '../ui/dialogue.js'
 
 export class Game {
 	constructor() {
@@ -140,11 +141,21 @@ export class Game {
 		)
 		colors_problem.set_source(colors_problem_shelf)
 
+
+		// test dialogue ans its hitbox
+		var dialogue = await Dialogue.create(this, config.IMG_DIR + "dialogue_box.png", "Press 'Space' to dash, dash has a 10 seconds cooldown. You can also press 'E' when facing an object to interact with it.", (dialogue) => {
+			dialogue.source.destructor()
+		})
+		var dialogue_test = new Hitbox(this, this.get_current_map(), 0, 4 * constants.TILE_SIZE, constants.TILE_SIZE, constants.TILE_SIZE, false, false, null, (e, h, t) => {
+			h.game.current_ui = dialogue
+		})
+		dialogue.set_source(dialogue_test)
+
 		// SWITCH MAP HITBOXES
 		// -- from the house (manual)
 		new Hitbox(this, this.get_current_map(), 3 * constants.TILE_SIZE, 8 * constants.TILE_SIZE, constants.TILE_SIZE, constants.TILE_SIZE, false, false, null, (e, h, time) => {
 			if (!this.inputHandler.isKeyPressed(constants.INTERACTION_KEY)) return // one must press INTERACTION_KEY to switch map
-			this.maps[0].player_pos = {x: 4 * constants.TILE_SIZE, y: 5 * constants.TILE_SIZE}
+			this.maps[0].player_pos = {x: this.player.worldX, y: this.player.worldY - 50}
 			this.set_map(1)
 
 			this.player.set_map(this.maps[1])
@@ -161,7 +172,7 @@ export class Game {
 		})
 		// -- from the house (auto)
 		new Hitbox(this, this.get_current_map(), 3 * constants.TILE_SIZE, 8.75 * constants.TILE_SIZE, constants.TILE_SIZE, constants.TILE_SIZE / 4, false, false, null, (e, h, time) => {
-			this.maps[0].player_pos = {x: 4 * constants.TILE_SIZE, y: 5 * constants.TILE_SIZE}
+			this.maps[0].player_pos = {x: this.player.worldX, y: this.player.worldY - 50}
 			this.set_map(1)
 
 			this.player.set_map(this.maps[1])
