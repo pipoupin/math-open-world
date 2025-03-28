@@ -64,10 +64,10 @@ export class Game {
 		// create class objects
 		this.inputHandler = new InputHandler(this)
 		const default_tileset = await Tileset.create(this, config.IMG_DIR + "map.png", 16, constants.TILE_SIZE, 0)
-		const pretty_face_tileset = await Tileset.create(this, config.IMG_DIR + "pretty_face_tileset.png", 16, constants.TILE_SIZE, 1)
+		const cabane_tilset = await Tileset.create(this, config.IMG_DIR + "cabane_tileset.png", 16, constants.TILE_SIZE, 0)
 		const spider_tile_set = await Tileset.create(this, config.IMG_DIR + "spider_tileset.png", 100, constants.TILE_SIZE * 4, 0)
 		this.maps = [
-			await Map.create(this, 'house.json', pretty_face_tileset, "black", {x: 4 * constants.TILE_SIZE, y: 2.5 * constants.TILE_SIZE}),
+			await Map.create(this, 'house.json', cabane_tilset, "black", {x: constants.TILE_SIZE, y: 3 * constants.TILE_SIZE}),
 			await Map.create(this, 'map.json', default_tileset, "grey", {x: 15.5 * constants.TILE_SIZE, y: 14.01 * constants.TILE_SIZE})
 
 		]
@@ -93,11 +93,11 @@ export class Game {
 		const colors_problem = await Problem.create(
 			this, config.IMG_DIR + "book_ui.png", 440, 580, "colors",
 			[
-				new NumberArea(this, "numberarea-red", -100, -110, 60, 80, 1, true, (answer, numberarea) => {}, 80, "black", "Times New Roman", ""),
+				new NumberArea(this, "numberarea-pink", -100, -110, 60, 80, 1, true, (answer, numberarea) => {}, 80, "black", "Times New Roman", ""),
 
-				new NumberArea(this, "numberarea-green", -20, -110, 60, 80, 1, true, (answer, numberarea) => {}, 80, "black", "Times New Roman", ""),
+				new NumberArea(this, "numberarea-blue", -20, -110, 60, 80, 1, true, (answer, numberarea) => {}, 80, "black", "Times New Roman", ""),
 
-				new NumberArea(this, "numberarea-yellow", 60, -110, 60, 80, 1, true, (answer, numberarea) => {}, 80, "black", "Times New Roman", ""),
+				new NumberArea(this, "numberarea-red", 60, -110, 60, 80, 1, true, (answer, numberarea) => {}, 80, "black", "Times New Roman", ""),
 
 				// No more needed but I leave it there in case
 				// new Button(this, "button-submit", -50, 155, 100, 50, true, (button) => {
@@ -117,17 +117,17 @@ export class Game {
 				})
 			],
 			(problem) => {
-				if(problem.get_widget("numberarea-red").has_focus){
+				if(problem.get_widget("numberarea-pink").has_focus){
 
 				} else {
 					
 				}
 
+				const numberarea_pink = problem.get_widget("numberarea-pink");
+				const numberarea_blue = problem.get_widget("numberarea-blue");
 				const numberarea_red = problem.get_widget("numberarea-red");
-				const numberarea_green = problem.get_widget("numberarea-green");
-				const numberarea_yellow = problem.get_widget("numberarea-yellow");
 
-				if (numberarea_red.content === "3" && numberarea_green.content === "2" && numberarea_yellow.content === "3") {
+				if (numberarea_pink.content === "3" && numberarea_blue.content === "4" && numberarea_red.content === "4") {
 					problem.is_finished = true;
 					problem.source.is_talkable = false
 					console.log("bonnes réponses");
@@ -135,14 +135,14 @@ export class Game {
 			}
 		)
 		const colors_problem_shelf = new Talkable(this, this.get_current_map(),
-			new Hitbox(this, this.get_current_map(), 0, constants.TILE_SIZE * 2, constants.TILE_SIZE, constants.TILE_SIZE, true, false, null, (e, h, t) => {}),
+			new Hitbox(this, this.get_current_map(), constants.TILE_SIZE * 3, constants.TILE_SIZE * 3, constants.TILE_SIZE, constants.TILE_SIZE, false, false, null, (e, h, t) => {}),
 			colors_problem, null
 		)
 		colors_problem.set_source(colors_problem_shelf)
 
 		// SWITCH MAP HITBOXES
 		// -- from the house (manual)
-		new Hitbox(this, this.get_current_map(), 3 * constants.TILE_SIZE, 5 * constants.TILE_SIZE, 2 * constants.TILE_SIZE, constants.TILE_SIZE, false, false, null, (e, h, time) => {
+		new Hitbox(this, this.get_current_map(), 3 * constants.TILE_SIZE, 8 * constants.TILE_SIZE, constants.TILE_SIZE, constants.TILE_SIZE, false, false, null, (e, h, time) => {
 			if (!this.inputHandler.isKeyPressed(constants.INTERACTION_KEY)) return // one must press INTERACTION_KEY to switch map
 			this.maps[0].player_pos = {x: 4 * constants.TILE_SIZE, y: 5 * constants.TILE_SIZE}
 			this.set_map(1)
@@ -160,7 +160,7 @@ export class Game {
 			black_transition.start(time)
 		})
 		// -- from the house (auto)
-		new Hitbox(this, this.get_current_map(), 3 * constants.TILE_SIZE, 5.75 * constants.TILE_SIZE, 2 * constants.TILE_SIZE, constants.TILE_SIZE / 4, false, false, null, (e, h, time) => {
+		new Hitbox(this, this.get_current_map(), 3 * constants.TILE_SIZE, 8.75 * constants.TILE_SIZE, constants.TILE_SIZE, constants.TILE_SIZE / 4, false, false, null, (e, h, time) => {
 			this.maps[0].player_pos = {x: 4 * constants.TILE_SIZE, y: 5 * constants.TILE_SIZE}
 			this.set_map(1)
 

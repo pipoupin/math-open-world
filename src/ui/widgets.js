@@ -40,7 +40,7 @@ export class Label extends Widget{
      * @param {Boolean} rendered - Boolean refearing to if this widget should be rendered
      * @param {Number} [fontsize=5] - Label's text's fontsize
      * @param {String} [textcolor="black"] - Label's text's color
-     * @param {string} [font="serif"] - Label's text's font
+     * @param {string} [font="arial"] - Label's text's font
      */
     constructor(game, id, x, y, text, rendered, fontsize=15, textcolor="black", font="arial"){
         super(game, id, x, y, constants.LABEL_TYPE, rendered)
@@ -245,7 +245,7 @@ export class NumberArea extends TextArea{
      * @param {(answer: String, numberarea: NumberArea) => void} command - Command executed when the submit method is called, 'answer' refers to what has been typed in the numberarea, 'numberarea' refers to the numberarea itself
      * @param {Number} [fontsize=5] - The numberarea's text fontsize
      * @param {String} [textcolor="black"] - The numberarea's text color
-     * @param {String} [font="serif"] - The numberarea's text font
+     * @param {String} [font="arial"] - The numberarea's text font
      * @param {String} [blink_bar="I"] - The blinking bar when the numberarea is selected
      */
     constructor(game, id, x, y, width, height, max_char_number, rendered, command, fontsize=15, textcolor="black", font="arial", blink_bar="I"){

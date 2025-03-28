@@ -158,19 +158,11 @@ export class Entity {
     if (this.game.get_current_map() !== this.map) return;
 
     if(constants.DEBUG){
+      // Doesn't seem to work for some reason
       this.game.ctx.beginPath()
       this.game.ctx.arc(this.worldX - this.game.camera.x, this.worldY - this.game.camera.y, 3, 0, Math.PI * 2)
       this.game.ctx.fillStyle = this.player ? "blue": "red"
       this.game.ctx.fill()
-
-      this.collision_hitbox.render()
-      this.combat_hitbox.render()
-
-      if(!this.player){
-        console.log(this.worldX - this.game.camera.x, this.worldY - this.game.camera.y)
-        console.log(this.worldX, this.worldY)
-        console.log(this.game.camera)
-      }
     }
 
     if (this.isWithinCameraView()) {
