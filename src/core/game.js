@@ -151,7 +151,8 @@ export class Game {
 			config.IMG_DIR + "awnser_box.png", (dialogue, awnser) => {
 				console.log(awnser)
 				dialogue.source.destructor()
-		})
+			}, 25, "black", "arial"
+		)
 		var dialogue_test = new Hitbox(this, this.get_current_map(), 0, 4 * constants.TILE_SIZE, constants.TILE_SIZE, constants.TILE_SIZE, false, false, null, (e, h, t) => {
 			h.game.current_ui = dialogue
 		})

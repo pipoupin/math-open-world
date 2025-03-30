@@ -8,16 +8,17 @@ export class Dialogue extends Ui{
 
     /**
      * !!! One shouldn't use the constructor to make an dialogue, use the static create method instead
-     * @param {Game} game - The dialogue's game
-     * @param {String} text - The content of the dialogue
-     * @param {(d: Dialogue) => void} on_end - The command executed at the end of the dialogue
-     * @param {String} textcolor - Label's text's color
-     * @param {string} font - Label's text's font
+     * @param {Game} game 
+     * @param {String} text 
+     * @param {(d: Dialogue) => void} on_end 
+     * @param {Number} fontsize 
+     * @param {String} textcolor 
+     * @param {string} font 
      */
-    constructor(game, text, on_end, textcolor, font){
+    constructor(game, text, on_end, fontsize, textcolor, font){
         var widgets = [new Label(game, "dialogue-content",
             - game.canvas.width / 2 + 100, game.canvas.height / 2 - 50, "",
-            true, 25, textcolor, font),
+            true, fontsize, textcolor, font),
             new Button(game, "new-line-button", - game.canvas.width / 2, - game.canvas.height / 2, game.canvas.width, game.canvas.height, true, (button) => button.ui.next())
         ]
 
@@ -31,7 +32,7 @@ export class Dialogue extends Ui{
         this.on_end = on_end
         this.last_time = 0
         
-        this.sentences = slice(text,100)
+        this.sentences = slice(text, Math.round(2300 / fontsize))
         this.sentence = 0
     }
 
@@ -41,12 +42,13 @@ export class Dialogue extends Ui{
      * @param {String} src - The dialogue's background's path
      * @param {String} text - The content of the dialogue
      * @param {(d: Dialogue) => void} [on_end = (d: Dialogue) => {}] - The command executed at the end of the dialogue
-     * @param {String} [textcolor="black"] - Label's text's color
-     * @param {string} [font="arial"] - Label's text's font
+     * @param {Number} fontsize - Dialogue's text's font size
+     * @param {String} [textcolor="black"] - Dialogue's text's color
+     * @param {string} [font="arial"] - Dialogue's text's font
      * @returns {Dialogue}
      */
-    static async create(game, src, text, on_end=(d) => {}, textcolor="black", font="arial"){
-        const dialogue = new Dialogue(game, text, on_end, textcolor, font)
+    static async create(game, src, text, on_end=(d) => {}, fontsize=15, textcolor="black", font="arial"){
+        const dialogue = new Dialogue(game, text, on_end, fontsize, textcolor, font)
         try {
 			await dialogue.load(src)
 		} catch (error) {
@@ -88,22 +90,23 @@ export class Dialogue extends Ui{
 export class QuestionDialogue extends Ui{
     /**
      * !!! One shouldn't use the constructor to make an dialogue, use the static create method instead
-     * @param {Game} game - The dialogue's game
-     * @param {String} text - The content of the dialogue
-     * @param {Array<String>} awnsers - The possible awnsers to the question
-     * @param {Number} awnsers_x - The awnsers' box's bottom left corner's x coordinate
-     * @param {Number} awnsers_y - The awnsers' box's bottom left corner's y coordinate
-     * @param {Number} awnsers_width - The width of the awnsers' box
-     * @param {Number} awnsers_height - The height of one awnser in the awnsers' box
-     * @param {Tileset} awnser_box_tileset - The tileset used to draw the awnser box
-     * @param {(d: Dialogue, a: String) => void} on_end - The command executed at the end of the dialogue
-     * @param {String} textcolor - Label's text's color
-     * @param {string} font - Label's text's font
+     * @param {Game} game 
+     * @param {String} text 
+     * @param {Array<String>} awnsers 
+     * @param {Number} awnsers_x 
+     * @param {Number} awnsers_y 
+     * @param {Number} awnsers_width 
+     * @param {Number} awnsers_height 
+     * @param {Tileset} awnser_box_tileset 
+     * @param {(d: Dialogue, a: String) => void} on_end 
+     * @param {Number} fontsize 
+     * @param {String} textcolor 
+     * @param {string} font 
      */
-    constructor(game, text, awnsers, awnsers_x, awnsers_y, awnsers_width, awnsers_height, awnser_box_tileset, on_end, textcolor, font){
+    constructor(game, text, awnsers, awnsers_x, awnsers_y, awnsers_width, awnsers_height, awnser_box_tileset, on_end, fontsize, textcolor, font){
         var widgets = [new Label(game, "dialogue-content",
             - game.canvas.width / 2 + 100, game.canvas.height / 2 - 50, "",
-            true, 25, textcolor, font),
+            true, fontsize, textcolor, font),
             new Button(game, "new-line-button", - game.canvas.width / 2, - game.canvas.height / 2, game.canvas.width, game.canvas.height, true, (button) => button.ui.next())
         ]
 
@@ -127,7 +130,7 @@ export class QuestionDialogue extends Ui{
             ))
 
             widgets.push(new Label(game, "awnser-label-"+i.toString(),
-                awnsers_x * 1.05, awnsers_y - ((i + 0.5) * awnsers_height) + 7.5, awnsers[i], false
+                awnsers_x * 1.05, awnsers_y - ((i + 0.5) * awnsers_height) + 7.5, awnsers[i], false, fontsize, textcolor, font
             ))
         }
 
@@ -142,7 +145,7 @@ export class QuestionDialogue extends Ui{
         this.on_end = on_end
         this.last_time = 0
         
-        this.sentences = slice(text,100)
+        this.sentences = slice(text, Math.round(2300 / fontsize))
         this.sentence = 0
     }
 
@@ -158,15 +161,16 @@ export class QuestionDialogue extends Ui{
      * @param {Number} awnsers_height - The height of one awnser in the awnsers' box
      * @param {String} awnser_box_tileset_src - The box drawing tileset's path
      * @param {(d: Dialogue, a: String) => void} [on_end = (d: Dialogue, a: String) => {}] - The command executed at the end of the dialogue
-     * @param {String} [textcolor="black"] - Label's text's color
-     * @param {string} [font="arial"] - Label's text's font
+     * @param {number} [fontsize=15] - Dialogue's text's font size
+     * @param {String} [textcolor="black"] - Dialogue's text's color
+     * @param {string} [font="arial"] - Dialogue's text's font
      * @returns {Dialogue}
      */
-    static async create(game, src, text, awnsers, awnsers_x, awnsers_y, awnsers_width, awnsers_height, awnser_box_tileset_src, on_end=(d, a) => {}, textcolor="black", font="arial"){
+    static async create(game, src, text, awnsers, awnsers_x, awnsers_y, awnsers_width, awnsers_height, awnser_box_tileset_src, on_end=(d, a) => {}, fontsize=15, textcolor="black", font="arial"){
         awnsers_width = Math.round(awnsers_width)
         awnsers_height = Math.round(awnsers_height)
         let awnser_box_tileset = await Tileset.create(game, awnser_box_tileset_src, 16, awnsers_height, 0)
-        const dialogue = new QuestionDialogue(game, text, awnsers, awnsers_x, awnsers_y, awnsers_width, awnsers_height, awnser_box_tileset, on_end, textcolor, font)
+        const dialogue = new QuestionDialogue(game, text, awnsers, awnsers_x, awnsers_y, awnsers_width, awnsers_height, awnser_box_tileset, on_end, fontsize, textcolor, font)
         try {
 			await dialogue.load(src)
 		} catch (error) {
