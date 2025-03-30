@@ -17,6 +17,7 @@ export class Ui {
         this.width = width
         this.height = height
         this.source = null
+        /** @type {Array<Widget>} */
         this.widgets = widgets
         this.ids = []
         this.widgets.forEach((widget) => {
@@ -28,7 +29,7 @@ export class Ui {
         this.focused_widget = null
         this.is_finished = false
         /** @type {TextArea} */
-        this.selected_textarea = null
+        this.focused_widget = null
         this.widgets_states_handler = widgets_states_handler
     }
 

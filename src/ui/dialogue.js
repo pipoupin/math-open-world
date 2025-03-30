@@ -1,7 +1,8 @@
 import { Game } from "../core/game.js";
 import { slice } from "../utils.js";
+import { Tileset } from "../world/tileset.js";
 import { Ui } from "./ui.js";
-import { Button, Label } from "./widgets.js";
+import { Button, Icon, Label } from "./widgets.js";
 
 export class Dialogue extends Ui{
 
@@ -16,7 +17,7 @@ export class Dialogue extends Ui{
     constructor(game, text, on_end, textcolor, font){
         var widgets = [new Label(game, "dialogue-content",
             - game.canvas.width / 2 + 100, game.canvas.height / 2 - 50, "",
-            true, 50, textcolor, font),
+            true, 25, textcolor, font),
             new Button(game, "new-line-button", - game.canvas.width / 2, - game.canvas.height / 2, game.canvas.width, game.canvas.height, true, (button) => button.ui.next())
         ]
 
@@ -30,8 +31,7 @@ export class Dialogue extends Ui{
         this.on_end = on_end
         this.last_time = 0
         
-        this.sentences = slice(text, 50)
-        console.log(this.sentences)
+        this.sentences = slice(text,100)
         this.sentence = 0
     }
 
@@ -58,29 +58,167 @@ export class Dialogue extends Ui{
 
     update(current_time){
         super.update(current_time)
-        if(current_time - this.last_time < 150) return
+        if(current_time - this.last_time < 100) return
         this.last_time = current_time
         /** @type {Label} */
         var label = this.get_widget("dialogue-content")
         if(label.text == this.sentences[this.sentence]) return
-        label.update_config(null, null, label.text+this.sentences[this.sentence].at(label.text.length))
+        label.text = label.text+this.sentences[this.sentence].at(label.text.length)
     }
 
     next(){
         /** @type {Label} */
         var label = this.get_widget("dialogue-content")
         if(label.text != this.sentences[this.sentence]){
-            label.update_config(null, null, this.sentences[this.sentence])
+            label.text = this.sentences[this.sentence]
             return
         }
         if(this.sentence + 1 == this.sentences.length){
             this.is_finished = true
             this.sentence = 0
-            label.update_config(null, null, "")
+            label.text = ""
             this.on_end(this)
             return
         }
         this.sentence += 1
-        label.update_config(null, null, "")
+        label.text = ""
+    }
+}
+
+export class QuestionDialogue extends Ui{
+    /**
+     * !!! One shouldn't use the constructor to make an dialogue, use the static create method instead
+     * @param {Game} game - The dialogue's game
+     * @param {String} text - The content of the dialogue
+     * @param {Array<String>} awnsers - The possible awnsers to the question
+     * @param {Number} awnsers_x - The awnsers' box's bottom left corner's x coordinate
+     * @param {Number} awnsers_y - The awnsers' box's bottom left corner's y coordinate
+     * @param {Number} awnsers_width - The width of the awnsers' box
+     * @param {Number} awnsers_height - The height of one awnser in the awnsers' box
+     * @param {Tileset} awnser_box_tileset - The tileset used to draw the awnser box
+     * @param {(d: Dialogue, a: String) => void} on_end - The command executed at the end of the dialogue
+     * @param {String} textcolor - Label's text's color
+     * @param {string} font - Label's text's font
+     */
+    constructor(game, text, awnsers, awnsers_x, awnsers_y, awnsers_width, awnsers_height, awnser_box_tileset, on_end, textcolor, font){
+        var widgets = [new Label(game, "dialogue-content",
+            - game.canvas.width / 2 + 100, game.canvas.height / 2 - 50, "",
+            true, 25, textcolor, font),
+            new Button(game, "new-line-button", - game.canvas.width / 2, - game.canvas.height / 2, game.canvas.width, game.canvas.height, true, (button) => button.ui.next())
+        ]
+
+        for(let i = 0; i < awnsers.length; i++){
+
+            for(let j = 0; j < awnsers_width/awnsers_height; j++){
+                let tile_nb = i == 0? 7: i + 1 == awnsers.length? 1: 4
+                tile_nb += j == 0? 0: j + 1 >= awnsers_width/awnsers_height? 2: 1
+                widgets.push(new Icon(game, `awnsers-box-icon-${i}-${j}`,
+                    awnsers_x + j * awnsers_height, awnsers_y - ((i + 1) * awnsers_height), awnser_box_tileset, tile_nb, false))
+
+            }
+
+            widgets.push(new Button(game, "awnser-button-"+i.toString(),
+            awnsers_x, awnsers_y - ((i + 1) * awnsers_height), awnsers_width, awnsers_height, false, (button) => {
+                if(button.ui.sentence + 1 != button.ui.sentences.length || button.ui.get_widget("dialogue-content").text != button.ui.sentences[this.sentence]) return
+                let awnser_number = parseInt(button.id.split("-").at(-1))
+                this.is_finished = true
+                button.ui.on_end(button.ui, button.ui.awnsers[awnser_number])
+            }
+            ))
+
+            widgets.push(new Label(game, "awnser-label-"+i.toString(),
+                awnsers_x * 1.05, awnsers_y - ((i + 0.5) * awnsers_height) + 7.5, awnsers[i], false
+            ))
+        }
+
+        var widgets_states_handler = (dialogue) => {
+
+        }
+
+        super(game, game.canvas.width, game.canvas.height, widgets, widgets_states_handler)
+
+        this.text = text
+        this.awnsers = awnsers
+        this.on_end = on_end
+        this.last_time = 0
+        
+        this.sentences = slice(text,100)
+        this.sentence = 0
+    }
+
+    /**
+     * Method used to build an dialogue. This method is async and static
+     * @param {Game} game - The dialogue's game
+     * @param {String} src - The dialogue's background's path
+     * @param {String} text - The content of the dialogue
+     * @param {Array<String>} awnsers - The possible awnsers to the question
+     * @param {Number} awnsers_x - The awnsers' box's bottom left corner's x coordinate
+     * @param {Number} awnsers_y - The awnsers' box's bottom left corner's y coordinate
+     * @param {Number} awnsers_width - The width of the awnsers' box
+     * @param {Number} awnsers_height - The height of one awnser in the awnsers' box
+     * @param {String} awnser_box_tileset_src - The box drawing tileset's path
+     * @param {(d: Dialogue, a: String) => void} [on_end = (d: Dialogue, a: String) => {}] - The command executed at the end of the dialogue
+     * @param {String} [textcolor="black"] - Label's text's color
+     * @param {string} [font="arial"] - Label's text's font
+     * @returns {Dialogue}
+     */
+    static async create(game, src, text, awnsers, awnsers_x, awnsers_y, awnsers_width, awnsers_height, awnser_box_tileset_src, on_end=(d, a) => {}, textcolor="black", font="arial"){
+        awnsers_width = Math.round(awnsers_width)
+        awnsers_height = Math.round(awnsers_height)
+        let awnser_box_tileset = await Tileset.create(game, awnser_box_tileset_src, 16, awnsers_height, 0)
+        const dialogue = new QuestionDialogue(game, text, awnsers, awnsers_x, awnsers_y, awnsers_width, awnsers_height, awnser_box_tileset, on_end, textcolor, font)
+        try {
+			await dialogue.load(src)
+		} catch (error) {
+			console.error(`couldn't load file "${src}" : ${error.message}`)
+			return
+		}
+		return dialogue
+    }
+
+    update(current_time){
+        super.update(current_time)
+
+        if(current_time - this.last_time < 100) return
+        this.last_time = current_time
+        
+        /** @type {Label} */
+        var label = this.get_widget("dialogue-content")
+        
+        if(label.text == this.sentences[this.sentence]) return
+        label.text = label.text+this.sentences[this.sentence].at(label.text.length)
+        
+        if(this.sentence + 1 == this.sentences.length && label.text == this.sentences[this.sentence]){
+            for(let i = 0; i < this.awnsers.length; i++){
+                this.get_widget("awnser-button-"+i.toString()).rendered = true
+                this.get_widget("awnser-label-"+i.toString()).rendered = true
+                for(let j = 0; j < this.get_widget("awnser-button-0").side_ratio(); j++){
+                    this.get_widget(`awnsers-box-icon-${i}-${j}`).rendered = true
+                }
+            }
+        }
+    }
+
+    next(){
+        /** @type {Label} */
+        var label = this.get_widget("dialogue-content")
+        if(label.text != this.sentences[this.sentence]){
+            label.text = this.sentences[this.sentence]
+
+            if(this.sentence + 1 == this.sentences.length && label.text == this.sentences[this.sentence]){
+                for(let i = 0; i < this.awnsers.length; i++){
+                    this.get_widget("awnser-button-"+i.toString()).rendered = true
+                    this.get_widget("awnser-label-"+i.toString()).rendered = true
+                    for(let j = 0; j < this.get_widget("awnser-button-0").side_ratio(); j++){
+                        this.get_widget(`awnsers-box-icon-${i}-${j}`).rendered = true
+                    }
+                }
+            }
+
+            return
+        }
+        if(this.sentence + 1 == this.sentences.length) return
+        this.sentence += 1
+        label.text = ""
     }
 }

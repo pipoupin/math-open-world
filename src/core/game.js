@@ -11,7 +11,7 @@ import { Button, Icon, Label, NumberArea, TextArea, Texture } from '../ui/widget
 import { Talkable } from '../entities/talkable.js'
 import { config, constants } from "../constants.js"
 import { Transition, UnicoloreTransition } from '../ui/transition.js'
-import { Dialogue } from '../ui/dialogue.js'
+import { Dialogue, QuestionDialogue } from '../ui/dialogue.js'
 
 export class Game {
 	constructor() {
@@ -75,6 +75,7 @@ export class Game {
 		this.current_map = 0 // "scene"
 		this.map = this.maps[this.current_map]
 
+		// test entity
 		const test_spider_entity = new Entity(this, this.maps[1], spider_tile_set,
 			new Hitbox(this, this.maps[1], 0, 0, constants.TILE_SIZE * 2, constants.TILE_SIZE * 2.5, true, false, null, (e, h, t) => {}),
 			new Hitbox(this, this.maps[1], 0, 0, constants.TILE_SIZE * 2, constants.TILE_SIZE * 2.5, false, false, null, (e, h, t) => {}),
@@ -143,8 +144,13 @@ export class Game {
 
 
 		// test dialogue ans its hitbox
-		var dialogue = await Dialogue.create(this, config.IMG_DIR + "dialogue_box.png", "Press 'Space' to dash, dash has a 10 seconds cooldown. You can also press 'E' when facing an object to interact with it.", (dialogue) => {
-			dialogue.source.destructor()
+		var dialogue = await QuestionDialogue.create(this, config.IMG_DIR + "dialogue_box.png",
+			"Press 'Space' to dash, dash has a 10 seconds cooldown. You can also press 'E' when facing an object to interact with it.",
+			["Ok", "Nan"], // anything can be added here and the bow will be automatically generated
+			this.canvas.width / 4, this.canvas.height / 4, this.canvas.width / 8, this.canvas.height / 16,
+			config.IMG_DIR + "awnser_box.png", (dialogue, awnser) => {
+				console.log(awnser)
+				dialogue.source.destructor()
 		})
 		var dialogue_test = new Hitbox(this, this.get_current_map(), 0, 4 * constants.TILE_SIZE, constants.TILE_SIZE, constants.TILE_SIZE, false, false, null, (e, h, t) => {
 			h.game.current_ui = dialogue

@@ -7,7 +7,7 @@ export class Widget{
     /**
      * !!! One shouldn't create a widget by using this constructor, use subclass widgets instead
      * @param {Game} game - The current game
-     * @param {String} id- The widget's ID
+     * @param {String} id - The widget's ID
      * @param {Number} x - the x coordinates of the top-left corner of the widget
      * @param {Number} y - the y coordinates of the top-left corner of the widget
      * @param {String} type - The widget's type
@@ -113,6 +113,10 @@ export class Button extends Widget{
         }
     }
 
+    side_ratio(){
+        return this.width/this.height
+    }
+
     /**
      * Method used to change the widget's fields, left 'null' in order to not change the corresponding field
      * @param {Number} [x = null] - the x coordinates of the top-left corner of the widget
@@ -156,7 +160,6 @@ export class TextArea extends Widget{
         this.height = height
         this.content = ""
         this.max_char_number = max_char_number
-        this.selected = false
         this.command = command
         this.fontsize = fontsize
         this.textcolor = textcolor
