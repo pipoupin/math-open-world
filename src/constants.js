@@ -61,5 +61,7 @@ export const collisions = {
         171: {width: 72, height: 110}
     },
     "house.json": {
+        11: {y: -8, height: 96},
+        55: {y: -8, height: 96}
     }
 }

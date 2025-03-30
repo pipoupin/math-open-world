@@ -92,14 +92,12 @@ export class Map {
 
 									if(collisions[src][layer.data[i]].width)
 										new_width = collisions[src][layer.data[i]].width
-
-									if(new_x + new_width > 128)
+									else 
 										new_width = 128 - new_x
 
 									if(collisions[src][layer.data[i]].height)
 										new_height = collisions[src][layer.data[i]].height
-
-									if(new_y + new_height > 128)
+									else
 										new_height = 128 - new_y
 								}
 							}
