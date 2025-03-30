@@ -103,7 +103,18 @@ export class Map {
 							}
 							new Hitbox(this.game, this, tileX + new_x, tileY + new_y, new_width, new_height, true, false, null, (e, h, t) => {});
 						}
-					} else if (layer.name == "Ground") { // create hitboxes for void tiles
+					} 
+					//
+					//
+					//
+					//
+					// Please read this when reviewing the code 🙏
+					//
+					// I don't really know if this is usefull anymore
+					// I mean, you can simply put the '-1' in the 'Blocks' just above can't you ?
+					// As it isn't a '0' it will create a hitbox but without any texture
+					// 
+					else if (layer.name == "Ground") { // create hitboxes for void tiles
 						for (let i = 0; i < layer.data.length; i++) {
 							if (layer.data[i] != -1)
 								continue
