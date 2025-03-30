@@ -146,7 +146,7 @@ export class Game {
 		// test dialogue ans its hitbox
 		var dialogue = await QuestionDialogue.create(this, config.IMG_DIR + "dialogue_box.png",
 			"Press 'Space' to dash, dash has a 10 seconds cooldown. You can also press 'E' when facing an object to interact with it.",
-			["Ok", "Nan"], // anything can be added here and the bow will be automatically generated
+			["Ok", "No"], // anything can be added here and the bow will be automatically generated
 			this.canvas.width / 4, this.canvas.height / 4, this.canvas.width / 8, this.canvas.height / 16,
 			config.IMG_DIR + "awnser_box.png", (dialogue, awnser) => {
 				console.log(awnser)

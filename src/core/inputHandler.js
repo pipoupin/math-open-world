@@ -18,8 +18,11 @@ export class InputHandler {
             }
             this.keys_down[e.key.toLowerCase()] = true
             if(e.key == "Backspace" && this.del_key_can_be_pressed){
-                if(game.current_ui && game.current_ui.focused_widget){
-                    game.current_ui.focused_widget.content = game.current_ui.focused_widget.content.slice(0, -1)
+                if(game.current_ui && game.current_ui.focused_widgets.length != 0){
+                    game.current_ui.focused_widgets.forEach(widget => {
+                        if(widget.type != constants.TEXTAREA_TYPE && widget.type != constants.NUMBERAREA_TYPE) return
+                        widget.content = widget.content.slice(0, -1)
+                    })
                     this.del_key_can_be_pressed = false
                 }
             }
@@ -40,79 +43,80 @@ export class InputHandler {
 
         document.addEventListener('click', (e) => {
             if(game.current_ui && game.current_ui instanceof Ui){
+                
                 var widget_clicked = false
-                game.current_ui.widgets.forEach(widget => {
-                    if(widget.x <= this.mouse_pos.x
-                        && (widget.x + widget.width) >= this.mouse_pos.x
-                        && widget.y <= this.mouse_pos.y
-                        && (widget.y + widget.height) >= this.mouse_pos.y){
-                            if(!widget.rendered) return
-                            if(widget.type == constants.BUTTON_TYPE
-                                || widget.type == constants.TEXTAREA_TYPE
-                                || widget.type == constants.NUMBERAREA_TYPE){
+                var new_focused_widgets = []
+                
+                game.current_ui.widgets.forEach(widget => { 
+                    if(!widget.rendered) return
+                    if(widget.type == constants.BUTTON_TYPE
+                        || widget.type == constants.TEXTAREA_TYPE
+                        || widget.type == constants.NUMBERAREA_TYPE){
+                        
+                        if(widget.x <= this.mouse_pos.x
+                            && (widget.x + widget.width) >= this.mouse_pos.x
+                            && widget.y <= this.mouse_pos.y
+                            && (widget.y + widget.height) >= this.mouse_pos.y){
 
-                                if(widget.type == constants.BUTTON_TYPE) {
-                                    widget.command(widget)
-                                    if(game.current_ui.focused_widget)
-                                        game.current_ui.focused_widget.has_focus = false
-                                    widget.has_focus = true
-                                    game.current_ui.focused_widget = widget
-                                }
-
-                                if(widget.type == constants.TEXTAREA_TYPE || widget.type == constants.NUMBERAREA_TYPE){
-                                    if(game.current_ui.focused_widget)
-                                        game.current_ui.focused_widget.has_focus = false
-                                    widget.has_focus = true
-                                    game.current_ui.focused_widget = widget
-                                } else {
-                                    if(game.current_ui.focused_widget){
-                                        game.current_ui.focused_widget.has_focus = false
-                                        game.current_ui.focused_widget = null
-                                    }
-                                }
-                                widget_clicked = true
+                            if(widget.type == constants.BUTTON_TYPE) {
+                                widget.command(widget)
+                                new_focused_widgets.push(widget)
                             }
+
+                            else if(widget.type == constants.TEXTAREA_TYPE || widget.type == constants.NUMBERAREA_TYPE){
+                                new_focused_widgets.push(widget)
+                            }
+                        }
                     }
                 })
-                if(!widget_clicked){
-                    game.focused_widget = null
-                    if(game.current_ui.focused_widget)
-                        game.current_ui.focused_widget.has_focus = false
-                    game.current_ui.focused_widget = null
+                if(new_focused_widgets.length == 0){
+                    game.current_ui.focused_widgets.forEach(widget => {
+                        widget.has_focus = false
+                    })
+                    game.current_ui.focused_widgets = []
+                } else {
+                    game.current_ui.focused_widgets.forEach(widget => {
+                        widget.has_focus = false
+                    })
+                    game.current_ui.focused_widgets = []
+                    new_focused_widgets.forEach(widget => {
+                        game.current_ui.focused_widgets.push(widget)
+                        widget.has_focus = true
+                    })
                 }
             }
         })
 
         document.addEventListener("keypress", (e) => {
-            if(game.current_ui && game.current_ui.focused_widget && e.key.length == 1){
-                if(game.current_ui.focused_widget.content.length != game.current_ui.focused_widget.max_char_number){
-                    if(game.current_ui.focused_widget.type == constants.NUMBERAREA_TYPE
-                        && !(["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"].includes(e.key))) return
-                    game.current_ui.focused_widget.content += e.key
-                }
+            if(game.current_ui && game.current_ui.focused_widgets.length != 0 && e.key.length == 1){
+                game.current_ui.focused_widgets.forEach(widget => {
+                    if(widget.type != constants.TEXTAREA_TYPE && widget.type != constants.NUMBERAREA_TYPE) return
+                    if(widget.content.length != widget.max_char_number){
+                        if(widget.type == constants.NUMBERAREA_TYPE
+                            && !(["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"].includes(e.key))) return
+                        widget.content += e.key
+                    }
+                })
             }
         })
 
-        // document.addEventListener("mousedown", (e) => {
-        //     if(game.current_ui){
-        //         game.current_ui.widgets.forEach(widget => {
-        //             if(widget.x <= this.mouse_pos.x
-        //                 && (widget.x + widget.width) >= this.mouse_pos.x
-        //                 && widget.y <= this.mouse_pos.y
-        //                 && (widget.y + widget.height) >= this.mouse_pos.y){
-        //                     if(widget.type == constants.BUTTON_TYPE
-        //                         || widget.type == constants.TEXTAREA_TYPE
-        //                         || widget.type == constants.NUMBERAREA_TYPE){
-        //                         widget.is_clicked = true
-        //                         widget.has_focus = true
-        //                         if(game.current_ui.focused_widget)
-        //                             game.current_ui.focused_widget.has_focus = false
-        //                         game.current_ui.focused_widget = widget
-        //                     }
-        //             }
-        //         })
-        //     }
-        // })
+        document.addEventListener("mousedown", (e) => {
+            if(game.current_ui){
+                game.current_ui.widgets.forEach(widget => {
+                    if(widget.type == constants.BUTTON_TYPE
+                        || widget.type == constants.TEXTAREA_TYPE
+                        || widget.type == constants.NUMBERAREA_TYPE){
+                        if(widget.x <= this.mouse_pos.x
+                            && (widget.x + widget.width) >= this.mouse_pos.x
+                            && widget.y <= this.mouse_pos.y
+                            && (widget.y + widget.height) >= this.mouse_pos.y){
+                            
+                            widget.is_clicked = true
+                        }
+                    }
+                })
+            }
+        })
 
         document.addEventListener("mouseup", (e) => {
             if(game.current_ui){

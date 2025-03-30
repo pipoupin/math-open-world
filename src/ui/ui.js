@@ -26,10 +26,9 @@ export class Ui {
             widget.ui = this
             this.ids.push(widget.id)
         })
-        this.focused_widget = null
+        /** @type {Array<Widget>} */
+        this.focused_widgets = []
         this.is_finished = false
-        /** @type {TextArea} */
-        this.focused_widget = null
         this.widgets_states_handler = widgets_states_handler
     }
 

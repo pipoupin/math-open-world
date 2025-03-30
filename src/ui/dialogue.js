@@ -1,3 +1,4 @@
+import { config, constants } from "../constants.js";
 import { Game } from "../core/game.js";
 import { slice } from "../utils.js";
 import { Tileset } from "../world/tileset.js";
@@ -10,16 +11,21 @@ export class Dialogue extends Ui{
      * !!! One shouldn't use the constructor to make an dialogue, use the static create method instead
      * @param {Game} game 
      * @param {String} text 
+     * @param {Tileset} arrow_tileset 
      * @param {(d: Dialogue) => void} on_end 
      * @param {Number} fontsize 
      * @param {String} textcolor 
      * @param {string} font 
      */
-    constructor(game, text, on_end, fontsize, textcolor, font){
+    constructor(game, text, arrow_tileset, on_end, fontsize, textcolor, font){
         var widgets = [new Label(game, "dialogue-content",
             - game.canvas.width / 2 + 100, game.canvas.height / 2 - 50, "",
             true, fontsize, textcolor, font),
-            new Button(game, "new-line-button", - game.canvas.width / 2, - game.canvas.height / 2, game.canvas.width, game.canvas.height, true, (button) => button.ui.next())
+            new Button(game, "new-line-button",
+                - game.canvas.width / 2, - game.canvas.height / 2, game.canvas.width, game.canvas.height,
+                true, (button) => button.ui.next()),
+            new Icon(game, "arrow-icon", game.canvas.width / 9 * 4, game.canvas.height / 9 * 4,
+                arrow_tileset, 1, false)
         ]
 
         var widgets_states_handler = (dialogue) => {
@@ -48,7 +54,8 @@ export class Dialogue extends Ui{
      * @returns {Dialogue}
      */
     static async create(game, src, text, on_end=(d) => {}, fontsize=15, textcolor="black", font="arial"){
-        const dialogue = new Dialogue(game, text, on_end, fontsize, textcolor, font)
+        let arrow_tileset = await Tileset.create(game, config.IMG_DIR+"arrow.png", 15, 16, 0)
+        const dialogue = new Dialogue(game, text, arrow_tileset, on_end, fontsize, textcolor, font)
         try {
 			await dialogue.load(src)
 		} catch (error) {
@@ -66,6 +73,11 @@ export class Dialogue extends Ui{
         var label = this.get_widget("dialogue-content")
         if(label.text == this.sentences[this.sentence]) return
         label.text = label.text+this.sentences[this.sentence].at(label.text.length)
+
+        if(label.text == this.sentences[this.sentence])
+            this.get_widget("arrow-icon").rendered = true
+        else
+            this.get_widget("arrow-icon").rendered = false
     }
 
     next(){
@@ -73,6 +85,7 @@ export class Dialogue extends Ui{
         var label = this.get_widget("dialogue-content")
         if(label.text != this.sentences[this.sentence]){
             label.text = this.sentences[this.sentence]
+            this.get_widget("arrow-icon").rendered = true
             return
         }
         if(this.sentence + 1 == this.sentences.length){
@@ -92,6 +105,7 @@ export class QuestionDialogue extends Ui{
      * !!! One shouldn't use the constructor to make an dialogue, use the static create method instead
      * @param {Game} game 
      * @param {String} text 
+     * @param {Tileset} arrow_tileset 
      * @param {Array<String>} awnsers 
      * @param {Number} awnsers_x 
      * @param {Number} awnsers_y 
@@ -103,11 +117,15 @@ export class QuestionDialogue extends Ui{
      * @param {String} textcolor 
      * @param {string} font 
      */
-    constructor(game, text, awnsers, awnsers_x, awnsers_y, awnsers_width, awnsers_height, awnser_box_tileset, on_end, fontsize, textcolor, font){
+    constructor(game, text, arrow_tileset, awnsers, awnsers_x, awnsers_y, awnsers_width, awnsers_height, awnser_box_tileset, on_end, fontsize, textcolor, font){
         var widgets = [new Label(game, "dialogue-content",
             - game.canvas.width / 2 + 100, game.canvas.height / 2 - 50, "",
             true, fontsize, textcolor, font),
-            new Button(game, "new-line-button", - game.canvas.width / 2, - game.canvas.height / 2, game.canvas.width, game.canvas.height, true, (button) => button.ui.next())
+            new Button(game, "new-line-button",
+                - game.canvas.width / 2, - game.canvas.height / 2, game.canvas.width, game.canvas.height,
+                true, (button) => button.ui.next()),
+            new Icon(game, "arrow-icon", game.canvas.width / 9 * 4, game.canvas.height / 9 * 4,
+                arrow_tileset, 1, false)
         ]
 
         for(let i = 0; i < awnsers.length; i++){
@@ -122,6 +140,7 @@ export class QuestionDialogue extends Ui{
 
             widgets.push(new Button(game, "awnser-button-"+i.toString(),
             awnsers_x, awnsers_y - ((i + 1) * awnsers_height), awnsers_width, awnsers_height, false, (button) => {
+                if(!button.has_focus) return
                 if(button.ui.sentence + 1 != button.ui.sentences.length || button.ui.get_widget("dialogue-content").text != button.ui.sentences[this.sentence]) return
                 let awnser_number = parseInt(button.id.split("-").at(-1))
                 this.is_finished = true
@@ -132,10 +151,19 @@ export class QuestionDialogue extends Ui{
             widgets.push(new Label(game, "awnser-label-"+i.toString(),
                 awnsers_x * 1.05, awnsers_y - ((i + 0.5) * awnsers_height) + 7.5, awnsers[i], false, fontsize, textcolor, font
             ))
+
+            widgets.push(new Icon(game, "awnser-arrow-"+i.toString(),
+            awnsers_x + awnsers_width * 0.9, awnsers_y - ((i + 0.75) * awnsers_height), arrow_tileset, 4, false))
         }
 
         var widgets_states_handler = (dialogue) => {
-
+            for(let i = 0; i < awnsers.length; i++){
+                if(dialogue.get_widget("awnser-button-"+i.toString()).has_focus){
+                    dialogue.get_widget("awnser-arrow-"+i.toString()).rendered = true
+                } else {
+                    dialogue.get_widget("awnser-arrow-"+i.toString()).rendered = false
+                }
+            }
         }
 
         super(game, game.canvas.width, game.canvas.height, widgets, widgets_states_handler)
@@ -169,8 +197,9 @@ export class QuestionDialogue extends Ui{
     static async create(game, src, text, awnsers, awnsers_x, awnsers_y, awnsers_width, awnsers_height, awnser_box_tileset_src, on_end=(d, a) => {}, fontsize=15, textcolor="black", font="arial"){
         awnsers_width = Math.round(awnsers_width)
         awnsers_height = Math.round(awnsers_height)
+        let arrow_tileset = await Tileset.create(game, config.IMG_DIR+"arrow.png", 15, 16, 0)
         let awnser_box_tileset = await Tileset.create(game, awnser_box_tileset_src, 16, awnsers_height, 0)
-        const dialogue = new QuestionDialogue(game, text, awnsers, awnsers_x, awnsers_y, awnsers_width, awnsers_height, awnser_box_tileset, on_end, fontsize, textcolor, font)
+        const dialogue = new QuestionDialogue(game, text, arrow_tileset, awnsers, awnsers_x, awnsers_y, awnsers_width, awnsers_height, awnser_box_tileset, on_end, fontsize, textcolor, font)
         try {
 			await dialogue.load(src)
 		} catch (error) {
@@ -191,15 +220,25 @@ export class QuestionDialogue extends Ui{
         
         if(label.text == this.sentences[this.sentence]) return
         label.text = label.text+this.sentences[this.sentence].at(label.text.length)
+
+        if(label.text == this.sentences[this.sentence]){
+
+            this.get_widget("arrow-icon").rendered = true
         
-        if(this.sentence + 1 == this.sentences.length && label.text == this.sentences[this.sentence]){
-            for(let i = 0; i < this.awnsers.length; i++){
-                this.get_widget("awnser-button-"+i.toString()).rendered = true
-                this.get_widget("awnser-label-"+i.toString()).rendered = true
-                for(let j = 0; j < this.get_widget("awnser-button-0").side_ratio(); j++){
-                    this.get_widget(`awnsers-box-icon-${i}-${j}`).rendered = true
+            if(this.sentence + 1 == this.sentences.length){
+                
+                this.get_widget("arrow-icon").rendered = false
+
+                for(let i = 0; i < this.awnsers.length; i++){
+                    this.get_widget("awnser-button-"+i.toString()).rendered = true
+                    this.get_widget("awnser-label-"+i.toString()).rendered = true
+                    for(let j = 0; j < this.get_widget("awnser-button-0").side_ratio(); j++){
+                        this.get_widget(`awnsers-box-icon-${i}-${j}`).rendered = true
+                    }
                 }
             }
+        } else {
+            this.get_widget("arrow-icon").rendered = false
         }
     }
 
@@ -209,7 +248,12 @@ export class QuestionDialogue extends Ui{
         if(label.text != this.sentences[this.sentence]){
             label.text = this.sentences[this.sentence]
 
-            if(this.sentence + 1 == this.sentences.length && label.text == this.sentences[this.sentence]){
+            this.get_widget("arrow-icon").rendered = true
+
+            if(this.sentence + 1 == this.sentences.length){
+
+                this.get_widget("arrow-icon").rendered = false
+
                 for(let i = 0; i < this.awnsers.length; i++){
                     this.get_widget("awnser-button-"+i.toString()).rendered = true
                     this.get_widget("awnser-label-"+i.toString()).rendered = true
