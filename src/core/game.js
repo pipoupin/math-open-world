@@ -5,6 +5,7 @@ import { InputHandler } from './inputHandler.js'
 import { Entity } from '../entities/entity.js'
 import { Hitbox } from '../entities/hitbox.js'
 import { Problem } from '../ui/problem.js'
+import { Inventory } from '../ui/inventory.js'
 import { Attack } from '../entities/attack.js'
 import { Ui } from '../ui/ui.js'
 import { Button, Icon, Label, NumberArea, TextArea, Texture } from '../ui/widgets.js'
@@ -59,6 +60,35 @@ export class Game {
 
 		this.camera = { x: -1000, y: -1000 }
 		this.TILE_SIZE = 128
+
+		document.addEventListener('keydown', async (event) => {
+            if (event.key.toLowerCase() === 'e') { // Check if the "T" key is pressed
+				console.log("e pressed")
+                if (!this.current_ui) { // Only create the inventory if no other UI is active
+                    const inventory = await Inventory.create(
+                        this,
+                        config.IMG_DIR + "inventory.png", // Path to the inventory background image
+                        400, // Width of the inventory
+                        300, // Height of the inventory
+                        [], // Items in the inventory (empty for now)
+                        (inventory) => {
+                            console.log("Inventory updated");
+                        }
+                    );
+
+                    if (inventory) {
+                        this.current_ui = inventory; // Set the inventory as the current UI
+                    }
+                }
+            }
+			document.addEventListener('keydown', (event) => {
+				if (event.key.toLowerCase() === 'escape' || event.key.toLowerCase() === 'e') { 
+					if (this.current_ui) {
+						this.current_ui.is_finished = true
+						this.current_ui = null
+					}
+				}
+        })});
 	}
 
 	async run() {
