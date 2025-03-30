@@ -29,7 +29,7 @@ export const constants = {
     DOWN_KEY: "s",
     LEFT_KEY: "q",
     RIGHT_KEY: "d",
-    INTERACTION_KEY: "e",
+    INTERACTION_KEY: "f",
     DASH_KEY: " ",
 
     ACTIVE_TILES: [169]
