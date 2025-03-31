@@ -4,6 +4,13 @@
 
 #TODO: implement fully working attacks
 #TODO: implement the "block" tiles classes (so that they are not fully blocking the tile)
-#TODO: implement in-game ui (inventory, message box, chat with npcs)
-#TODO: add problems
 #TODO: Change the house's table's texture to make its shadow half-transparent
+#TODO: implement a test for the timed problems
+#TODO: rewrite the coordinate system using the resizeables (don't worry i'll handle it, maybe... sometime...)
+
+# Maybe we could separate collision hitboxes and action hitboxes by making sub-classes
+# As collision hitboxes' commands are not meant to ever be triggered
+#     and action hitboxes gets no benefits in also being a collision one
+# that would lighten the code from it's many generated hitboxes that all have a empty command
+#
+# Idk i was just thinking smth like that
