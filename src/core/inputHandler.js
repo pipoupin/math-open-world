@@ -44,7 +44,6 @@ export class InputHandler {
         document.addEventListener('click', (e) => {
             if(game.current_ui && game.current_ui instanceof Ui){
                 
-                var widget_clicked = false
                 var new_focused_widgets = []
                 
                 game.current_ui.widgets.forEach(widget => { 
@@ -75,9 +74,11 @@ export class InputHandler {
                     })
                     game.current_ui.focused_widgets = []
                 } else {
-                    game.current_ui.focused_widgets.forEach(widget => {
-                        widget.has_focus = false
-                    })
+                    if(game.current_ui.focused_widgets){
+                        game.current_ui.focused_widgets.forEach(widget => {
+                            widget.has_focus = false
+                        })
+                    }
                     game.current_ui.focused_widgets = []
                     new_focused_widgets.forEach(widget => {
                         game.current_ui.focused_widgets.push(widget)
@@ -88,7 +89,7 @@ export class InputHandler {
         })
 
         document.addEventListener("keypress", (e) => {
-            if(game.current_ui && game.current_ui.focused_widgets.length != 0 && e.key.length == 1){
+            if(game.current_ui && game.current_ui instanceof Ui && game.current_ui.focused_widgets.length != 0 && e.key.length == 1){
                 game.current_ui.focused_widgets.forEach(widget => {
                     if(widget.type != constants.TEXTAREA_TYPE && widget.type != constants.NUMBERAREA_TYPE) return
                     if(widget.content.length != widget.max_char_number){

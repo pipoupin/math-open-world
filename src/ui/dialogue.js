@@ -106,18 +106,18 @@ export class QuestionDialogue extends Ui{
      * @param {Game} game 
      * @param {String} text 
      * @param {Tileset} arrow_tileset 
-     * @param {Array<String>} awnsers 
-     * @param {Number} awnsers_x 
-     * @param {Number} awnsers_y 
-     * @param {Number} awnsers_width 
-     * @param {Number} awnsers_height 
-     * @param {Tileset} awnser_box_tileset 
+     * @param {Array<String>} anwsers 
+     * @param {Number} anwsers_x 
+     * @param {Number} anwsers_y 
+     * @param {Number} anwsers_width 
+     * @param {Number} anwsers_height 
+     * @param {Tileset} anwser_box_tileset 
      * @param {(d: Dialogue, a: String) => void} on_end 
      * @param {Number} fontsize 
      * @param {String} textcolor 
      * @param {string} font 
      */
-    constructor(game, text, arrow_tileset, awnsers, awnsers_x, awnsers_y, awnsers_width, awnsers_height, awnser_box_tileset, on_end, fontsize, textcolor, font){
+    constructor(game, text, arrow_tileset, anwsers, anwsers_x, anwsers_y, anwsers_width, anwsers_height, anwser_box_tileset, on_end, fontsize, textcolor, font){
         var widgets = [new Label(game, "dialogue-content",
             - game.canvas.width / 2 + 100, game.canvas.height / 2 - 50, "",
             true, fontsize, textcolor, font),
@@ -128,40 +128,40 @@ export class QuestionDialogue extends Ui{
                 arrow_tileset, 1, false)
         ]
 
-        for(let i = 0; i < awnsers.length; i++){
+        for(let i = 0; i < anwsers.length; i++){
 
-            for(let j = 0; j < awnsers_width/awnsers_height; j++){
-                let tile_nb = i == 0? 7: i + 1 == awnsers.length? 1: 4
-                tile_nb += j == 0? 0: j + 1 >= awnsers_width/awnsers_height? 2: 1
-                widgets.push(new Icon(game, `awnsers-box-icon-${i}-${j}`,
-                    awnsers_x + j * awnsers_height, awnsers_y - ((i + 1) * awnsers_height), awnser_box_tileset, tile_nb, false))
+            for(let j = 0; j < anwsers_width/anwsers_height; j++){
+                let tile_nb = i == 0? 7: i + 1 == anwsers.length? 1: 4
+                tile_nb += j == 0? 0: j + 1 >= anwsers_width/anwsers_height? 2: 1
+                widgets.push(new Icon(game, `anwsers-box-icon-${i}-${j}`,
+                    anwsers_x + j * anwsers_height, anwsers_y - ((i + 1) * anwsers_height), anwser_box_tileset, tile_nb, false))
 
             }
 
-            widgets.push(new Button(game, "awnser-button-"+i.toString(),
-            awnsers_x, awnsers_y - ((i + 1) * awnsers_height), awnsers_width, awnsers_height, false, (button) => {
+            widgets.push(new Button(game, "anwser-button-"+i.toString(),
+            anwsers_x, anwsers_y - ((i + 1) * anwsers_height), anwsers_width, anwsers_height, false, (button) => {
                 if(!button.has_focus) return
                 if(button.ui.sentence + 1 != button.ui.sentences.length || button.ui.get_widget("dialogue-content").text != button.ui.sentences[this.sentence]) return
-                let awnser_number = parseInt(button.id.split("-").at(-1))
+                let anwser_number = parseInt(button.id.split("-").at(-1))
                 this.is_finished = true
-                button.ui.on_end(button.ui, button.ui.awnsers[awnser_number])
+                button.ui.on_end(button.ui, button.ui.anwsers[anwser_number])
             }
             ))
 
-            widgets.push(new Label(game, "awnser-label-"+i.toString(),
-                awnsers_x * 1.05, awnsers_y - ((i + 0.5) * awnsers_height) + 7.5, awnsers[i], false, fontsize, textcolor, font
+            widgets.push(new Label(game, "anwser-label-"+i.toString(),
+                anwsers_x * 1.05, anwsers_y - ((i + 0.5) * anwsers_height) + 7.5, anwsers[i], false, fontsize, textcolor, font
             ))
 
-            widgets.push(new Icon(game, "awnser-arrow-"+i.toString(),
-            awnsers_x + awnsers_width * 0.9, awnsers_y - ((i + 0.75) * awnsers_height), arrow_tileset, 4, false))
+            widgets.push(new Icon(game, "anwser-arrow-"+i.toString(),
+            anwsers_x + anwsers_width * 0.9, anwsers_y - ((i + 0.75) * anwsers_height), arrow_tileset, 4, false))
         }
 
         var widgets_states_handler = (dialogue) => {
-            for(let i = 0; i < awnsers.length; i++){
-                if(dialogue.get_widget("awnser-button-"+i.toString()).has_focus){
-                    dialogue.get_widget("awnser-arrow-"+i.toString()).rendered = true
+            for(let i = 0; i < anwsers.length; i++){
+                if(dialogue.get_widget("anwser-button-"+i.toString()).has_focus){
+                    dialogue.get_widget("anwser-arrow-"+i.toString()).rendered = true
                 } else {
-                    dialogue.get_widget("awnser-arrow-"+i.toString()).rendered = false
+                    dialogue.get_widget("anwser-arrow-"+i.toString()).rendered = false
                 }
             }
         }
@@ -169,7 +169,7 @@ export class QuestionDialogue extends Ui{
         super(game, game.canvas.width, game.canvas.height, widgets, widgets_states_handler)
 
         this.text = text
-        this.awnsers = awnsers
+        this.anwsers = anwsers
         this.on_end = on_end
         this.last_time = 0
         
@@ -182,24 +182,24 @@ export class QuestionDialogue extends Ui{
      * @param {Game} game - The dialogue's game
      * @param {String} src - The dialogue's background's path
      * @param {String} text - The content of the dialogue
-     * @param {Array<String>} awnsers - The possible awnsers to the question
-     * @param {Number} awnsers_x - The awnsers' box's bottom left corner's x coordinate
-     * @param {Number} awnsers_y - The awnsers' box's bottom left corner's y coordinate
-     * @param {Number} awnsers_width - The width of the awnsers' box
-     * @param {Number} awnsers_height - The height of one awnser in the awnsers' box
-     * @param {String} awnser_box_tileset_src - The box drawing tileset's path
+     * @param {Array<String>} anwsers - The possible anwsers to the question
+     * @param {Number} anwsers_x - The anwsers' box's bottom left corner's x coordinate
+     * @param {Number} anwsers_y - The anwsers' box's bottom left corner's y coordinate
+     * @param {Number} anwsers_width - The width of the anwsers' box
+     * @param {Number} anwsers_height - The height of one anwser in the anwsers' box
+     * @param {String} anwser_box_tileset_src - The box drawing tileset's path
      * @param {(d: Dialogue, a: String) => void} [on_end = (d: Dialogue, a: String) => {}] - The command executed at the end of the dialogue
      * @param {number} [fontsize=15] - Dialogue's text's font size
      * @param {String} [textcolor="black"] - Dialogue's text's color
      * @param {string} [font="arial"] - Dialogue's text's font
      * @returns {Dialogue}
      */
-    static async create(game, src, text, awnsers, awnsers_x, awnsers_y, awnsers_width, awnsers_height, awnser_box_tileset_src, on_end=(d, a) => {}, fontsize=15, textcolor="black", font="arial"){
-        awnsers_width = Math.round(awnsers_width)
-        awnsers_height = Math.round(awnsers_height)
+    static async create(game, src, text, anwsers, anwsers_x, anwsers_y, anwsers_width, anwsers_height, anwser_box_tileset_src, on_end=(d, a) => {}, fontsize=15, textcolor="black", font="arial"){
+        anwsers_width = Math.round(anwsers_width)
+        anwsers_height = Math.round(anwsers_height)
         let arrow_tileset = await Tileset.create(game, config.IMG_DIR+"arrow.png", 15, 16, 0)
-        let awnser_box_tileset = await Tileset.create(game, awnser_box_tileset_src, 16, awnsers_height, 0)
-        const dialogue = new QuestionDialogue(game, text, arrow_tileset, awnsers, awnsers_x, awnsers_y, awnsers_width, awnsers_height, awnser_box_tileset, on_end, fontsize, textcolor, font)
+        let anwser_box_tileset = await Tileset.create(game, anwser_box_tileset_src, 16, anwsers_height, 0)
+        const dialogue = new QuestionDialogue(game, text, arrow_tileset, anwsers, anwsers_x, anwsers_y, anwsers_width, anwsers_height, anwser_box_tileset, on_end, fontsize, textcolor, font)
         try {
 			await dialogue.load(src)
 		} catch (error) {
@@ -229,11 +229,11 @@ export class QuestionDialogue extends Ui{
                 
                 this.get_widget("arrow-icon").rendered = false
 
-                for(let i = 0; i < this.awnsers.length; i++){
-                    this.get_widget("awnser-button-"+i.toString()).rendered = true
-                    this.get_widget("awnser-label-"+i.toString()).rendered = true
-                    for(let j = 0; j < this.get_widget("awnser-button-0").side_ratio(); j++){
-                        this.get_widget(`awnsers-box-icon-${i}-${j}`).rendered = true
+                for(let i = 0; i < this.anwsers.length; i++){
+                    this.get_widget("anwser-button-"+i.toString()).rendered = true
+                    this.get_widget("anwser-label-"+i.toString()).rendered = true
+                    for(let j = 0; j < this.get_widget("anwser-button-0").side_ratio(); j++){
+                        this.get_widget(`anwsers-box-icon-${i}-${j}`).rendered = true
                     }
                 }
             }
@@ -254,11 +254,11 @@ export class QuestionDialogue extends Ui{
 
                 this.get_widget("arrow-icon").rendered = false
 
-                for(let i = 0; i < this.awnsers.length; i++){
-                    this.get_widget("awnser-button-"+i.toString()).rendered = true
-                    this.get_widget("awnser-label-"+i.toString()).rendered = true
-                    for(let j = 0; j < this.get_widget("awnser-button-0").side_ratio(); j++){
-                        this.get_widget(`awnsers-box-icon-${i}-${j}`).rendered = true
+                for(let i = 0; i < this.anwsers.length; i++){
+                    this.get_widget("anwser-button-"+i.toString()).rendered = true
+                    this.get_widget("anwser-label-"+i.toString()).rendered = true
+                    for(let j = 0; j < this.get_widget("anwser-button-0").side_ratio(); j++){
+                        this.get_widget(`anwsers-box-icon-${i}-${j}`).rendered = true
                     }
                 }
             }

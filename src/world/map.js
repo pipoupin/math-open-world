@@ -103,45 +103,6 @@ export class Map {
 							}
 							new Hitbox(this.game, this, tileX + new_x, tileY + new_y, new_width, new_height, true, false, null, (e, h, t) => {});
 						}
-					} 
-					//
-					//
-					//
-					//
-					// Please read this when reviewing the code 🙏
-					//
-					// I don't really know if this is usefull anymore
-					// I mean, you can simply put the '-1' in the 'Blocks' just above can't you ?
-					// As it isn't a '0' it will create a hitbox but without any texture
-					// 
-					else if (layer.name == "Ground") { // create hitboxes for void tiles
-						for (let i = 0; i < layer.data.length; i++) {
-							if (layer.data[i] != -1)
-								continue
-
-							const tileX = (i % layer.width) * constants.TILE_SIZE;
-							const tileY = Math.floor(i / layer.width) * constants.TILE_SIZE;
-
-
-							var new_x = 0
-							var new_y = 0
-							var new_width = constants.TILE_SIZE
-							var new_height = constants.TILE_SIZE
-
-							if(src in collisions){
-								if(layer.data[i] in collisions[src]){
-									if(collisions[src][layer.data[i]].x)
-										new_x = collisions[src][layer.data[i]].x
-									if(collisions[src][layer.data[i]].y)
-										new_y = collisions[src][layer.data[i]].y
-									if(collisions[src][layer.data[i]].width)
-										new_width = collisions[src][layer.data[i]].width
-									if(collisions[src][layer.data[i]].height)
-										new_height = collisions[src][layer.data[i]].height
-								}
-							}
-							new Hitbox(this.game, this, tileX + new_x, tileY + new_y, new_width, new_height, true, false, null, (e, h, t) => {});
-						}
 					}
 				}
 			}

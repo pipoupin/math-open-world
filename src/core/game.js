@@ -90,16 +90,24 @@ export class Game {
 		// used to place the player correctly
 		this.update()
 
+		const colors_problem_finishing_ui = await Ui.create(this, config.IMG_DIR + "opened_book_ui.png", 880, 580, [
+			new Button(this, "button",
+				- this.canvas.width / 2, - this.canvas.height / 2, this.canvas.width, this.canvas.height,
+				true, (button) => {
+					button.ui.is_finished = true
+				})
+			], (ui) => {})
+
 		const black_transition = new UnicoloreTransition(this, 500, "black")
 
 		const colors_problem = await Problem.create(
 			this, config.IMG_DIR + "book_ui.png", 440, 580, "colors",
 			[
-				new NumberArea(this, "numberarea-pink", -100, -110, 60, 80, 1, true, (answer, numberarea) => {}, 80, "black", "Times New Roman", ""),
+				new NumberArea(this, "numberarea-pink", -100, -110, 60, 80, 1, true, (numberarea) => {}, 80, "black", "Times New Roman", ""),
 
-				new NumberArea(this, "numberarea-blue", -20, -110, 60, 80, 1, true, (answer, numberarea) => {}, 80, "black", "Times New Roman", ""),
+				new NumberArea(this, "numberarea-blue", -20, -110, 60, 80, 1, true, (numberarea) => {}, 80, "black", "Times New Roman", ""),
 
-				new NumberArea(this, "numberarea-red", 60, -110, 60, 80, 1, true, (answer, numberarea) => {}, 80, "black", "Times New Roman", ""),
+				new NumberArea(this, "numberarea-red", 60, -110, 60, 80, 1, true, (numberarea) => {}, 80, "black", "Times New Roman", ""),
 
 				// No more needed but I leave it there in case
 				// new Button(this, "button-submit", -50, 155, 100, 50, true, (button) => {
@@ -116,23 +124,38 @@ export class Game {
 				}),
 				new Button(this, "button-undo-4", -200, -(this.canvas.height / 2), 400, this.canvas.height / 2 - 270, true, (button)=>{
 					button.ui.is_finished=true
+				}),
+
+				new Button(this, "open-button", this.canvas.width / 16, this.canvas.height / 16, 100, 100, false, (button)=>{
+					button.game.current_ui = colors_problem_finishing_ui
 				})
 			],
 			(problem) => {
-				if(problem.get_widget("numberarea-pink").has_focus){
-
-				} else {
-					
-				}
-
 				const numberarea_pink = problem.get_widget("numberarea-pink");
 				const numberarea_blue = problem.get_widget("numberarea-blue");
 				const numberarea_red = problem.get_widget("numberarea-red");
 
+				if(numberarea_pink.has_focus){
+
+				} else {
+
+				}
+
+				if(numberarea_blue.has_focus){
+
+				} else {
+
+				}
+
+				if(numberarea_red.has_focus){
+
+				} else {
+
+				}
+
 				if (numberarea_pink.content === "3" && numberarea_blue.content === "4" && numberarea_red.content === "4") {
-					problem.is_finished = true;
 					problem.source.is_talkable = false
-					console.log("bonnes réponses");
+					problem.get_widget("open-button").rendered = true;
 				}	
 			}
 		)
@@ -143,20 +166,26 @@ export class Game {
 		colors_problem.set_source(colors_problem_shelf)
 
 
-		// test dialogue ans its hitbox
-		var dialogue = await QuestionDialogue.create(this, config.IMG_DIR + "dialogue_box.png",
+		// test dialogue and its hitbox
+		var threats_dialogue = await Dialogue.create(this, config.IMG_DIR + "dialogue_box.png",
+			"Go and die !!!", (dialogue) => {}, 40
+		)
+
+		var mqc_dialogue = await QuestionDialogue.create(this, config.IMG_DIR + "dialogue_box.png",
 			"Press 'Space' to dash, dash has a 10 seconds cooldown. You can also press 'E' when facing an object to interact with it.",
-			["Ok", "No"], // anything can be added here and the bow will be automatically generated
+			["Ok", "No"], // anything can be added here and the box will be automatically generated
 			this.canvas.width / 4, this.canvas.height / 4, this.canvas.width / 8, this.canvas.height / 16,
-			config.IMG_DIR + "awnser_box.png", (dialogue, awnser) => {
-				console.log(awnser)
+			config.IMG_DIR + "anwser_box.png", (dialogue, anwser) => {
+				if(anwser == "No"){
+					dialogue.game.current_ui = threats_dialogue
+				}
 				dialogue.source.destructor()
 			}, 25, "black", "arial"
 		)
 		var dialogue_test = new Hitbox(this, this.get_current_map(), 0, 4 * constants.TILE_SIZE, constants.TILE_SIZE, constants.TILE_SIZE, false, false, null, (e, h, t) => {
-			h.game.current_ui = dialogue
+			h.game.current_ui = mqc_dialogue
 		})
-		dialogue.set_source(dialogue_test)
+		mqc_dialogue.set_source(dialogue_test)
 
 		// SWITCH MAP HITBOXES
 		// -- from the house (manual)
@@ -256,6 +285,8 @@ export class Game {
 				this.current_ui.is_finished = false
 				this.current_ui = null
 			} else{
+				if(this.current_ui instanceof Transition && !this.current_ui.start_time)
+					this.current_ui.start_time = current_time
 				this.current_ui.update(current_time)
 				return
 			}
