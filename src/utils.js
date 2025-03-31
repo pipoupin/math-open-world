@@ -31,3 +31,7 @@ export const slice = (str, lenght) => {
 	array[0] = array[0].slice(1)
 	return array
 }
+
+export class Resizeable{
+	//soon
+}

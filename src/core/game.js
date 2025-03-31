@@ -4,7 +4,7 @@ import { Player } from '../entities/player.js'
 import { InputHandler } from './inputHandler.js'
 import { Entity } from '../entities/entity.js'
 import { Hitbox } from '../entities/hitbox.js'
-import { Problem } from '../ui/problem.js'
+import { Problem, TimedProblem } from '../ui/problem.js'
 import { Attack } from '../entities/attack.js'
 import { Ui } from '../ui/ui.js'
 import { Button, Icon, Label, NumberArea, TextArea, Texture } from '../ui/widgets.js'
@@ -285,7 +285,10 @@ export class Game {
 				this.current_ui.is_finished = false
 				this.current_ui = null
 			} else{
-				if(this.current_ui instanceof Transition && !this.current_ui.start_time)
+				if((this.current_ui instanceof Transition
+					|| this.current_ui instanceof TimedProblem)
+					&& !this.current_ui.start_time)
+
 					this.current_ui.start_time = current_time
 				this.current_ui.update(current_time)
 				return
