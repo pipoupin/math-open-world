@@ -4,7 +4,7 @@ export const config = {
 }
 
 export const constants = {
-    DEBUG: false,
+    DEBUG: true,
 
     TILE_SIZE: 128,
 
@@ -37,8 +37,22 @@ export const constants = {
 
 // TODO: The future has arrived
 // still need a bit cleaner way to do it tho
+// the format is
+// map_name: tile_number: {x: new_x, y: new_y, width: new_width, height: new_height}
+//
+// with:
+// map_name the path to the map file, String
+// tile_number the number of the tile that needs to be changed in the maps' tileset, Number
+//
+// new_x, new_y the new ccordinates of the top-left corner of the hitbox, 0 by default, Numbers
+// new_width, new_height the new width and height of the hitbox, constants.TILE_SIZE by default, Numbers
+//
+// x, y, width and height takes their default values when not specified
 export const collisions = {
     "map.json": {
+        76: { width: 96, height: 112},
+        113: {x: 16, y: 24, width: 96, height: 88},
+        114: {x: 32, width: 64, height: 112},
         127: {x: 56, width: 72},
         131: {width: 72},
         167: {x: 56, width: 72, height: 110},
@@ -47,5 +61,7 @@ export const collisions = {
         171: {width: 72, height: 110}
     },
     "house.json": {
+        11: {y: -8, height: 96},
+        55: {y: -8, height: 96}
     }
 }

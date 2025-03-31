@@ -7,7 +7,7 @@ export class Widget{
     /**
      * !!! One shouldn't create a widget by using this constructor, use subclass widgets instead
      * @param {Game} game - The current game
-     * @param {String} id- The widget's ID
+     * @param {String} id - The widget's ID
      * @param {Number} x - the x coordinates of the top-left corner of the widget
      * @param {Number} y - the y coordinates of the top-left corner of the widget
      * @param {String} type - The widget's type
@@ -40,7 +40,7 @@ export class Label extends Widget{
      * @param {Boolean} rendered - Boolean refearing to if this widget should be rendered
      * @param {Number} [fontsize=5] - Label's text's fontsize
      * @param {String} [textcolor="black"] - Label's text's color
-     * @param {string} [font="serif"] - Label's text's font
+     * @param {string} [font="arial"] - Label's text's font
      */
     constructor(game, id, x, y, text, rendered, fontsize=15, textcolor="black", font="arial"){
         super(game, id, x, y, constants.LABEL_TYPE, rendered)
@@ -103,7 +103,7 @@ export class Button extends Widget{
     }
 
     render(){
-        if(this.rendered){
+        if(this.rendered && constants.DEBUG){
             this.game.ctx.strokeStyle = "blue"
             this.game.ctx.strokeRect(
                 this.game.canvas.width / 2 + this.x,
@@ -111,6 +111,10 @@ export class Button extends Widget{
                 this.width, this.height
             )
         }
+    }
+
+    side_ratio(){
+        return this.width/this.height
     }
 
     /**
@@ -144,19 +148,18 @@ export class TextArea extends Widget{
      * @param {Number} height - The textarea's height
      * @param {Number} max_char_number - The maximum of character you can type in
      * @param {Boolean} rendered - Boolean refearing to if this widget should be rendered
-     * @param {(answer: String, textarea: TextArea) => void} command - Command executed when the submit method is called, 'answer' refers to what has been typed in the textarea, 'textarea' refers to the textarea itself
+     * @param {(textarea: TextArea) => void} command - Command executed when the submit method is called, 'textarea' refers to the textarea itself
      * @param {Number} [fontsize=5] - The textarea's text fontsize
      * @param {String} [textcolor="black"] - The textarea's text color
      * @param {String} [font="arial"] - The textarea's text font
      * @param {String} [blink_bar="I"] - The blinking bar when the textarea is selected
      */
-    constructor(game, id, x, y, width, height, max_char_number, rendered, command, fontsize=15, textcolor="black", font="arial", blink_bar="I"){
+    constructor(game, id, x, y, width, height, max_char_number, rendered, command, fontsize=15, textcolor="black", font="arial", blink_bar="|"){
         super(game, id, x, y, constants.TEXTAREA_TYPE, rendered)
         this.width = width
         this.height = height
         this.content = ""
         this.max_char_number = max_char_number
-        this.selected = false
         this.command = command
         this.fontsize = fontsize
         this.textcolor = textcolor
@@ -167,23 +170,26 @@ export class TextArea extends Widget{
     }
 
     submit(){
-        this.command(this.content, this)
+        this.command(this)
     }
 
     render(){
         if(this.rendered){
-            this.game.ctx.strokeStyle = "blue"
-            this.game.ctx.strokeRect(
-                this.game.canvas.width / 2 + this.x,
-                this.game.canvas.height / 2 + this.y,
-                this.width, this.height
-            )
+            if(constants.DEBUG){
+                this.game.ctx.strokeStyle = "blue"
+                this.game.ctx.strokeRect(
+                    this.game.canvas.width / 2 + this.x,
+                    this.game.canvas.height / 2 + this.y,
+                    this.width, this.height
+                )
+            }
             this.game.ctx.fillStyle = this.textcolor
             this.game.ctx.font = `${this.fontsize}px ${this.font}`
             this.game.ctx.fillText(
                 this.content + (this.has_bar ? this.blink_bar: ""),
                 this.game.canvas.width / 2 + this.x,
-                this.y + (this.game.canvas.height + this.height) / 2)
+                this.y + ((this.game.canvas.height + this.height) / 2) + (this.fontsize / 4)
+            )
         }
     }
 
@@ -206,7 +212,7 @@ export class TextArea extends Widget{
      * @param {String} [content = null] - The textarea's content, what has been typed in it
      * @param {Number} [max_char_number = null] - The maximum of character you can type in
      * @param {Boolean} [rendered=null] - Boolean refearing to if this widget should be rendered
-     * @param {(answer: String, textarea: TextArea) => void} [command = null] - Command executed when the submit method is called, 'answer' refers to what has been typed in the textarea, 'textarea' refers to the textarea itself
+     * @param {(textarea: TextArea) => void} [command = null] - Command executed when the submit method is called, 'textarea' refers to the textarea itself
      * @param {Number} [fontsize = null] - The textarea's text fontsize
      * @param {String} [textcolor = null] - The textarea's text color
      * @param {String} [font = null] - The textarea's text font
@@ -239,10 +245,10 @@ export class NumberArea extends TextArea{
      * @param {Number} height - The numberarea's height
      * @param {Number} max_char_number - The maximum of character you can type in
      * @param {Boolean} rendered - Boolean refearing to if this widget should be rendered
-     * @param {(answer: String, numberarea: NumberArea) => void} command - Command executed when the submit method is called, 'answer' refers to what has been typed in the numberarea, 'numberarea' refers to the numberarea itself
+     * @param {(numberarea: NumberArea) => void} command - Command executed when the submit method is called, 'numberarea' refers to the numberarea itself
      * @param {Number} [fontsize=5] - The numberarea's text fontsize
      * @param {String} [textcolor="black"] - The numberarea's text color
-     * @param {String} [font="serif"] - The numberarea's text font
+     * @param {String} [font="arial"] - The numberarea's text font
      * @param {String} [blink_bar="I"] - The blinking bar when the numberarea is selected
      */
     constructor(game, id, x, y, width, height, max_char_number, rendered, command, fontsize=15, textcolor="black", font="arial", blink_bar="I"){

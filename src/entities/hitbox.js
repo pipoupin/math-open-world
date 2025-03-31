@@ -50,6 +50,14 @@ export class Hitbox {
 		}
 	}
 
+	/**
+	 * 
+	 * @param {Attack | Entity} owner 
+	 */
+	set_owner(owner){
+		this.owner = owner
+	}
+
 	render() {
 		if(this.game.get_current_map() == this.map){
 			this.game.ctx.strokeStyle = this.player ? "blue" : "red"

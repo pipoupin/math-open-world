@@ -1,4 +1,5 @@
 import { constants } from "../constants.js"
+import { Ui } from "../ui/ui.js"
 import { Game } from "./game.js"
 
 export class InputHandler {
@@ -17,8 +18,11 @@ export class InputHandler {
             }
             this.keys_down[e.key.toLowerCase()] = true
             if(e.key == "Backspace" && this.del_key_can_be_pressed){
-                if(game.current_ui && game.current_ui.selected_textarea){
-                    game.current_ui.selected_textarea.content = game.current_ui.selected_textarea.content.slice(0, -1)
+                if(game.current_ui && game.current_ui.focused_widgets.length != 0){
+                    game.current_ui.focused_widgets.forEach(widget => {
+                        if(widget.type != constants.TEXTAREA_TYPE && widget.type != constants.NUMBERAREA_TYPE) return
+                        widget.content = widget.content.slice(0, -1)
+                    })
                     this.del_key_can_be_pressed = false
                 }
             }
@@ -38,71 +42,78 @@ export class InputHandler {
         }
 
         document.addEventListener('click', (e) => {
-            if(game.current_ui){
-                var widget_clicked = false
-                game.current_ui.widgets.forEach(widget => {
-                    if(widget.x <= this.mouse_pos.x
-                        && (widget.x + widget.width) >= this.mouse_pos.x
-                        && widget.y <= this.mouse_pos.y
-                        && (widget.y + widget.height) >= this.mouse_pos.y){
-                            if(widget.type == constants.BUTTON_TYPE
-                                || widget.type == constants.TEXTAREA_TYPE
-                                || widget.type == constants.NUMBERAREA_TYPE){
+            if(game.current_ui && game.current_ui instanceof Ui){
+                
+                var new_focused_widgets = []
+                
+                game.current_ui.widgets.forEach(widget => { 
+                    if(!widget.rendered) return
+                    if(widget.type == constants.BUTTON_TYPE
+                        || widget.type == constants.TEXTAREA_TYPE
+                        || widget.type == constants.NUMBERAREA_TYPE){
+                        
+                        if(widget.x <= this.mouse_pos.x
+                            && (widget.x + widget.width) >= this.mouse_pos.x
+                            && widget.y <= this.mouse_pos.y
+                            && (widget.y + widget.height) >= this.mouse_pos.y){
 
-                                if(widget.type == constants.BUTTON_TYPE) {
-                                    widget.command(widget)
-                                }
-
-                                if(widget.type == constants.TEXTAREA_TYPE || widget.type == constants.NUMBERAREA_TYPE){
-                                    if(game.current_ui.selected_textarea)
-                                        game.current_ui.selected_textarea.selected = false
-                                    widget.selected = true
-                                    game.current_ui.selected_textarea = widget
-                                } else {
-                                    if(game.current_ui.selected_textarea){
-                                        game.current_ui.selected_textarea.selected = false
-                                        game.current_ui.selected_textarea = null
-                                    }
-                                }
-                                widget_clicked = true
+                            if(widget.type == constants.BUTTON_TYPE) {
+                                widget.command(widget)
+                                new_focused_widgets.push(widget)
                             }
+
+                            else if(widget.type == constants.TEXTAREA_TYPE || widget.type == constants.NUMBERAREA_TYPE){
+                                new_focused_widgets.push(widget)
+                            }
+                        }
                     }
                 })
-                if(!widget_clicked){
-                    game.selected_textarea = null
-                    if(game.current_ui.focused_widget)
-                        game.current_ui.focused_widget.has_focus = false
-                    game.current_ui.focused_widget = null
+                if(new_focused_widgets.length == 0){
+                    game.current_ui.focused_widgets.forEach(widget => {
+                        widget.has_focus = false
+                    })
+                    game.current_ui.focused_widgets = []
+                } else {
+                    if(game.current_ui.focused_widgets){
+                        game.current_ui.focused_widgets.forEach(widget => {
+                            widget.has_focus = false
+                        })
+                    }
+                    game.current_ui.focused_widgets = []
+                    new_focused_widgets.forEach(widget => {
+                        game.current_ui.focused_widgets.push(widget)
+                        widget.has_focus = true
+                    })
                 }
             }
         })
 
         document.addEventListener("keypress", (e) => {
-            if(game.current_ui && game.current_ui.selected_textarea && e.key.length == 1){
-                if(game.current_ui.selected_textarea.content.length != game.current_ui.selected_textarea.max_char_number){
-                    if(game.current_ui.selected_textarea.type == constants.NUMBERAREA_TYPE
-                        && !(["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"].includes(e.key))) return
-                    game.current_ui.selected_textarea.content += e.key
-                }
+            if(game.current_ui && game.current_ui instanceof Ui && game.current_ui.focused_widgets.length != 0 && e.key.length == 1){
+                game.current_ui.focused_widgets.forEach(widget => {
+                    if(widget.type != constants.TEXTAREA_TYPE && widget.type != constants.NUMBERAREA_TYPE) return
+                    if(widget.content.length != widget.max_char_number){
+                        if(widget.type == constants.NUMBERAREA_TYPE
+                            && !(["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"].includes(e.key))) return
+                        widget.content += e.key
+                    }
+                })
             }
         })
 
         document.addEventListener("mousedown", (e) => {
             if(game.current_ui){
                 game.current_ui.widgets.forEach(widget => {
-                    if(widget.x <= this.mouse_pos.x
-                        && (widget.x + widget.width) >= this.mouse_pos.x
-                        && widget.y <= this.mouse_pos.y
-                        && (widget.y + widget.height) >= this.mouse_pos.y){
-                            if(widget.type == constants.BUTTON_TYPE
-                                || widget.type == constants.TEXTAREA_TYPE
-                                || widget.type == constants.NUMBERAREA_TYPE){
-                                widget.is_clicked = true
-                                widget.has_focus = true
-                                if(game.current_ui.focused_widget)
-                                    game.current_ui.focused_widget.has_focus = false
-                                game.current_ui.focused_widget = widget
-                            }
+                    if(widget.type == constants.BUTTON_TYPE
+                        || widget.type == constants.TEXTAREA_TYPE
+                        || widget.type == constants.NUMBERAREA_TYPE){
+                        if(widget.x <= this.mouse_pos.x
+                            && (widget.x + widget.width) >= this.mouse_pos.x
+                            && widget.y <= this.mouse_pos.y
+                            && (widget.y + widget.height) >= this.mouse_pos.y){
+                            
+                            widget.is_clicked = true
+                        }
                     }
                 })
             }
@@ -121,7 +132,18 @@ export class InputHandler {
         })
     }
 
+    /**
+     * 
+     * @param {String} key 
+     * @returns {Boolean}
+     */
     isKeyDown(key) { return this.keys_down[key] }
+
+    /**
+     * 
+     * @param {String} key 
+     * @returns {Boolean}
+     */
     isKeyPressed(key) {
         if (this.keys_pressed[key]) {
             this.keys_pressed[key] = false

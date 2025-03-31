@@ -1,4 +1,6 @@
 import { Game } from "../core/game.js";
+import { Hitbox } from "../entities/hitbox.js";
+import { Talkable } from "../entities/talkable.js";
 import { TextArea, Widget } from "./widgets.js";
 
 export class Ui {
@@ -14,6 +16,8 @@ export class Ui {
         this.game = game
         this.width = width
         this.height = height
+        this.source = null
+        /** @type {Array<Widget>} */
         this.widgets = widgets
         this.ids = []
         this.widgets.forEach((widget) => {
@@ -22,10 +26,9 @@ export class Ui {
             widget.ui = this
             this.ids.push(widget.id)
         })
-        this.focused_widget = null
+        /** @type {Array<Widget>} */
+        this.focused_widgets = []
         this.is_finished = false
-        /** @type {TextArea} */
-        this.selected_textarea = null
         this.widgets_states_handler = widgets_states_handler
     }
 
@@ -61,6 +64,14 @@ export class Ui {
 			img.onload = resolve
 			img.onerror = reject
 		})
+    }
+
+    /**
+     * 
+     * @param {Talkable | Hitbox} source 
+     */
+    set_source(source){
+        this.source = source
     }
 
     render(){
