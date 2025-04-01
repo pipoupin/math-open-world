@@ -295,6 +295,8 @@ export class Game {
 			}
 		}
 
+		this.get_current_map().update(current_time)
+
 		this.entities.forEach(entity => {entity.update(current_time)})
 
 		this.camera.x = this.player.worldX - this.canvas.width / 2
