@@ -67,6 +67,7 @@ export class Map {
 			this.animation_tilesets = {}
 
 			for(let tile_num of Object.keys(this.animated_tiles)){
+				tile_num = parseInt(tile_num)
 				if(this.animated_tiles[tile_num].tileset.path == "current")
 					this.animation_tilesets[tile_num] = this.tileset
 				else if(!isNaN(this.animated_tiles[tile_num].tileset.path))
