@@ -1,7 +1,7 @@
 import { Game } from "../core/game.js";
 import { Hitbox } from "../entities/hitbox.js";
 import { Talkable } from "../entities/talkable.js";
-import { TextArea, Widget } from "./widgets.js";
+import { Widget } from "./widgets.js";
 
 export class Ui {
     /**

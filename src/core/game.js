@@ -7,7 +7,7 @@ import { Hitbox } from '../entities/hitbox.js'
 import { Problem, TimedProblem } from '../ui/problem.js'
 import { Attack } from '../entities/attack.js'
 import { Ui } from '../ui/ui.js'
-import { Button, Icon, Label, NumberArea, TextArea, Texture } from '../ui/widgets.js'
+import { Button, NumberArea } from '../ui/widgets.js'
 import { Talkable } from '../entities/talkable.js'
 import { config, constants } from "../constants.js"
 import { Transition, UnicoloreTransition } from '../ui/transition.js'
@@ -183,6 +183,7 @@ export class Game {
 			}, 25, "black", "arial"
 		)
 		var dialogue_test = new Hitbox(this, this.get_current_map(), 0, 4 * constants.TILE_SIZE, constants.TILE_SIZE, constants.TILE_SIZE, false, false, null, (e, h, t) => {
+			if(!e instanceof Player) return
 			h.game.current_ui = mqc_dialogue
 		})
 		mqc_dialogue.set_source(dialogue_test)
@@ -190,6 +191,7 @@ export class Game {
 		// SWITCH MAP HITBOXES
 		// -- from the house (manual)
 		new Hitbox(this, this.get_current_map(), 3 * constants.TILE_SIZE, 8 * constants.TILE_SIZE, constants.TILE_SIZE, constants.TILE_SIZE, false, false, null, (e, h, time) => {
+			if(!e instanceof Player) return
 			if (!this.inputHandler.isKeyPressed(constants.INTERACTION_KEY)) return // one must press INTERACTION_KEY to switch map
 			this.maps[0].player_pos = {x: this.player.worldX, y: this.player.worldY - 50}
 			this.set_map(1)
@@ -208,6 +210,7 @@ export class Game {
 		})
 		// -- from the house (auto)
 		new Hitbox(this, this.get_current_map(), 3 * constants.TILE_SIZE, 8.75 * constants.TILE_SIZE, constants.TILE_SIZE, constants.TILE_SIZE / 4, false, false, null, (e, h, time) => {
+			if(!e instanceof Player) return
 			this.maps[0].player_pos = {x: this.player.worldX, y: this.player.worldY - 50}
 			this.set_map(1)
 
@@ -234,6 +237,7 @@ export class Game {
 			false,
 			null,
 			(e, h, time) => {
+				if(!e instanceof Player) return
 				if (!this.inputHandler.isKeyPressed(constants.INTERACTION_KEY)) return
 				this.maps[1].player_pos = {x: 15.5 * constants.TILE_SIZE, y: 14.01 * constants.TILE_SIZE}
 
@@ -258,6 +262,7 @@ export class Game {
 			false, 
 			null, 
 			(e, h, time) => {
+				if(!e instanceof Player) return
 				this.maps[1].player_pos = {x: 15.5 * constants.TILE_SIZE, y: 14.01 * constants.TILE_SIZE}
 
 				this.set_map(0)

@@ -1,4 +1,4 @@
-import { config, constants } from "../constants.js";
+import { config } from "../constants.js";
 import { Game } from "../core/game.js";
 import { slice } from "../utils.js";
 import { Tileset } from "../world/tileset.js";

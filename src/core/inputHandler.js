@@ -10,6 +10,7 @@ export class InputHandler {
         this.keys_down = {}
         this.keys_pressed = {}
         this.del_key_can_be_pressed = true
+        /** @type {x: Number, y: Number} */
         this.mouse_pos = {x:null, y:null}
 
         document.addEventListener('keydown', (e) => {
