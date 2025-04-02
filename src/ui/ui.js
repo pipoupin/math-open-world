@@ -1,3 +1,4 @@
+import { config } from "../constants.js";
 import { Game } from "../core/game.js";
 import { Hitbox } from "../entities/hitbox.js";
 import { Talkable } from "../entities/talkable.js";
@@ -45,7 +46,7 @@ export class Ui {
     static async create(game, src, width, height, widgets, widgets_state_handler){
         const ui = new Ui(game, width, height, widgets, widgets_state_handler)
         try {
-			await ui.load(src)
+			await ui.load(config.IMG_DIR + src)
 		} catch (error) {
 			console.error(`couldn't load file "${src}" : ${error.message}`)
 			return

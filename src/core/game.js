@@ -64,9 +64,9 @@ export class Game {
 	async run() {
 		// create class objects
 		this.inputHandler = new InputHandler(this)
-		const default_tileset = await Tileset.create(this, config.IMG_DIR + "map.png", 16, constants.TILE_SIZE, 0)
-		const cabane_tilset = await Tileset.create(this, config.IMG_DIR + "cabane_tileset.png", 16, constants.TILE_SIZE, 0)
-		const spider_tile_set = await Tileset.create(this, config.IMG_DIR + "spider_tileset.png", 100, constants.TILE_SIZE * 4, 0)
+		const default_tileset = await Tileset.create(this, "map.png", 16, constants.TILE_SIZE, 0)
+		const cabane_tilset = await Tileset.create(this, "cabane_tileset.png", 16, constants.TILE_SIZE, 0)
+		const spider_tile_set = await Tileset.create(this, "spider_tileset.png", 100, constants.TILE_SIZE * 4, 0)
 		this.maps = [
 			await Map.create(this, 'house.json', cabane_tilset, "black", {x: constants.TILE_SIZE, y: 3 * constants.TILE_SIZE}),
 			await Map.create(this, 'map.json', default_tileset, "grey", {x: 15.5 * constants.TILE_SIZE, y: 14.01 * constants.TILE_SIZE})
@@ -83,14 +83,14 @@ export class Game {
 		)
 
 
-		const player_tileset = await Tileset.create(this, config.IMG_DIR + 'spritesheet.png', 16, constants.TILE_SIZE, 0)
+		const player_tileset = await Tileset.create(this, 'spritesheet.png', 16, constants.TILE_SIZE, 0)
 		this.player = new Player(this, player_tileset)
 		this.player.set_map(this.get_current_map())
 		
 		// used to place the player correctly
 		this.update()
 
-		const colors_problem_finishing_ui = await Ui.create(this, config.IMG_DIR + "opened_book_ui.png", 880, 580, [
+		const colors_problem_finishing_ui = await Ui.create(this, "opened_book_ui.png", 880, 580, [
 			new Button(this, "button",
 				- this.canvas.width / 2, - this.canvas.height / 2, this.canvas.width, this.canvas.height,
 				true, (button) => {
@@ -101,7 +101,7 @@ export class Game {
 		const black_transition = new UnicoloreTransition(this, 500, "black")
 
 		const colors_problem = await Problem.create(
-			this, config.IMG_DIR + "book_ui.png", 440, 580, "colors",
+			this, "book_ui.png", 440, 580, "colors",
 			[
 				new NumberArea(this, "numberarea-pink", -100, -110, 60, 80, 1, true, (numberarea) => {}, 80, "black", "Times New Roman", ""),
 
@@ -167,15 +167,15 @@ export class Game {
 
 
 		// test dialogue and its hitbox
-		var threats_dialogue = await Dialogue.create(this, config.IMG_DIR + "dialogue_box.png",
+		var threats_dialogue = await Dialogue.create(this, "dialogue_box.png",
 			"Go and die !!!", (dialogue) => {}, 40
 		)
 
-		var mqc_dialogue = await QuestionDialogue.create(this, config.IMG_DIR + "dialogue_box.png",
+		var mqc_dialogue = await QuestionDialogue.create(this, "dialogue_box.png",
 			"Press 'Space' to dash, dash has a 10 seconds cooldown. You can also press 'E' when facing an object to interact with it.",
 			["Ok", "No"], // anything can be added here and the box will be automatically generated
 			this.canvas.width / 4, this.canvas.height / 4, this.canvas.width / 8, this.canvas.height / 16,
-			config.IMG_DIR + "anwser_box.png", (dialogue, anwser) => {
+			"anwser_box.png", (dialogue, anwser) => {
 				if(anwser == "No"){
 					dialogue.game.current_ui = threats_dialogue
 				}

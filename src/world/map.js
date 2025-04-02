@@ -74,7 +74,7 @@ export class Map {
 					this.animation_tilesets[tile_num] = this.animation_tilesets[parseInt(this.animated_tiles[tile_num].tileset.path)]
 				else
 					this.animation_tilesets[tile_num] = await Tileset.create(this.game,
-						config.IMG_DIR + this.animated_tiles[tile_num].tileset.path,
+						this.animated_tiles[tile_num].tileset.path,
 						this.animated_tiles[tile_num].tileset.tilesize,
 						constants.TILE_SIZE, this.animated_tiles[tile_num].tileset.spacing)
 			}

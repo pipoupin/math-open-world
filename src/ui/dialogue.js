@@ -54,10 +54,10 @@ export class Dialogue extends Ui{
      * @returns {Dialogue}
      */
     static async create(game, src, text, on_end=(d) => {}, fontsize=15, textcolor="black", font="arial"){
-        let arrow_tileset = await Tileset.create(game, config.IMG_DIR+"arrow.png", 15, 16, 0)
+        let arrow_tileset = await Tileset.create(game, "arrow.png", 15, 16, 0)
         const dialogue = new Dialogue(game, text, arrow_tileset, on_end, fontsize, textcolor, font)
         try {
-			await dialogue.load(src)
+			await dialogue.load(config.IMG_DIR + src)
 		} catch (error) {
 			console.error(`couldn't load file "${src}" : ${error.message}`)
 			return
@@ -197,11 +197,11 @@ export class QuestionDialogue extends Ui{
     static async create(game, src, text, anwsers, anwsers_x, anwsers_y, anwsers_width, anwsers_height, anwser_box_tileset_src, on_end=(d, a) => {}, fontsize=15, textcolor="black", font="arial"){
         anwsers_width = Math.round(anwsers_width)
         anwsers_height = Math.round(anwsers_height)
-        let arrow_tileset = await Tileset.create(game, config.IMG_DIR+"arrow.png", 15, 16, 0)
+        let arrow_tileset = await Tileset.create(game, "arrow.png", 15, 16, 0)
         let anwser_box_tileset = await Tileset.create(game, anwser_box_tileset_src, 16, anwsers_height, 0)
         const dialogue = new QuestionDialogue(game, text, arrow_tileset, anwsers, anwsers_x, anwsers_y, anwsers_width, anwsers_height, anwser_box_tileset, on_end, fontsize, textcolor, font)
         try {
-			await dialogue.load(src)
+			await dialogue.load(config.IMG_DIR + src)
 		} catch (error) {
 			console.error(`couldn't load file "${src}" : ${error.message}`)
 			return

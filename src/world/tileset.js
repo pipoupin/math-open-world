@@ -1,4 +1,5 @@
 import { Game } from "../core/game.js";
+import { config } from "../constants.js";
 
 export class Tileset {
     /**
@@ -29,7 +30,7 @@ export class Tileset {
     static async create(game, src, img_tile_size, screen_tile_size, tileset_spacing) {
         const tileset = new Tileset(game, img_tile_size, screen_tile_size, tileset_spacing);
         try {
-            await tileset.load(src);
+            await tileset.load(config.IMG_DIR + src);
         } catch (error) {
             console.error(`Couldn't load file "${src}": ${error.message}`);
             throw new Error(`Failed to load tileset image: ${error.message}`);
