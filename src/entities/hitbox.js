@@ -2,6 +2,7 @@ import { Game } from "../core/game.js"
 import { Map } from "../world/map.js"
 import { Attack } from "./attack.js"
 import { Entity } from "./entity.js"
+import { Resizeable } from "../utils.js"
 
 export class Hitbox {
 	/**
@@ -20,13 +21,13 @@ export class Hitbox {
 		this.game = game
 		this.map = map
 
-		this.x1 = x
-		this.x2 = x + width
-		this.y1 = y
-		this.y2 = y + height
+		this.x1 = new Resizeable(game, x)
+		this.x2 = new Resizeable(game, x + width)
+		this.y1 = new Resizeable(game, y)
+		this.y2 = new Resizeable(game, y + height)
 
-		this.width = width
-		this.height = height
+		this.width = new Resizeable(game, width)
+		this.height = new Resizeable(game, height)
 
 		if (collision) game.collision_hitboxes.push(this)
 		else game.combat_hitboxes.push(this)
@@ -43,10 +44,10 @@ export class Hitbox {
 	 */
 	get_corner(i) {
 		switch(i) {
-			case 0: return {x: this.x1, y: this.y1}
-			case 1: return {x: this.x2, y: this.y1}
-			case 2: return {x: this.x1, y: this.y2}
-			case 3: return {x: this.x2, y: this.y2}
+			case 0: return {x: this.x1.get(), y: this.y1.get()}
+			case 1: return {x: this.x2.get(), y: this.y1.get()}
+			case 2: return {x: this.x1.get(), y: this.y2.get()}
+			case 3: return {x: this.x2.get(), y: this.y2.get()}
 		}
 	}
 
@@ -62,10 +63,10 @@ export class Hitbox {
 		if(this.game.get_current_map() == this.map){
 			this.game.ctx.strokeStyle = this.player ? "blue" : "red"
 			this.game.ctx.strokeRect(
-				this.x1 - this.game.camera.x,
-				this.y1 - this.game.camera.y,
-				this.width,
-				this.height
+				this.x1.get() - this.game.camera.x.get(),
+				this.y1.get() - this.game.camera.y.get(),
+				this.width.get(),
+				this.height.get()
 			)
 		}
 	}
@@ -78,7 +79,7 @@ export class Hitbox {
 	is_colliding(hitbox) {
 		if (this == hitbox) return false
 		if (this.map != hitbox.map) return false
-		return !(this.x1 > hitbox.x2 || hitbox.x1 > this.x2 || this.y1 > hitbox.y2 || hitbox.y1 > this.y2)
+		return !(this.x1.get() > hitbox.x2.get() || hitbox.x1.get() > this.x2.get() || this.y1.get() > hitbox.y2.get() || hitbox.y1.get() > this.y2.get())
 	}
 
 	/**
@@ -120,10 +121,10 @@ export class Hitbox {
 	 * @param {Number} y 
 	 */
 	center_around(x, y) {
-		this.x1 = x - this.width / 2
-		this.x2 = x + this.width / 2
-		this.y1 = y - this.height / 2
-		this.y2 = y + this.height / 2
+		this.x1.set_value(x - this.width.get() / 2)
+		this.x2.set_value(x + this.width.get() / 2)
+		this.y1.set_value(y - this.height.get() / 2)
+		this.y2.set_value(y + this.height.get() / 2)
 	}
 
 	/**
@@ -134,21 +135,21 @@ export class Hitbox {
 	 * @param {Number} [height=null] 
 	 */
 	set(x, y, width=null, height=null) {
-		this.x1 = x
-		this.y1 = y
-		if(width != null) this.width = width
-		if(height != null) this.height = height
-		this.x2 = x + this.width
-		this.y2 = y + this.height
-		if(this.x2 < this.x1){
-			this.x1 = this.x2
-			this.x2 = x
-			this.width *= -1
+		this.x1.set_value(x)
+		this.y1.set_value(y)
+		if(width != null) this.width.set_value(width)
+		if(height != null) this.height.set_value(height)
+		this.x2.set_value(x + this.width.get())
+		this.y2.set_value(y + this.height.get())
+		if(this.x2.get() < this.x1.get()){
+			this.x1.set_value(this.x2.get())
+			this.x2.set_value(x)
+			this.width.set_value(this.width.get() * -1)
 		}
-		if(this.y2 < this.y1){
-			this.y1 = this.y2
-			this.y2 = y
-			this.height *= -1
+		if(this.y2.get() < this.y1.get()){
+			this.y1.set_value(this.y2.get())
+			this.y2.set_value(y)
+			this.height.set_value(this.height.get() * -1)
 		}
 	}
 
@@ -158,10 +159,10 @@ export class Hitbox {
 	 * @param {Number} dy 
 	 */
 	move_by(dx, dy) {
-		this.x1 += dx
-		this.x2 += dx
-		this.y1 += dy
-		this.y2 += dy
+		this.x1.set_value(this.x1.get() + dx)
+		this.x2.set_value(this.x2.get() + dx)
+		this.y1.set_value(this.y1.get() + dy)
+		this.y2.set_value(this.y2.get() + dy)
 	}
 
 	/**

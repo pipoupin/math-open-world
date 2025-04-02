@@ -2,7 +2,8 @@ import { constants } from '../constants.js'
 import { Game } from '../core/game.js'
 import { Entity } from './entity.js'
 import { Hitbox } from './hitbox.js'
-import { clamp } from '../utils.js'
+import { Map } from '../world/map.js'
+import { clamp, Resizeable } from '../utils.js'
 
 export class Player extends Entity {
 	/**
@@ -14,7 +15,7 @@ export class Player extends Entity {
 			game, game.get_current_map(), player_tileset,
 			new Hitbox(game, game.get_current_map(), 400, 400 + constants.TILE_SIZE / 2, 2 * constants.TILE_SIZE / 3, constants.TILE_SIZE / 2, true, true, null, (e, h, t) => {}),
 			new Hitbox(game, game.get_current_map(), 400, 400, 2 * constants.TILE_SIZE / 3, constants.TILE_SIZE, false, true, null, (e, h, t) => {}),
-			600, 600, 175, -1, {combat: {x: 0, y: 0}, collision: {x: 0, y: constants.TILE_SIZE / 4}}
+			600, 600, 175, {combat: {x: game.zero, y: game.zero}, collision: {x: game.zero, y: new Resizeable(game, constants.TILE_SIZE / 4)}}, -1
 		)
 
 		this.collision_hitbox.owner = this
@@ -86,14 +87,22 @@ export class Player extends Entity {
 
 		super.updateHitboxes()
 
-		if(this.direction == 0)
-			this.raycast_hitbox.set(this.worldX, this.worldY, 0, 100)
-		if(this.direction == 1)
-			this.raycast_hitbox.set(this.worldX, this.worldY, 0, -100)
-		if(this.direction == 2)
-			this.raycast_hitbox.set(this.worldX, this.worldY, 100, 0)
-		if(this.direction == 3)
-			this.raycast_hitbox.set(this.worldX, this.worldY, -100, 0)
+		if(this.direction == 0){
+			this.raycast_hitbox.set(this.worldX.get(), this.worldY.get(), 0, 100)
+			console.log(this.raycast_hitbox)
+		}
+		if(this.direction == 1){
+			this.raycast_hitbox.set(this.worldX.get(), this.worldY.get(), 0, -100)
+			console.log(this.raycast_hitbox)
+		}
+		if(this.direction == 2){
+			this.raycast_hitbox.set(this.worldX.get(), this.worldY.get(), 100, 0)
+			console.log(this.raycast_hitbox)
+		}
+		if(this.direction == 3){
+			this.raycast_hitbox.set(this.worldX.get(), this.worldY.get(), -100, 0)
+			console.log(this.raycast_hitbox)
+		}
 	}
 
 	/**
@@ -102,8 +111,8 @@ export class Player extends Entity {
 	 */
 	set_map(new_map){
 		super.set_map(new_map)
-		this.worldX = new_map.player_pos.x
-		this.worldY = new_map.player_pos.y
+		this.worldX.set_value(new_map.player_pos.x)
+		this.worldY.set_value(new_map.player_pos.y)
 	}
 
 	/**
@@ -112,7 +121,7 @@ export class Player extends Entity {
 	 * @param {Number} y 
 	 */
 	set_pos(x, y) {
-		this.worldX = clamp(x, constants.PLAYER_COMBAT_BOX_WIDTH/ 2, this.map.world.width - constants.PLAYER_COMBAT_BOX_WIDTH/2)
-		this.worldY = clamp(y, constants.PLAYER_COMBAT_BOX_HEIGHT/2, this.map.world.height - constants.PLAYER_COMBAT_BOX_HEIGHT/2)
+		this.worldX.set_value(clamp(x, constants.PLAYER_COMBAT_BOX_WIDTH/ 2, this.map.world.width.get() - constants.PLAYER_COMBAT_BOX_WIDTH/2))
+		this.worldY.set_value(clamp(y, constants.PLAYER_COMBAT_BOX_HEIGHT/2, this.map.world.height.get() - constants.PLAYER_COMBAT_BOX_HEIGHT/2))
 	}
 }

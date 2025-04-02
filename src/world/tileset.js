@@ -1,5 +1,6 @@
 import { Game } from "../core/game.js";
 import { config } from "../constants.js";
+import { Resizeable } from "../utils.js";
 
 export class Tileset {
     /**
@@ -11,7 +12,7 @@ export class Tileset {
      */
     constructor(game, img_tile_size, screen_tile_size, tileset_spacing) {
         this.img_tile_size = img_tile_size;
-        this.screen_tile_size = screen_tile_size;
+        this.screen_tile_size = new Resizeable(game, screen_tile_size);
         this.game = game;
         this.tileset_spacing = tileset_spacing;
         this.img = null; // Initialize the image to null
@@ -80,7 +81,7 @@ export class Tileset {
 			this.img,
 			tileX, tileY, this.img_tile_size, this.img_tile_size,
 			Math.floor(screenX), Math.floor(screenY),
-			this.screen_tile_size, this.screen_tile_size
+			this.screen_tile_size.get(), this.screen_tile_size.get()
 		);
 	}
 }

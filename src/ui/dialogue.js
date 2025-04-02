@@ -38,7 +38,7 @@ export class Dialogue extends Ui{
         this.on_end = on_end
         this.last_time = 0
         
-        this.sentences = slice(text, Math.round(2300 / fontsize))
+        this.sentences = slice(text, Math.round(1.75 * this.game.canvas.width / fontsize))
         this.sentence = 0
     }
 
@@ -119,7 +119,7 @@ export class QuestionDialogue extends Ui{
      */
     constructor(game, text, arrow_tileset, anwsers, anwsers_x, anwsers_y, anwsers_width, anwsers_height, anwser_box_tileset, on_end, fontsize, textcolor, font){
         var widgets = [new Label(game, "dialogue-content",
-            - game.canvas.width / 2 + 100, game.canvas.height / 2 - 50, "",
+            - game.canvas.width / 2.25, game.canvas.height / 2 - 50, "",
             true, fontsize, textcolor, font),
             new Button(game, "new-line-button",
                 - game.canvas.width / 2, - game.canvas.height / 2, game.canvas.width, game.canvas.height,
@@ -153,7 +153,7 @@ export class QuestionDialogue extends Ui{
             ))
 
             widgets.push(new Icon(game, "anwser-arrow-"+i.toString(),
-            anwsers_x + anwsers_width * 0.9, anwsers_y - ((i + 0.75) * anwsers_height), arrow_tileset, 4, false))
+            anwsers_x + anwsers_width - arrow_tileset.screen_tile_size, anwsers_y - ((i + 0.75) * anwsers_height), arrow_tileset, 4, false))
         }
 
         var widgets_states_handler = (dialogue) => {
@@ -173,7 +173,7 @@ export class QuestionDialogue extends Ui{
         this.on_end = on_end
         this.last_time = 0
         
-        this.sentences = slice(text, Math.round(2300 / fontsize))
+        this.sentences = slice(text, Math.round(1.75 * this.game.canvas.width / fontsize))
         this.sentence = 0
     }
 
@@ -188,7 +188,7 @@ export class QuestionDialogue extends Ui{
      * @param {Number} anwsers_width - The width of the anwsers' box
      * @param {Number} anwsers_height - The height of one anwser in the anwsers' box
      * @param {String} anwser_box_tileset_src - The box drawing tileset's path
-     * @param {(d: Dialogue, a: String) => void} [on_end = (d: Dialogue, a: String) => {}] - The command executed at the end of the dialogue
+     * @param {(d: Dialogue, anwser: String) => void} [on_end = (d: Dialogue, a: String) => {}] - The command executed at the end of the dialogue, 'anwser' refers to the anwser that have been chosen by the player
      * @param {number} [fontsize=15] - Dialogue's text's font size
      * @param {String} [textcolor="black"] - Dialogue's text's color
      * @param {string} [font="arial"] - Dialogue's text's font

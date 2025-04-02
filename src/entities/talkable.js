@@ -33,10 +33,10 @@ export class Talkable{
 		if(this.game.get_current_map() == this.map){
 			this.game.ctx.strokeStyle = "green"
 			this.game.ctx.strokeRect(
-				this.hitbox.x1 - this.game.camera.x,
-				this.hitbox.y1 - this.game.camera.y,
-				this.hitbox.width,
-				this.hitbox.height
+				this.hitbox.x1.get() - this.game.camera.x.get(),
+				this.hitbox.y1.get() - this.game.camera.y.get(),
+				this.hitbox.width.get(),
+				this.hitbox.height.get()
 			)
 		}
 	}
@@ -49,7 +49,7 @@ export class Talkable{
             }
         }
         if(this.entity)
-            this.hitbox.center_around(this.entity.worldX, this.entity.worldY)
+            this.hitbox.center_around(this.entity.worldX.get(), this.entity.worldY.get())
     }
 
     destructor(){

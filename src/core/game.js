@@ -12,6 +12,7 @@ import { Talkable } from '../entities/talkable.js'
 import { config, constants } from "../constants.js"
 import { Transition, UnicoloreTransition } from '../ui/transition.js'
 import { Dialogue, QuestionDialogue } from '../ui/dialogue.js'
+import { Resizeable } from '../utils.js'
 
 export class Game {
 	constructor() {
@@ -21,17 +22,21 @@ export class Game {
 		this.canvas.width = window.innerWidth
 		this.canvas.height = window.innerHeight
 
+		constants.TILE_SIZE = this.canvas.width / 10
+
 		/** @type {CanvasRenderingContext2D} */
 		this.ctx = this.canvas.getContext('2d')
 		this.ctx.imageSmoothingEnabled = false
 
-		document.addEventListener('resize', () => {
+		window.addEventListener('resize', () => {
 			this.canvas.width = window.innerWidth
 			this.canvas.height = window.innerHeight
 
 			/** @type {CanvasRenderingContext2D} */
 			this.ctx = this.canvas.getContext('2d')
 			this.ctx.imageSmoothingEnabled = false
+
+			constants.TILE_SIZE = this.canvas.width / 10
 		})
 
 		// prevent right-click (as it provokes bugs)
@@ -58,7 +63,9 @@ export class Game {
 		/** @type {Ui | Transition} */
 		this.current_ui = null
 
-		this.camera = { x: -1000, y: -1000 }
+		this.zero = new Resizeable(this, 0)
+
+		this.camera = { x: new Resizeable(this, -1000), y: new Resizeable(this, -1000)}
 	}
 
 	async run() {
@@ -79,7 +86,7 @@ export class Game {
 		const test_spider_entity = new Entity(this, this.maps[1], spider_tile_set,
 			new Hitbox(this, this.maps[1], 0, 0, constants.TILE_SIZE * 2, constants.TILE_SIZE * 2.5, true, false, null, (e, h, t) => {}),
 			new Hitbox(this, this.maps[1], 0, 0, constants.TILE_SIZE * 2, constants.TILE_SIZE * 2.5, false, false, null, (e, h, t) => {}),
-			200, 200, 150, 10, {combat: {x: 0, y: -20}, collision: {x: 0, y: -20}}
+			200, 200, 150, {combat: {x: this.zero, y: new Resizeable(this, -20)}, collision: {x: this.zero, y: new Resizeable(this, -20)}}, 10
 		)
 
 
@@ -304,19 +311,19 @@ export class Game {
 
 		this.entities.forEach(entity => {entity.update(current_time)})
 
-		this.camera.x = this.player.worldX - this.canvas.width / 2
-		this.camera.y = this.player.worldY - this.canvas.height / 2
+		this.camera.x.set_value(this.player.worldX.get() - this.canvas.width / 2)
+		this.camera.y.set_value(this.player.worldY.get() - this.canvas.height / 2)
 
-		if (this.get_current_map().world.width <= this.canvas.width) {
-			this.camera.x = (this.get_current_map().world.width - this.canvas.width) / 2;
+		if (this.get_current_map().world.width.get() <= this.canvas.width) {
+			this.camera.x.set_value((this.get_current_map().world.width.get() - this.canvas.width) / 2);
 		} else {
-			this.camera.x = Math.max(0, Math.min(this.camera.x, this.get_current_map().world.width - this.canvas.width));
+			this.camera.x.set_value(Math.max(0, Math.min(this.camera.x.get(), this.get_current_map().world.width.get() - this.canvas.width)));
 		}
 
-		if (this.get_current_map().world.height <= this.canvas.height) {
-			this.camera.y = (this.get_current_map().world.height - this.canvas.height) / 2;
+		if (this.get_current_map().world.height.get() <= this.canvas.height) {
+			this.camera.y.set_value((this.get_current_map().world.height.get() - this.canvas.height) / 2);
 		} else {
-			this.camera.y = Math.max(0, Math.min(this.camera.y, this.get_current_map().world.height - this.canvas.height));
+			this.camera.y.set_value(Math.max(0, Math.min(this.camera.y.get(), this.get_current_map().world.height.get() - this.canvas.height)));
 		}
 
 
@@ -331,6 +338,7 @@ export class Game {
 	}
 
 	render() {
+
 		this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
 		this.get_current_map().render_ground_blocks()
 

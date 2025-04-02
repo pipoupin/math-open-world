@@ -131,12 +131,6 @@ export class InputHandler {
                 })
             }
         })
-
-        // I will do it later, it will be so much pain...
-        // window.addEventListener("resize", (e) => {
-        //     game.canvas.width = window.innerWidth
-        //     game.canvas.height = window.innerHeight
-        // })
     }
 
     /**
