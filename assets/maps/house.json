@@ -1,10 +1,11 @@
-{ "compressionlevel":-1,
- "height":9,
- "width":7,
- "infinite":false,
- "layers":[
+{
+    "compressionlevel":-1,
+    "height":9,
+    "width":7,
+    "infinite":false,
+    "layers":[
         {
-         "data":[33, 34, 34, 34, 34, 34, 35,
+            "data":[33, 34, 34, 34, 34, 34, 35,
                41, 42, 42, 42, 42, 42, 43,
                49, 50, 50, 50, 50, 50, 51,
                14, 14, 14, 14, 14, 14, 14,
@@ -13,19 +14,19 @@
                14, 14, 14, 14, 14, 14, 14,
                14, 14, 14, 14, 14, 14, 14,
                0, 0, 0, 14, 0, 0, 0],
-         "height":9,
-         "id":1,
-         "name":"Ground",
-         "opacity":1,
-         "type":"tilelayer",
-         "visible":true,
-         "width":7,
-         "x":0,
-         "y":0,
-         "is_before_player":true
+            "height":9,
+            "id":1,
+            "name":"Ground",
+            "opacity":1,
+            "type":"tilelayer",
+            "visible":true,
+            "width":7,
+            "x":0,
+            "y":0,
+            "is_before_player":true
         }, 
         {
-         "data":[0, 1, 0, 0, 0, 0, 0,
+            "data":[0, 1, 0, 0, 0, 0, 0,
                0, 9, 8, 0, 7, 15, 0,
                0, 17, 0, 0, 0, 0, 0,
                0, 0, 0, 0, 0, 0, 0,
@@ -34,19 +35,19 @@
                0, 39, 53, 53, 53, 53, 40,
                0, 0, 0, 0, 0, 0, 0,
                0, 0, 0, 0, 0, 0, 0],
-         "height":9,
-         "id":2,
-         "name":"Furnitures",
-         "opacity":1,
-         "type":"tilelayer",
-         "visible":true,
-         "width":7,
-         "x":0,
-         "y":0,
-         "is_before_player":true
+            "height":9,
+            "id":2,
+            "name":"Furnitures",
+            "opacity":1,
+            "type":"tilelayer",
+            "visible":true,
+            "width":7,
+            "x":0,
+            "y":0,
+            "is_before_player":true
         },
         {
-         "data":[0, 0, 0, 0, 0, 0, 0,
+            "data":[0, 0, 0, 0, 0, 0, 0,
                0, -1, 0, 0, 0, 0, 0,
                -1, 0, -1, -1, -1, -1, 2,
                0, 0, 0, 18, 0, 16, 10,
@@ -87,18 +88,19 @@
             "y":0,
             "is_before_player":false
          }],
- "nextlayerid":3,
- "nextobjectid":1,
- "orientation":"orthogonal",
- "renderorder":"right-down",
- "tiledversion":"1.11.2",
- "tileheight":16,
- "tilesets":[
+    "animated":{},
+    "nextlayerid":3,
+    "nextobjectid":1,
+    "orientation":"orthogonal",
+    "renderorder":"right-down",
+    "tiledversion":"1.11.2",
+    "tileheight":16,
+    "tilesets":[
         {
-         "firstgid":1,
-         "source":"..\/sprites\/roguelikeSheet_transparent.tsx"
+            "firstgid":1,
+            "source":"..\/sprites\/roguelikeSheet_transparent.tsx"
         }],
- "tilewidth":16,
- "type":"map",
- "version":"1.10"
+    "tilewidth":16,
+    "type":"map",
+    "version":"1.10"
 }

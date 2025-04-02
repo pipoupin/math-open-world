@@ -30,13 +30,10 @@ export const constants = {
     LEFT_KEY: "q",
     RIGHT_KEY: "d",
     INTERACTION_KEY: "e",
-    DASH_KEY: " ",
-
-    ACTIVE_TILES: [169]
+    DASH_KEY: " "
 }
 
-// TODO: The future has arrived
-// still need a bit cleaner way to do it tho
+// The future has arrived
 // the format is
 // map_name: tile_number: {x: new_x, y: new_y, width: new_width, height: new_height}
 //

@@ -10,6 +10,7 @@ export class InputHandler {
         this.keys_down = {}
         this.keys_pressed = {}
         this.del_key_can_be_pressed = true
+        /** @type {x: Number, y: Number} */
         this.mouse_pos = {x:null, y:null}
 
         document.addEventListener('keydown', (e) => {
@@ -130,6 +131,12 @@ export class InputHandler {
                 })
             }
         })
+
+        // I will do it later, it will be so much pain...
+        // window.addEventListener("resize", (e) => {
+        //     game.canvas.width = window.innerWidth
+        //     game.canvas.height = window.innerHeight
+        // })
     }
 
     /**

@@ -57,6 +57,28 @@ export class Map {
 			this.height = body.height
 			this.world.width = this.width * constants.TILE_SIZE
 			this.world.height = this.height * constants.TILE_SIZE
+
+			this.animated_tiles = body.animated
+			this.framerate = null
+			if(body.map_framerate)
+				this.framerate = body.map_framerate
+			this.last_frame_time = 0
+			this.current_frame = 0
+			this.animation_tilesets = {}
+
+			for(let tile_num of Object.keys(this.animated_tiles)){
+				tile_num = parseInt(tile_num)
+				if(this.animated_tiles[tile_num].tileset.path == "current")
+					this.animation_tilesets[tile_num] = this.tileset
+				else if(!isNaN(this.animated_tiles[tile_num].tileset.path))
+					this.animation_tilesets[tile_num] = this.animation_tilesets[parseInt(this.animated_tiles[tile_num].tileset.path)]
+				else
+					this.animation_tilesets[tile_num] = await Tileset.create(this.game,
+						config.IMG_DIR + this.animated_tiles[tile_num].tileset.path,
+						this.animated_tiles[tile_num].tileset.tilesize,
+						constants.TILE_SIZE, this.animated_tiles[tile_num].tileset.spacing)
+			}
+
 			for (let layer of body.layers) {
 				if (layer.type === "tilelayer") {
 
@@ -69,8 +91,6 @@ export class Map {
 					if (layer.name === "Blocks") {
 						for (let i = 0; i < layer.data.length; i++) {
 							if (!layer.data[i])
-								continue
-							if ((! layer.data[i]) || constants.ACTIVE_TILES.includes(layer.data[i]))
 								continue
 
 							const tileX = (i % layer.width) * constants.TILE_SIZE;
@@ -112,6 +132,18 @@ export class Map {
 	}
 
 	/**
+	 * 
+	 * @param {Number} current_time 
+	 */
+	update(current_time){
+		if(!this.framerate) return
+		if(current_time - this.last_frame_time >= this.framerate){
+			this.current_frame++
+			this.last_frame_time = current_time
+		}
+	}
+
+	/**
 	 * @param {Number} layer_i 
 	 * @param {Number} x 
 	 * @param {Number} y 
@@ -150,9 +182,14 @@ export class Map {
 
 				for (let i = 0; i < this.layers.length; i++) {
 					const tile_num = this.get_cell(i, x, y);
-					if (tile_num !== 0) // skips empty tiles 
+					if(this.animated_tiles[tile_num]){
+						this.animation_tilesets[tile_num].drawTile(
+							this.animated_tiles[tile_num].frameorder[
+								this.current_frame % this.animated_tiles[tile_num].frameorder.length
+							], screenX, screenY)
+					}
+					else if (tile_num !== 0) // skips empty tiles 
 						this.tileset.drawTile(tile_num, screenX, screenY);
-
 				}
 			}
 		}
@@ -174,7 +211,13 @@ export class Map {
 
 				for (let i = 0; i < this.perpective_layers.length; i++) {
 					const tile_num = this.get_perspective_cell(i, x, y);
-					if (tile_num !== 0) // skips empty tiles 
+					if(this.animated_tiles[tile_num]){
+						this.animation_tilesets[tile_num].drawTile(
+							this.animated_tiles[tile_num].frameorder[
+								this.current_frame % this.animated_tiles[tile_num].frameorder.length
+							], screenX, screenY)
+					}
+					else if (tile_num !== 0) // skips empty tiles 
 						this.tileset.drawTile(tile_num, screenX, screenY);
 				}
 			}
