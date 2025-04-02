@@ -25,8 +25,8 @@ export class Player extends Entity {
 
 		this.inputHandler = game.inputHandler
 
-		this.fullSpeed = 10
-		this.acceleration = 4
+		this.fullSpeed = new Resizeable(game, 10)
+		this.acceleration = new Resizeable(game, 4)
 		this.last_dash = -constants.PLAYER_DASH_COOLDOWN // used both for during the dash and for waiting state
 		this.dash_reset = false
 		this.dashing = false
@@ -50,8 +50,8 @@ export class Player extends Entity {
 		
 		if (!this.dashing && this.inputHandler.isKeyDown(constants.DASH_KEY) && current_time - this.last_dash >= constants.PLAYER_DASH_COOLDOWN) {
 			this.dashing = true
-			this.acceleration = 10
-			this.fullSpeed = 30
+			this.acceleration.set_value(10)
+			this.fullSpeed.set_value(30)
 			this.last_dash = current_time
 		}
 
@@ -59,28 +59,28 @@ export class Player extends Entity {
 			this.last_dash = this.dash_reset ? 0 : current_time
 			this.dash_reset = false
 			this.dashing = false
-			this.fullSpeed = 10
-			this.acceleration = 4
+			this.fullSpeed.set_value(10)
+			this.acceleration.set_value(4)
 		}
 	
-		if (this.inputHandler.isKeyDown(constants.UP_KEY)) this.dy -= this.acceleration
-		if (this.inputHandler.isKeyDown(constants.DOWN_KEY)) this.dy += this.acceleration
-		if (this.inputHandler.isKeyDown(constants.LEFT_KEY)) this.dx -= this.acceleration
-		if (this.inputHandler.isKeyDown(constants.RIGHT_KEY)) this.dx += this.acceleration
+		if (this.inputHandler.isKeyDown(constants.UP_KEY)) this.dy -= this.acceleration.get()
+		if (this.inputHandler.isKeyDown(constants.DOWN_KEY)) this.dy += this.acceleration.get()
+		if (this.inputHandler.isKeyDown(constants.LEFT_KEY)) this.dx -= this.acceleration.get()
+		if (this.inputHandler.isKeyDown(constants.RIGHT_KEY)) this.dx += this.acceleration.get()
 
 		// Handle deceleration
 		if (!this.inputHandler.isKeyDown(constants.UP_KEY) && !this.inputHandler.isKeyDown(constants.DOWN_KEY))
-			this.dy = Math.sign(this.dy) * Math.max(Math.abs(this.dy) - this.acceleration, 0)
+			this.dy = Math.sign(this.dy) * Math.max(Math.abs(this.dy) - this.acceleration.get(), 0)
 		if (!this.inputHandler.isKeyDown(constants.LEFT_KEY) && !this.inputHandler.isKeyDown(constants.RIGHT_KEY))
-			this.dx = Math.sign(this.dx) * Math.max(Math.abs(this.dx) - this.acceleration, 0)
+			this.dx = Math.sign(this.dx) * Math.max(Math.abs(this.dx) - this.acceleration.get(), 0)
 
 		// Apply diagonal speed limitation
 		if (this.dx && this.dy) {
-			this.dy = Math.sign(this.dy) * Math.min(this.fullSpeed / Math.SQRT2, Math.abs(this.dy))
-			this.dx = Math.sign(this.dx) * Math.min(this.fullSpeed / Math.SQRT2, Math.abs(this.dx))
+			this.dy = Math.sign(this.dy) * Math.min(this.fullSpeed.get() / Math.SQRT2, Math.abs(this.dy))
+			this.dx = Math.sign(this.dx) * Math.min(this.fullSpeed.get() / Math.SQRT2, Math.abs(this.dx))
 		} else {
-			this.dy = Math.sign(this.dy) * Math.min(this.fullSpeed, Math.abs(this.dy))
-			this.dx = Math.sign(this.dx) * Math.min(this.fullSpeed, Math.abs(this.dx))
+			this.dy = Math.sign(this.dy) * Math.min(this.fullSpeed.get(), Math.abs(this.dy))
+			this.dx = Math.sign(this.dx) * Math.min(this.fullSpeed.get(), Math.abs(this.dx))
 		}
 
 		super.update(current_time)
@@ -88,20 +88,16 @@ export class Player extends Entity {
 		super.updateHitboxes()
 
 		if(this.direction == 0){
-			this.raycast_hitbox.set(this.worldX.get(), this.worldY.get(), 0, 100)
-			console.log(this.raycast_hitbox)
+			this.raycast_hitbox.set(this.worldX.get(), this.worldY.get(), 0, constants.TILE_SIZE)
 		}
 		if(this.direction == 1){
-			this.raycast_hitbox.set(this.worldX.get(), this.worldY.get(), 0, -100)
-			console.log(this.raycast_hitbox)
+			this.raycast_hitbox.set(this.worldX.get(), this.worldY.get(), 0, - constants.TILE_SIZE)
 		}
 		if(this.direction == 2){
-			this.raycast_hitbox.set(this.worldX.get(), this.worldY.get(), 100, 0)
-			console.log(this.raycast_hitbox)
+			this.raycast_hitbox.set(this.worldX.get(), this.worldY.get(), constants.TILE_SIZE, 0)
 		}
 		if(this.direction == 3){
-			this.raycast_hitbox.set(this.worldX.get(), this.worldY.get(), -100, 0)
-			console.log(this.raycast_hitbox)
+			this.raycast_hitbox.set(this.worldX.get(), this.worldY.get(), - constants.TILE_SIZE, 0)
 		}
 	}
 
