@@ -111,7 +111,6 @@ export class Hitbox {
 				}
 			}
 		}
-
 		return colliding_hitboxes
 	}
 
@@ -159,10 +158,10 @@ export class Hitbox {
 	 * @param {Number} dy 
 	 */
 	move_by(dx, dy) {
-		this.x1.set_value(this.x1.get() + dx)
-		this.x2.set_value(this.x2.get() + dx)
-		this.y1.set_value(this.y1.get() + dy)
-		this.y2.set_value(this.y2.get() + dy)
+		this.x1.set_value(this.x1.get() + dx.get())
+		this.x2.set_value(this.x2.get() + dx.get())
+		this.y1.set_value(this.y1.get() + dy.get())
+		this.y2.set_value(this.y2.get() + dy.get())
 	}
 
 	/**

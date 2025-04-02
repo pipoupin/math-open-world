@@ -16,10 +16,10 @@ export class Entity {
     * @param {Number} worldX - the entity's x position in the world
     * @param {Number} worldY - the entity's y position in the world
     * @param {Number} animation_duration - the animation's frames' duration
-    * @param {{ combat: { x: Resizeable; y: Resizeable; }; collision: { x: Resizeable; y: Resizeable; }; }} hitboxes_offset - The entity's hitboxes' offset in case you need them to be a little bit offcentered
+    * @param {{ combat: { x: Number; y: Number; }; collision: { x: Number; y: Number; }; }} [hitboxes_offset={combat:{x:0,y:0},collision:{x:0,y:0}}] - The entity's hitboxes' offset in case you need them to be a little bit offcentered
     * @param {number} [life=-1] - The entity's life
     */
-    constructor(game, map, tileset, collision_hitbox, combat_hitbox, worldX, worldY, animation_duration, hitboxes_offset, life=-1) {
+    constructor(game, map, tileset, collision_hitbox, combat_hitbox, worldX, worldY, animation_duration, hitboxes_offset={combat:{x:0,y:0},collision:{x:0,y:0}}, life=-1) {
         this.game = game
         this.map = map
 
@@ -27,8 +27,8 @@ export class Entity {
         this.worldX = new Resizeable(game, worldX)
         this.worldY = new Resizeable(game, worldY)
 
-        this.dx = 5
-        this.dy = 5
+        this.dx = new Resizeable(game, 1)
+        this.dy = new Resizeable(game, 1)
 
         this.tileset = tileset
         this.collision_hitbox = collision_hitbox
@@ -41,7 +41,16 @@ export class Entity {
 
         this.life = life
 
-        this.hitboxes_offset = hitboxes_offset
+        this.hitboxes_offset = {
+            combat: {
+                x: new Resizeable(game, hitboxes_offset.combat.x),
+                y: new Resizeable(game, hitboxes_offset.combat.y)
+            },
+            collision: {
+                x: new Resizeable(game, hitboxes_offset.collision.x),
+                y: new Resizeable(game, hitboxes_offset.collision.y)
+            }
+        }
 
         this.game.entities.push(this)
     }
@@ -59,14 +68,14 @@ export class Entity {
             this.updateHitboxes()
         if (this.colliding()) {
             this.backPositionX()
-            this.dx = 0
+            this.dx.set_value(0)
         }
         
         this.updatePositionY()
             this.updateHitboxes()
         if (this.colliding()) {
             this.backPositionY()
-            this.dy = 0
+            this.dy.set_value(0)
         }
 
         this.collision_hitbox.get_colliding_hitboxes(true, false).forEach(hitbox => {
@@ -87,23 +96,23 @@ export class Entity {
     updatePositionX() {
         const halfHitboxWidth = this.combat_hitbox.width.get() / 2 + this.hitboxes_offset.combat.x.get()
         this.worldX.set_value(clamp(
-            this.worldX.get() + this.dx,
+            this.worldX.get() + this.dx.get(),
             halfHitboxWidth,
             this.game.map.world.width.get() - halfHitboxWidth
         ))
         if(this.worldX.get() === this.game.map.world.width.get() - halfHitboxWidth || this.worldX.get() === halfHitboxWidth)
-            this.dx = 0
+            this.dx.set_value(0)
     }
 
     updatePositionY() {
         const halfHitboxHeight = this.combat_hitbox.height.get() / 2 + this.hitboxes_offset.combat.y.get()
         this.worldY.set_value(clamp(
-            this.worldY.get() + this.dy,
+            this.worldY.get() + this.dy.get(),
             halfHitboxHeight,
             this.game.map.world.height.get() - halfHitboxHeight
         ))
         if(this.worldY.get() === this.game.map.world.height.get() - halfHitboxHeight || this.worldY.get() === halfHitboxHeight)
-            this.dy = 0
+            this.dy.set_value(0)
     }
 
     updateHitboxes() {
@@ -120,13 +129,13 @@ export class Entity {
     }
 
     backPositionX() {
-        this.worldX.set_value(this.worldX.get() - this.dx)
-        this.dx = 0
+        this.worldX.set_value(this.worldX.get() - this.dx.get())
+        this.dx.set_value(0)
     }
 
     backPositionY() {
-        this.worldY.set_value(this.worldY.get() - this.dy)
-        this.dy = 0
+        this.worldY.set_value(this.worldY.get() - this.dy.get())
+        this.dy.set_value(0)
     }
 
     /**
@@ -139,18 +148,18 @@ export class Entity {
         
         if (current_time - this.last_time < this.animation_duration) return
 
-        this.animation_step = (this.dx || this.dy) ? (this.animation_step + 1) % 4 : 0
+        this.animation_step = (this.dx.get() || this.dy.get()) ? (this.animation_step + 1) % 4 : 0
 
         this.last_time = current_time
     }
 
     updateDirection() {
-        if (this.dy === 0 && this.dx === 0) return
+        if (this.dy.get() === 0 && this.dx.get() === 0) return
 
-        if (Math.abs(this.dy) > Math.abs(this.dx)) {
-            this.direction = this.dy > 0 ? 0 : 1
+        if (Math.abs(this.dy.get()) > Math.abs(this.dx.get())) {
+            this.direction = this.dy.get() > 0 ? 0 : 1
         } else {
-            this.direction = this.dx > 0 ? 2 : 3
+            this.direction = this.dx.get() > 0 ? 2 : 3
         }
 
     }

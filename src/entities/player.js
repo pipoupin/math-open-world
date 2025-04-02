@@ -15,7 +15,7 @@ export class Player extends Entity {
 			game, game.get_current_map(), player_tileset,
 			new Hitbox(game, game.get_current_map(), 400, 400 + constants.TILE_SIZE / 2, 2 * constants.TILE_SIZE / 3, constants.TILE_SIZE / 2, true, true, null, (e, h, t) => {}),
 			new Hitbox(game, game.get_current_map(), 400, 400, 2 * constants.TILE_SIZE / 3, constants.TILE_SIZE, false, true, null, (e, h, t) => {}),
-			600, 600, 175, {combat: {x: game.zero, y: game.zero}, collision: {x: game.zero, y: new Resizeable(game, constants.TILE_SIZE / 4)}}, -1
+			600, 600, 175, {combat: {x: 0, y: 0}, collision: {x: 0, y: constants.TILE_SIZE / 4}}, -1
 		)
 
 		this.collision_hitbox.owner = this
@@ -25,8 +25,8 @@ export class Player extends Entity {
 
 		this.inputHandler = game.inputHandler
 
-		this.fullSpeed = new Resizeable(game, 10)
-		this.acceleration = new Resizeable(game, 4)
+		this.fullSpeed = new Resizeable(game, 0.078125 * constants.TILE_SIZE)
+		this.acceleration = new Resizeable(game, 0.03125 * constants.TILE_SIZE)
 		this.last_dash = -constants.PLAYER_DASH_COOLDOWN // used both for during the dash and for waiting state
 		this.dash_reset = false
 		this.dashing = false
@@ -63,24 +63,24 @@ export class Player extends Entity {
 			this.acceleration.set_value(4)
 		}
 	
-		if (this.inputHandler.isKeyDown(constants.UP_KEY)) this.dy -= this.acceleration.get()
-		if (this.inputHandler.isKeyDown(constants.DOWN_KEY)) this.dy += this.acceleration.get()
-		if (this.inputHandler.isKeyDown(constants.LEFT_KEY)) this.dx -= this.acceleration.get()
-		if (this.inputHandler.isKeyDown(constants.RIGHT_KEY)) this.dx += this.acceleration.get()
+		if (this.inputHandler.isKeyDown(constants.UP_KEY)) this.dy.set_value(this.dy.get() - this.acceleration.get())
+		if (this.inputHandler.isKeyDown(constants.DOWN_KEY)) this.dy.set_value(this.dy.get() + this.acceleration.get())
+		if (this.inputHandler.isKeyDown(constants.LEFT_KEY)) this.dx.set_value(this.dx.get() - this.acceleration.get())
+		if (this.inputHandler.isKeyDown(constants.RIGHT_KEY)) this.dx.set_value(this.dx.get() + this.acceleration.get())
 
 		// Handle deceleration
 		if (!this.inputHandler.isKeyDown(constants.UP_KEY) && !this.inputHandler.isKeyDown(constants.DOWN_KEY))
-			this.dy = Math.sign(this.dy) * Math.max(Math.abs(this.dy) - this.acceleration.get(), 0)
+			this.dy.set_value(Math.sign(this.dy.get()) * Math.max(Math.abs(this.dy.get()) - this.acceleration.get(), 0))
 		if (!this.inputHandler.isKeyDown(constants.LEFT_KEY) && !this.inputHandler.isKeyDown(constants.RIGHT_KEY))
-			this.dx = Math.sign(this.dx) * Math.max(Math.abs(this.dx) - this.acceleration.get(), 0)
+			this.dx.set_value(Math.sign(this.dx.get()) * Math.max(Math.abs(this.dx.get()) - this.acceleration.get(), 0))
 
 		// Apply diagonal speed limitation
-		if (this.dx && this.dy) {
-			this.dy = Math.sign(this.dy) * Math.min(this.fullSpeed.get() / Math.SQRT2, Math.abs(this.dy))
-			this.dx = Math.sign(this.dx) * Math.min(this.fullSpeed.get() / Math.SQRT2, Math.abs(this.dx))
+		if (this.dx.get() && this.dy.get()) {
+			this.dy.set_value(Math.sign(this.dy.get()) * Math.min(this.fullSpeed.get() / Math.SQRT2, Math.abs(this.dy.get())))
+			this.dx.set_value(Math.sign(this.dx.get()) * Math.min(this.fullSpeed.get() / Math.SQRT2, Math.abs(this.dx.get())))
 		} else {
-			this.dy = Math.sign(this.dy) * Math.min(this.fullSpeed.get(), Math.abs(this.dy))
-			this.dx = Math.sign(this.dx) * Math.min(this.fullSpeed.get(), Math.abs(this.dx))
+			this.dy.set_value(Math.sign(this.dy.get()) * Math.min(this.fullSpeed.get(), Math.abs(this.dy.get())))
+			this.dx.set_value(Math.sign(this.dx.get()) * Math.min(this.fullSpeed.get(), Math.abs(this.dx.get())))
 		}
 
 		super.update(current_time)
@@ -107,8 +107,8 @@ export class Player extends Entity {
 	 */
 	set_map(new_map){
 		super.set_map(new_map)
-		this.worldX.set_value(new_map.player_pos.x)
-		this.worldY.set_value(new_map.player_pos.y)
+		this.worldX.set_value(new_map.player_pos.x.get())
+		this.worldY.set_value(new_map.player_pos.y.get())
 	}
 
 	/**

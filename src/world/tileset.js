@@ -80,7 +80,7 @@ export class Tileset {
 		this.game.ctx.drawImage(
 			this.img,
 			tileX, tileY, this.img_tile_size, this.img_tile_size,
-			Math.floor(screenX), Math.floor(screenY),
+			screenX, screenY,
 			this.screen_tile_size.get(), this.screen_tile_size.get()
 		);
 	}

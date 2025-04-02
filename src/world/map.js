@@ -10,7 +10,7 @@ export class Map {
 	 * @param {Game} game - The current game
 	 * @param {Tileset} tileset - The tileset used to render the map
 	 * @param {String} background - The color of the tileless background
-	 * @param {Object} player_pos - The position of the player on this specific map
+	 * @param {{x: Number, y: Number}} player_pos - The position of the player on this specific map
 	 */
 	constructor(game, tileset, background, player_pos) {
 		this.game = game
@@ -21,7 +21,10 @@ export class Map {
 		this.perpective_layers = []
 		this.world = {}
 		this.background = background
-		this.player_pos = player_pos
+		this.player_pos = {
+			x: new Resizeable(game, player_pos.x),
+			y: new Resizeable(game, player_pos.y)
+		}
 	}
 
 	/**
@@ -30,7 +33,7 @@ export class Map {
 	 * @param {String} src - The path to the json file used as a reference to layout the map
 	 * @param {Tileset} tileset - The tileset used to render the map
 	 * @param {String} background - The color of the tileless background
-	 * @param {Object} player_pos - The position of the player on this specific map
+	 * @param {{x: Number, y: Number}} player_pos - The position of the player on this specific map
 	 * @returns {Map}
 	 */
 	static async create(game, src, tileset, background, player_pos) {
@@ -169,6 +172,15 @@ export class Map {
 	 */
 	get_perspective_cell(layer_i, x, y){
 		return this.perpective_layers[layer_i][y * this.width + x]
+	}
+
+	/**
+	 * 
+	 * @param {{x: Number, y: Number}} new_player_pos 
+	 */
+	set_player_pos(new_player_pos){
+		this.player_pos.x.set_value(new_player_pos.x)
+		this.player_pos.y.set_value(new_player_pos.y)
 	}
 
 	/**

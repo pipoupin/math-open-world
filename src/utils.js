@@ -36,8 +36,7 @@ export const slice = (str, lenght) => {
 
 export class Resizeable{
 	/**
-	 * Let it be for now, I will make it into the code later
-	 * (this forces me to rewrite a hella LOT of code so i'm too lazy for now)
+	 * 
 	 * @param {Game} game 
 	 * @param {Number} value 
 	 */
@@ -47,10 +46,33 @@ export class Resizeable{
 	}
 
 	set_value(new_value){
-		this.value = new_value / this.game.canvas.width
+		if(!isNaN(new_value / this.game.canvas.width))
+			this.value = new_value / this.game.canvas.width
+		else
+			console.error("error")
 	}
 
 	get(){
 		return this.value * this.game.canvas.width
+	}
+}
+
+export class YResizeable{
+	/**
+	 * 
+	 * @param {Game} game 
+	 * @param {Number} value 
+	 */
+	constructor(game, value){
+		this.game = game
+		this.value = value / this.game.canvas.height
+	}
+
+	set_value(new_value){
+		this.value = new_value / this.game.canvas.height
+	}
+
+	get(){
+		return this.value * this.game.canvas.height
 	}
 }

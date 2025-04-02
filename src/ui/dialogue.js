@@ -149,11 +149,11 @@ export class QuestionDialogue extends Ui{
             ))
 
             widgets.push(new Label(game, "anwser-label-"+i.toString(),
-                anwsers_x * 1.05, anwsers_y - ((i + 0.5) * anwsers_height) + 7.5, anwsers[i], false, fontsize, textcolor, font
+                anwsers_x * 1.05, anwsers_y - ((i + 0.5) * anwsers_height) + fontsize / 4, anwsers[i], false, fontsize, textcolor, font
             ))
 
             widgets.push(new Icon(game, "anwser-arrow-"+i.toString(),
-            anwsers_x + anwsers_width - arrow_tileset.screen_tile_size, anwsers_y - ((i + 0.75) * anwsers_height), arrow_tileset, 4, false))
+            anwsers_x + anwsers_width - arrow_tileset.screen_tile_size.get(), anwsers_y - ((i + 0.75) * anwsers_height), arrow_tileset, 4, false))
         }
 
         var widgets_states_handler = (dialogue) => {

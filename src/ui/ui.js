@@ -2,6 +2,7 @@ import { config } from "../constants.js";
 import { Game } from "../core/game.js";
 import { Hitbox } from "../entities/hitbox.js";
 import { Talkable } from "../entities/talkable.js";
+import { Resizeable } from "../utils.js";
 import { Widget } from "./widgets.js";
 
 export class Ui {
@@ -15,8 +16,8 @@ export class Ui {
      */
     constructor(game, width, height, widgets, widgets_states_handler){
         this.game = game
-        this.width = width
-        this.height = height
+        this.width = new Resizeable(game, width)
+        this.height = new Resizeable(game, height)
         this.source = null
         /** @type {Array<Widget>} */
         this.widgets = widgets
@@ -78,9 +79,9 @@ export class Ui {
     render(){
         this.game.ctx.drawImage(
             this.img,
-            (this.game.canvas.width - this.width) / 2,
-            (this.game.canvas.height - this.height) / 2,
-            this.width, this.height
+            (this.game.canvas.width - this.width.get()) / 2,
+            (this.game.canvas.height - this.height.get()) / 2,
+            this.width.get(), this.height.get()
         )
         for(let i = 0; i < this.widgets.length; i++){
             this.widgets[i].render()

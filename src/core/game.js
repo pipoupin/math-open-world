@@ -75,7 +75,7 @@ export class Game {
 		const cabane_tilset = await Tileset.create(this, "cabane_tileset.png", 16, constants.TILE_SIZE, 0)
 		const spider_tile_set = await Tileset.create(this, "spider_tileset.png", 100, constants.TILE_SIZE * 4, 0)
 		this.maps = [
-			await Map.create(this, 'house.json', cabane_tilset, "black", {x: constants.TILE_SIZE, y: 3 * constants.TILE_SIZE}),
+			await Map.create(this, 'house.json', cabane_tilset, "black", {x: constants.TILE_SIZE * 1.5, y: 3 * constants.TILE_SIZE}),
 			await Map.create(this, 'map.json', default_tileset, "grey", {x: 15.5 * constants.TILE_SIZE, y: 14.01 * constants.TILE_SIZE})
 
 		]
@@ -86,9 +86,8 @@ export class Game {
 		const test_spider_entity = new Entity(this, this.maps[1], spider_tile_set,
 			new Hitbox(this, this.maps[1], 0, 0, constants.TILE_SIZE * 2, constants.TILE_SIZE * 2.5, true, false, null, (e, h, t) => {}),
 			new Hitbox(this, this.maps[1], 0, 0, constants.TILE_SIZE * 2, constants.TILE_SIZE * 2.5, false, false, null, (e, h, t) => {}),
-			200, 200, 150, {combat: {x: this.zero, y: new Resizeable(this, -20)}, collision: {x: this.zero, y: new Resizeable(this, -20)}}, 10
+			constants.TILE_SIZE * 2, constants.TILE_SIZE * 2, 150, {combat: {x: 0, y: -0.15625 * constants.TILE_SIZE}, collision: {x: 0, y: -0.15625 * constants.TILE_SIZE}}, 10
 		)
-
 
 		const player_tileset = await Tileset.create(this, 'spritesheet.png', 16, constants.TILE_SIZE, 0)
 		this.player = new Player(this, player_tileset)
@@ -175,7 +174,7 @@ export class Game {
 
 		// test dialogue and its hitbox
 		var threats_dialogue = await Dialogue.create(this, "dialogue_box.png",
-			"Go and die !!!", (dialogue) => {}, 40
+			"Go and die !!!", (dialogue) => {}, constants.TILE_SIZE / 3
 		)
 
 		var mqc_dialogue = await QuestionDialogue.create(this, "dialogue_box.png",
@@ -187,7 +186,7 @@ export class Game {
 					dialogue.game.current_ui = threats_dialogue
 				}
 				dialogue.source.destructor()
-			}, 25, "black", "arial"
+			}, constants.TILE_SIZE / 5, "black", "arial"
 		)
 		var dialogue_test = new Hitbox(this, this.get_current_map(), 0, 4 * constants.TILE_SIZE, constants.TILE_SIZE, constants.TILE_SIZE, false, false, null, (e, h, t) => {
 			if(!e instanceof Player) return
@@ -200,7 +199,7 @@ export class Game {
 		new Hitbox(this, this.get_current_map(), 3 * constants.TILE_SIZE, 8 * constants.TILE_SIZE, constants.TILE_SIZE, constants.TILE_SIZE, false, false, null, (e, h, time) => {
 			if(!e instanceof Player) return
 			if (!this.inputHandler.isKeyPressed(constants.INTERACTION_KEY)) return // one must press INTERACTION_KEY to switch map
-			this.maps[0].player_pos = {x: this.player.worldX, y: this.player.worldY - 50}
+			this.maps[0].set_player_pos({x: this.player.worldX.get(), y: this.player.worldY.get() - constants.TILE_SIZE / 2})
 			this.set_map(1)
 
 			this.player.set_map(this.maps[1])
@@ -218,7 +217,7 @@ export class Game {
 		// -- from the house (auto)
 		new Hitbox(this, this.get_current_map(), 3 * constants.TILE_SIZE, 8.75 * constants.TILE_SIZE, constants.TILE_SIZE, constants.TILE_SIZE / 4, false, false, null, (e, h, time) => {
 			if(!e instanceof Player) return
-			this.maps[0].player_pos = {x: this.player.worldX, y: this.player.worldY - 50}
+			this.maps[0].set_player_pos({x: this.player.worldX.get(), y: this.player.worldY.get() - constants.TILE_SIZE / 2})
 			this.set_map(1)
 
 			this.player.set_map(this.maps[1])
@@ -239,14 +238,14 @@ export class Game {
 			15 * constants.TILE_SIZE,
 			13.5 * constants.TILE_SIZE,
 			constants.TILE_SIZE,
-			constants.TILE_SIZE / 2 - 18,
+			constants.TILE_SIZE / 2.859375,
 			false,
 			false,
 			null,
 			(e, h, time) => {
 				if(!e instanceof Player) return
 				if (!this.inputHandler.isKeyPressed(constants.INTERACTION_KEY)) return
-				this.maps[1].player_pos = {x: 15.5 * constants.TILE_SIZE, y: 14.01 * constants.TILE_SIZE}
+				this.maps[1].set_player_pos({x: 15.5 * constants.TILE_SIZE, y: 14.01 * constants.TILE_SIZE})
 
 				this.set_map(0)
 
@@ -270,7 +269,7 @@ export class Game {
 			null, 
 			(e, h, time) => {
 				if(!e instanceof Player) return
-				this.maps[1].player_pos = {x: 15.5 * constants.TILE_SIZE, y: 14.01 * constants.TILE_SIZE}
+				this.maps[1].set_player_pos({x: 15.5 * constants.TILE_SIZE, y: 14.01 * constants.TILE_SIZE})
 
 				this.set_map(0)
 
