@@ -1,5 +1,5 @@
 import { Game } from "../core/game.js";
-import { config } from "../constants.js";
+import { config, constants } from "../constants.js";
 import { Resizeable } from "../utils.js";
 
 export class Tileset {
@@ -80,7 +80,8 @@ export class Tileset {
 		this.game.ctx.drawImage(
 			this.img,
 			tileX, tileY, this.img_tile_size, this.img_tile_size,
-			screenX, screenY,
+			Math.floor(screenX * constants.TILE_SIZE) / constants.TILE_SIZE,
+			Math.floor(screenY * constants.TILE_SIZE) / constants.TILE_SIZE,
 			this.screen_tile_size.get(), this.screen_tile_size.get()
 		);
 	}
