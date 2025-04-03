@@ -119,7 +119,7 @@ export class QuestionDialogue extends Ui{
      */
     constructor(game, text, arrow_tileset, anwsers, anwsers_x, anwsers_y, anwsers_width, anwsers_height, anwser_box_tileset, on_end, fontsize, textcolor, font){
         var widgets = [new Label(game, "dialogue-content",
-            - game.canvas.width / 2.25, game.canvas.height / 2 - 50, "",
+            - game.canvas.width / 2.25, game.canvas.height / 2 - 60, "",
             true, fontsize, textcolor, font),
             new Button(game, "new-line-button",
                 - game.canvas.width / 2, - game.canvas.height / 2, game.canvas.width, game.canvas.height,
@@ -149,7 +149,7 @@ export class QuestionDialogue extends Ui{
             ))
 
             widgets.push(new Label(game, "anwser-label-"+i.toString(),
-                anwsers_x * 1.05, anwsers_y - ((i + 0.5) * anwsers_height) + fontsize / 4, anwsers[i], false, fontsize, textcolor, font
+                anwsers_x * 1.05, anwsers_y - ((i + 0.5) * anwsers_height), anwsers[i], false, fontsize, textcolor, font
             ))
 
             widgets.push(new Icon(game, "anwser-arrow-"+i.toString(),

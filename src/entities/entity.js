@@ -176,7 +176,6 @@ export class Entity {
         }
 
         if(constants.DEBUG){
-            // Doesn't seem to work for some reason
             this.game.ctx.beginPath()
             this.game.ctx.arc(this.worldX.get() - this.game.camera.x.get(), this.worldY.get() - this.game.camera.y.get(), 3, 0, Math.PI * 2)
             this.game.ctx.fillStyle = this.player ? "blue": "red"

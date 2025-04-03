@@ -58,7 +58,16 @@ export class Label extends Widget{
             this.game.ctx.fillText(
                 this.text,
                 this.game.canvas.width / 2 + this.x.get(),
-                this.game.canvas.height / 2 + this.y.get())
+                this.game.canvas.height / 2 + this.y.get() + this.fontsize.get() / 3)
+            
+            if(constants.DEBUG){
+                this.game.ctx.beginPath()
+                this.game.ctx.arc(this.game.canvas.width / 2 + this.x.get(),
+                    this.game.canvas.height / 2 + this.y.get(),
+                    3, 0, Math.PI * 2)
+                this.game.ctx.fillStyle = "blue"
+                this.game.ctx.fill()
+            }
         }
     }
 
@@ -189,7 +198,7 @@ export class TextArea extends Widget{
             this.game.ctx.fillText(
                 this.content + (this.has_bar ? this.blink_bar: ""),
                 this.game.canvas.width / 2 + this.x.get(),
-                this.y.get() + ((this.game.canvas.height + this.height.get()) / 2) + (this.fontsize.get() / 4)
+                this.y.get() + ((this.game.canvas.height + this.height.get()) / 2) + (this.fontsize.get() / 3)
             )
         }
     }
