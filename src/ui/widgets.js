@@ -189,7 +189,7 @@ export class TextArea extends Widget{
             this.game.ctx.fillText(
                 this.content + (this.has_bar ? this.blink_bar: ""),
                 this.game.canvas.width / 2 + this.x.get(),
-                this.y.get() + ((this.game.canvas.height + this.height) / 2) + (this.fontsize / 4)
+                this.y.get() + ((this.game.canvas.height + this.height.get()) / 2) + (this.fontsize.get() / 4)
             )
         }
     }
