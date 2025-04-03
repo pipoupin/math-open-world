@@ -1,5 +1,6 @@
 import { constants } from "../constants.js"
 import { Game } from "../core/game.js"
+import { Resizeable } from "../utils.js"
 import { Tileset } from "../world/tileset.js"
 import { Ui } from "./ui.js"
 
@@ -15,8 +16,8 @@ export class Widget{
      */
     constructor(game, id, x, y, type, rendered){
         this.game = game
-        this.x = x
-        this.y = y
+        this.x = new Resizeable(game, x)
+        this.y = new Resizeable(game, y)
         this.type = type
         this.id = id
         this.has_focus = false
@@ -45,19 +46,28 @@ export class Label extends Widget{
     constructor(game, id, x, y, text, rendered, fontsize=15, textcolor="black", font="arial"){
         super(game, id, x, y, constants.LABEL_TYPE, rendered)
         this.text = text
-        this.fontsize = fontsize
+        this.fontsize = new Resizeable(game, fontsize)
         this.textcolor = textcolor
         this.font = font
     }
 
     render(){
         if(this.rendered){
-            this.game.ctx.font = `${this.fontsize}px ${this.font}`
+            this.game.ctx.font = `${Math.round(this.fontsize.get())}px ${this.font}`
             this.game.ctx.fillStyle = this.textcolor
             this.game.ctx.fillText(
                 this.text,
-                this.game.canvas.width / 2 + this.x,
-                this.game.canvas.height / 2 + this.y)
+                this.game.canvas.width / 2 + this.x.get(),
+                this.game.canvas.height / 2 + this.y.get() + this.fontsize.get() / 3)
+            
+            if(constants.DEBUG){
+                this.game.ctx.beginPath()
+                this.game.ctx.arc(this.game.canvas.width / 2 + this.x.get(),
+                    this.game.canvas.height / 2 + this.y.get(),
+                    3, 0, Math.PI * 2)
+                this.game.ctx.fillStyle = "blue"
+                this.game.ctx.fill()
+            }
         }
     }
 
@@ -72,11 +82,11 @@ export class Label extends Widget{
      * @param {String} [font = null] - Label's text's font
      */
     update_config(x=null, y=null, text=null, rendered=null, fontsize=null, textcolor=null, font=null){
-        if(x != null) this.x = x
-        if(y != null) this.y = y
+        if(x != null) this.x.set_value(x)
+        if(y != null) this.y.set_value(y)
         if(text != null) this.text = text
         if(rendered != null) this.rendered = rendered
-        if(fontsize != null) this.fontsize = fontsize
+        if(fontsize != null) this.fontsize.set_value(fontsize)
         if(textcolor != null) this.textcolor = textcolor
         if(font != null) this.font = font
     }
@@ -96,8 +106,8 @@ export class Button extends Widget{
      */
     constructor(game, id, x, y, width, height, rendered, command){
         super(game, id, x, y, constants.BUTTON_TYPE, rendered)
-        this.width = width
-        this.height = height
+        this.width = new Resizeable(game, width)
+        this.height = new Resizeable(game, height)
         this.command = command
         this.is_clicked = false
     }
@@ -106,15 +116,15 @@ export class Button extends Widget{
         if(this.rendered && constants.DEBUG){
             this.game.ctx.strokeStyle = "blue"
             this.game.ctx.strokeRect(
-                this.game.canvas.width / 2 + this.x,
-                this.game.canvas.height / 2 + this.y,
-                this.width, this.height
+                this.game.canvas.width / 2 + this.x.get(),
+                this.game.canvas.height / 2 + this.y.get(),
+                this.width.get(), this.height.get()
             )
         }
     }
 
     side_ratio(){
-        return this.width/this.height
+        return this.width.get()/this.height.get()
     }
 
     /**
@@ -127,10 +137,10 @@ export class Button extends Widget{
      * @param {(button: Button) => void} [command = null] - Command executed when the button is being cliked, the 'button' parameter refers to the actual object, which is being clicked
      */
     update_config(x=null, y=null, width=null, height=null, rendered=null, command=null){
-        if(x != null) this.x = x
-        if(y != null) this.y = y
-        if(width != null) this.width = width
-        if(height != null) this.height = height
+        if(x != null) this.x.set_value(x)
+        if(y != null) this.y.set_value(y)
+        if(width != null) this.width.set_value(width)
+        if(height != null) this.height.set_value(height)
         if(rendered != null) this.rendered = rendered
         if(command != null) this.command = command
     }
@@ -156,12 +166,12 @@ export class TextArea extends Widget{
      */
     constructor(game, id, x, y, width, height, max_char_number, rendered, command, fontsize=15, textcolor="black", font="arial", blink_bar="|"){
         super(game, id, x, y, constants.TEXTAREA_TYPE, rendered)
-        this.width = width
-        this.height = height
+        this.width = new Resizeable(game, width)
+        this.height = new Resizeable(game, height)
         this.content = ""
         this.max_char_number = max_char_number
         this.command = command
-        this.fontsize = fontsize
+        this.fontsize = new Resizeable(game, fontsize)
         this.textcolor = textcolor
         this.font = font
         this.last_blink = 0
@@ -178,17 +188,17 @@ export class TextArea extends Widget{
             if(constants.DEBUG){
                 this.game.ctx.strokeStyle = "blue"
                 this.game.ctx.strokeRect(
-                    this.game.canvas.width / 2 + this.x,
-                    this.game.canvas.height / 2 + this.y,
-                    this.width, this.height
+                    this.game.canvas.width / 2 + this.x.get(),
+                    this.game.canvas.height / 2 + this.y.get(),
+                    this.width.get(), this.height.get()
                 )
             }
             this.game.ctx.fillStyle = this.textcolor
-            this.game.ctx.font = `${this.fontsize}px ${this.font}`
+            this.game.ctx.font = `${Math.round(this.fontsize.get())}px ${this.font}`
             this.game.ctx.fillText(
                 this.content + (this.has_bar ? this.blink_bar: ""),
-                this.game.canvas.width / 2 + this.x,
-                this.y + ((this.game.canvas.height + this.height) / 2) + (this.fontsize / 4)
+                this.game.canvas.width / 2 + this.x.get(),
+                this.y.get() + ((this.game.canvas.height + this.height.get()) / 2) + (this.fontsize.get() / 3)
             )
         }
     }
@@ -219,15 +229,15 @@ export class TextArea extends Widget{
      * @param {String} [blink_bar=null] - The blinking bar when the textarea is selected
      */
     update_config(x=null, y=null, width=null, height=null, content=null, max_char_number=null, rendered=null, command=null, fontsize=null, textcolor=null, font=null, blink_bar=null){
-        if(x != null) this.x = x
-        if(y != null) this.y = y
-        if(width != null) this.width = width
-        if(height != null) this.height = height
+        if(x != null) this.x.set_value(x)
+        if(y != null) this.y.set_value(y)
+        if(width != null) this.width.set_value(width)
+        if(height != null) this.height.set_value(height)
         if(max_char_number != null) this.max_char_number = max_char_number
         if(rendered != null) this.rendered = rendered
         if(content != null) this.content = content.slice(0, this.max_char_number)
         if(command != null) this.command = command
-        if(fontsize != null) this.fontsize = fontsize
+        if(fontsize != null) this.fontsize.set_value(fontsize)
         if(textcolor != null) this.textcolor = textcolor
         if(font != null) this.font = font
         if(blink_bar != null) this.blink_bar = blink_bar
@@ -278,8 +288,8 @@ export class Icon extends Widget{
         if(this.rendered){
             this.tileset.drawTile(
                 this.tile_nb,
-                this.game.canvas.width / 2 + this.x,
-                this.game.canvas.height / 2 + this.y)
+                this.game.canvas.width / 2 + this.x.get(),
+                this.game.canvas.height / 2 + this.y.get())
         }
     }
 
@@ -292,8 +302,8 @@ export class Icon extends Widget{
      * @param {Boolean} rendered - Boolean refearing to if this widget should be rendered
      */
     update_config(x=null, y=null, tileset=null, tile_nb=null, rendered=null){
-        if(x != null) this.x = x
-        if(y != null) this.y = y
+        if(x != null) this.x.set_value(x)
+        if(y != null) this.y.set_value(y)
         if(tileset != null) this.tileset = tileset
         if(tile_nb != null) this.tile_nb = tile_nb
         if(rendered != null) this.rendered = rendered
@@ -358,9 +368,9 @@ export class Texture extends Widget{
         if(this.rendered){
             this.game.ctx.drawImage(
                 this.img,
-                this.game.canvas.width / 2 + this.x,
-                this.game.canvas.height / 2 + this.y,
-                this.width, this.height
+                this.game.canvas.width / 2 + this.x.get(),
+                this.game.canvas.height / 2 + this.y.get(),
+                this.width.get(), this.height.get()
             )
         }
     }
@@ -374,10 +384,10 @@ export class Texture extends Widget{
      * @param {Boolean} [rendered = null] - Boolean refearing to if this widget should be rendered
      */
     update_config(x=null, y=null, width=null, height=null, rendered=null){
-        if(x != null) this.x = x
-        if(y != null) this.y = y
-        if(width != null) this.width = width
-        if(height != null) this.height = height
+        if(x != null) this.x.set_value(x)
+        if(y != null) this.y.set_value(y)
+        if(width != null) this.width.set_value(width)
+        if(height != null) this.height.set_value(height)
         if(rendered != null) this.rendered = rendered
     }
 

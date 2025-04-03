@@ -1,3 +1,4 @@
+import { config } from "../constants.js";
 import { Game } from "../core/game.js";
 import { Ui } from "./ui.js";
 
@@ -31,7 +32,7 @@ export class Problem extends Ui{
     static async create(game, src, width, height, answer, widgets, widgets_state_handler){
         const problem = new Problem(game, width, height, answer, widgets, widgets_state_handler)
         try {
-			await problem.load(src)
+			await problem.load(config.IMG_DIR + src)
 		} catch (error) {
 			console.error(`couldn't load file "${src}" : ${error.message}`)
 			return
@@ -76,7 +77,7 @@ export class TimedProblem extends Problem{
     static async create(game, src, width, height, answer, time_limit, on_fail=(problem)=>{}, widgets, widgets_state_handler){
         const problem = new TimedProblem(game, width, height, answer, time_limit, on_fail, widgets, widgets_state_handler)
         try {
-			await problem.load(src)
+			await problem.load(config.IMG_DIR + src)
 		} catch (error) {
 			console.error(`couldn't load file "${src}" : ${error.message}`)
 			return

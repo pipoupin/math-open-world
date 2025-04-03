@@ -2,6 +2,7 @@ import { Game } from "../core/game.js"
 import { Tileset } from "./tileset.js"
 import { Hitbox } from "../entities/hitbox.js"
 import { collisions, constants, config } from "../constants.js"
+import { Resizeable } from "../utils.js"
 
 export class Map {
 	/**
@@ -9,7 +10,7 @@ export class Map {
 	 * @param {Game} game - The current game
 	 * @param {Tileset} tileset - The tileset used to render the map
 	 * @param {String} background - The color of the tileless background
-	 * @param {Object} player_pos - The position of the player on this specific map
+	 * @param {{x: Number, y: Number}} player_pos - The position of the player on this specific map
 	 */
 	constructor(game, tileset, background, player_pos) {
 		this.game = game
@@ -20,7 +21,10 @@ export class Map {
 		this.perpective_layers = []
 		this.world = {}
 		this.background = background
-		this.player_pos = player_pos
+		this.player_pos = {
+			x: new Resizeable(game, player_pos.x),
+			y: new Resizeable(game, player_pos.y)
+		}
 	}
 
 	/**
@@ -29,7 +33,7 @@ export class Map {
 	 * @param {String} src - The path to the json file used as a reference to layout the map
 	 * @param {Tileset} tileset - The tileset used to render the map
 	 * @param {String} background - The color of the tileless background
-	 * @param {Object} player_pos - The position of the player on this specific map
+	 * @param {{x: Number, y: Number}} player_pos - The position of the player on this specific map
 	 * @returns {Map}
 	 */
 	static async create(game, src, tileset, background, player_pos) {
@@ -55,8 +59,8 @@ export class Map {
 			const body = await response.json()
 			this.width = body.width
 			this.height = body.height
-			this.world.width = this.width * constants.TILE_SIZE
-			this.world.height = this.height * constants.TILE_SIZE
+			this.world.width = new Resizeable(this.game, this.width * constants.TILE_SIZE)
+			this.world.height = new Resizeable(this.game, this.height * constants.TILE_SIZE)
 
 			this.animated_tiles = body.animated
 			this.framerate = null
@@ -74,7 +78,7 @@ export class Map {
 					this.animation_tilesets[tile_num] = this.animation_tilesets[parseInt(this.animated_tiles[tile_num].tileset.path)]
 				else
 					this.animation_tilesets[tile_num] = await Tileset.create(this.game,
-						config.IMG_DIR + this.animated_tiles[tile_num].tileset.path,
+						this.animated_tiles[tile_num].tileset.path,
 						this.animated_tiles[tile_num].tileset.tilesize,
 						constants.TILE_SIZE, this.animated_tiles[tile_num].tileset.spacing)
 			}
@@ -106,19 +110,25 @@ export class Map {
 
 									if(collisions[src][layer.data[i]].x)
 										new_x = collisions[src][layer.data[i]].x
+										new_x = new_x * constants.TILE_SIZE / 128
 
 									if(collisions[src][layer.data[i]].y)
 										new_y = collisions[src][layer.data[i]].y
+										new_y = new_y * constants.TILE_SIZE / 128
 
-									if(collisions[src][layer.data[i]].width)
+									if(collisions[src][layer.data[i]].width){
 										new_width = collisions[src][layer.data[i]].width
+										new_width = new_width * constants.TILE_SIZE / 128
+									}
 									else 
-										new_width = 128 - new_x
+										new_width = constants.TILE_SIZE - new_x
 
-									if(collisions[src][layer.data[i]].height)
+									if(collisions[src][layer.data[i]].height){
 										new_height = collisions[src][layer.data[i]].height
+										new_height = new_height * constants.TILE_SIZE / 128
+									}
 									else
-										new_height = 128 - new_y
+										new_height = constants.TILE_SIZE - new_y
 								}
 							}
 							new Hitbox(this.game, this, tileX + new_x, tileY + new_y, new_width, new_height, true, false, null, (e, h, t) => {});
@@ -128,7 +138,7 @@ export class Map {
 			}
 
 		// create a border around the map to prevent glitches
-		new Hitbox(this.game, this, 0, 0, this.world.width, this.world.height)
+		new Hitbox(this.game, this, 0, 0, this.world.width.get(), this.world.height.get())
 	}
 
 	/**
@@ -165,20 +175,29 @@ export class Map {
 	}
 
 	/**
+	 * 
+	 * @param {{x: Number, y: Number}} new_player_pos 
+	 */
+	set_player_pos(new_player_pos){
+		this.player_pos.x.set_value(new_player_pos.x)
+		this.player_pos.y.set_value(new_player_pos.y)
+	}
+
+	/**
 	 * Renders only the background, the ground and the "Blocks"
 	 */
 	render_ground_blocks() {
 		this.game.ctx.fillStyle = this.background
 		this.game.ctx.fillRect(0, 0, this.game.canvas.width, this.game.canvas.height)
-		const startTileX = Math.max(0, Math.floor(this.game.camera.x / constants.TILE_SIZE));
-		const startTileY = Math.max(0, Math.floor(this.game.camera.y / constants.TILE_SIZE));
-		const endTileX = Math.min(this.width, Math.ceil((this.game.camera.x + this.game.canvas.width) / constants.TILE_SIZE));
-		const endTileY = Math.min(this.height, Math.ceil((this.game.camera.y + this.game.canvas.height) / constants.TILE_SIZE));
+		const startTileX = Math.max(0, Math.floor(this.game.camera.x.get() / constants.TILE_SIZE));
+		const startTileY = Math.max(0, Math.floor(this.game.camera.y.get() / constants.TILE_SIZE));
+		const endTileX = Math.min(this.width, Math.ceil((this.game.camera.x.get() + this.game.canvas.width) / constants.TILE_SIZE));
+		const endTileY = Math.min(this.height, Math.ceil((this.game.camera.y.get() + this.game.canvas.height) / constants.TILE_SIZE));
 
 		for (let y = startTileY; y < endTileY; y++) {
 			for (let x = startTileX; x < endTileX; x++) {
-				const screenX = x * constants.TILE_SIZE - this.game.camera.x;
-				const screenY = y * constants.TILE_SIZE - this.game.camera.y;
+				const screenX = x * constants.TILE_SIZE - this.game.camera.x.get();
+				const screenY = y * constants.TILE_SIZE - this.game.camera.y.get();
 
 				for (let i = 0; i < this.layers.length; i++) {
 					const tile_num = this.get_cell(i, x, y);
@@ -199,15 +218,15 @@ export class Map {
 	 * render perspective
 	 */
 	render_perspective() {
-		const startTileX = Math.max(0, Math.floor(this.game.camera.x / constants.TILE_SIZE));
-		const startTileY = Math.max(0, Math.floor(this.game.camera.y / constants.TILE_SIZE));
-		const endTileX = Math.min(this.width, Math.ceil((this.game.camera.x + this.game.canvas.width) / constants.TILE_SIZE));
-		const endTileY = Math.min(this.height, Math.ceil((this.game.camera.y + this.game.canvas.height) / constants.TILE_SIZE));
+		const startTileX = Math.max(0, Math.floor(this.game.camera.x.get() / constants.TILE_SIZE));
+		const startTileY = Math.max(0, Math.floor(this.game.camera.y.get() / constants.TILE_SIZE));
+		const endTileX = Math.min(this.width, Math.ceil((this.game.camera.x.get() + this.game.canvas.width) / constants.TILE_SIZE));
+		const endTileY = Math.min(this.height, Math.ceil((this.game.camera.y.get() + this.game.canvas.height) / constants.TILE_SIZE));
 
 		for (let y = startTileY; y < endTileY; y++) {
 			for (let x = startTileX; x < endTileX; x++) {
-				const screenX = x * constants.TILE_SIZE - this.game.camera.x;
-				const screenY = y * constants.TILE_SIZE - this.game.camera.y;
+				const screenX = x * constants.TILE_SIZE - this.game.camera.x.get();
+				const screenY = y * constants.TILE_SIZE - this.game.camera.y.get();
 
 				for (let i = 0; i < this.perpective_layers.length; i++) {
 					const tile_num = this.get_perspective_cell(i, x, y);
