@@ -88,16 +88,16 @@ export class Player extends Entity {
 		super.updateHitboxes()
 
 		if(this.direction == 0){
-			this.raycast_hitbox.set(this.worldX.get(), this.worldY.get(), 0, constants.TILE_SIZE)
+			this.raycast_hitbox.set(this.worldX.get(), this.worldY.get(), 0, constants.TILE_SIZE / 1.5)
 		}
 		if(this.direction == 1){
-			this.raycast_hitbox.set(this.worldX.get(), this.worldY.get(), 0, - constants.TILE_SIZE)
+			this.raycast_hitbox.set(this.worldX.get(), this.worldY.get(), 0, - constants.TILE_SIZE / 1.5)
 		}
 		if(this.direction == 2){
-			this.raycast_hitbox.set(this.worldX.get(), this.worldY.get(), constants.TILE_SIZE, 0)
+			this.raycast_hitbox.set(this.worldX.get(), this.worldY.get(), constants.TILE_SIZE / 1.5, 0)
 		}
 		if(this.direction == 3){
-			this.raycast_hitbox.set(this.worldX.get(), this.worldY.get(), - constants.TILE_SIZE, 0)
+			this.raycast_hitbox.set(this.worldX.get(), this.worldY.get(), - constants.TILE_SIZE / 1.5, 0)
 		}
 	}
 
