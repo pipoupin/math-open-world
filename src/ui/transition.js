@@ -16,10 +16,10 @@ export class Transition{
 
     /**
      * 
-     * @param {Number} current_time 
+     * @param {Number} time 
      */
-    start(current_time){
-        this.start_time = current_time
+    start(time){
+        this.start_time = time
         this.game.current_ui = this
     }
 

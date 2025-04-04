@@ -1,4 +1,4 @@
-import { config } from "../constants.js";
+import { config, constants } from "../constants.js";
 import { Game } from "../core/game.js";
 import { slice } from "../utils.js";
 import { Tileset } from "../world/tileset.js";
@@ -19,7 +19,7 @@ export class Dialogue extends Ui{
      */
     constructor(game, text, arrow_tileset, on_end, fontsize, textcolor, font){
         var widgets = [new Label(game, "dialogue-content",
-            - game.canvas.width / 2 + 100, game.canvas.height / 2 - 50, "",
+            - game.canvas.width / 2.25, game.canvas.height * 0.4, "",
             true, fontsize, textcolor, font),
             new Button(game, "new-line-button",
                 - game.canvas.width / 2, - game.canvas.height / 2, game.canvas.width, game.canvas.height,
@@ -54,7 +54,7 @@ export class Dialogue extends Ui{
      * @returns {Dialogue}
      */
     static async create(game, src, text, on_end=(d) => {}, fontsize=15, textcolor="black", font="arial"){
-        let arrow_tileset = await Tileset.create(game, "arrow.png", 15, 16, 0)
+        let arrow_tileset = await Tileset.create(game, "arrow.png", 15, constants.TILE_SIZE / 8, 0)
         const dialogue = new Dialogue(game, text, arrow_tileset, on_end, fontsize, textcolor, font)
         try {
 			await dialogue.load(config.IMG_DIR + src)
@@ -119,7 +119,7 @@ export class QuestionDialogue extends Ui{
      */
     constructor(game, text, arrow_tileset, anwsers, anwsers_x, anwsers_y, anwsers_width, anwsers_height, anwser_box_tileset, on_end, fontsize, textcolor, font){
         var widgets = [new Label(game, "dialogue-content",
-            - game.canvas.width / 2.25, game.canvas.height / 2 - 60, "",
+            - game.canvas.width / 2.25, game.canvas.height * 0.4, "",
             true, fontsize, textcolor, font),
             new Button(game, "new-line-button",
                 - game.canvas.width / 2, - game.canvas.height / 2, game.canvas.width, game.canvas.height,
@@ -145,8 +145,7 @@ export class QuestionDialogue extends Ui{
                 let anwser_number = parseInt(button.id.split("-").at(-1))
                 this.is_finished = true
                 button.ui.on_end(button.ui, button.ui.anwsers[anwser_number])
-            }
-            ))
+            }))
 
             widgets.push(new Label(game, "anwser-label-"+i.toString(),
                 anwsers_x * 1.05, anwsers_y - ((i + 0.5) * anwsers_height), anwsers[i], false, fontsize, textcolor, font
@@ -197,7 +196,7 @@ export class QuestionDialogue extends Ui{
     static async create(game, src, text, anwsers, anwsers_x, anwsers_y, anwsers_width, anwsers_height, anwser_box_tileset_src, on_end=(d, a) => {}, fontsize=15, textcolor="black", font="arial"){
         anwsers_width = Math.round(anwsers_width)
         anwsers_height = Math.round(anwsers_height)
-        let arrow_tileset = await Tileset.create(game, "arrow.png", 15, 16, 0)
+        let arrow_tileset = await Tileset.create(game, "arrow.png", 15, constants.TILE_SIZE / 8, 0)
         let anwser_box_tileset = await Tileset.create(game, anwser_box_tileset_src, 16, anwsers_height, 0)
         const dialogue = new QuestionDialogue(game, text, arrow_tileset, anwsers, anwsers_x, anwsers_y, anwsers_width, anwsers_height, anwser_box_tileset, on_end, fontsize, textcolor, font)
         try {

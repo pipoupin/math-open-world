@@ -85,6 +85,15 @@ export class TimedProblem extends Problem{
 		return problem
     }
 
+    /**
+     * 
+     * @param {Number} time 
+     */
+    start(time){
+        this.start_time = time
+        this.game.current_ui = this
+    }
+
     trigger(){
         this.start_time = null
         this.game.current_ui = this
