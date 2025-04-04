@@ -7,12 +7,12 @@ import { Hitbox } from '../entities/hitbox.js'
 import { Problem, TimedProblem } from '../ui/problem.js'
 import { Attack } from '../entities/attack.js'
 import { Ui } from '../ui/ui.js'
-import { Button, NumberArea } from '../ui/widgets.js'
+import { Button, NumberArea, Icon } from '../ui/widgets.js'
 import { Talkable } from '../entities/talkable.js'
 import { config, constants } from "../constants.js"
 import { Transition, UnicoloreTransition } from '../ui/transition.js'
 import { Dialogue, QuestionDialogue } from '../ui/dialogue.js'
-import { Resizeable } from '../utils.js'
+import { Resizeable, YResizeable } from '../utils.js'
 
 export class Game {
 	constructor() {
@@ -27,6 +27,9 @@ export class Game {
 		/** @type {CanvasRenderingContext2D} */
 		this.ctx = this.canvas.getContext('2d')
 		this.ctx.imageSmoothingEnabled = false
+		
+		/**@type {Array<Resizeable | YResizeable>} */
+		this.resizeables = []
 
 		window.addEventListener('resize', () => {
 			this.canvas.width = window.innerWidth
@@ -37,6 +40,10 @@ export class Game {
 			this.ctx.imageSmoothingEnabled = false
 
 			constants.TILE_SIZE = this.canvas.width / 10
+
+			this.resizeables.forEach(resizeable => {
+				resizeable.resize(resizeable)
+			})
 		})
 
 		// prevent right-click (as it provokes bugs)
@@ -62,6 +69,8 @@ export class Game {
 
 		/** @type {Ui | Transition} */
 		this.current_ui = null
+
+		
 
 		this.zero = new Resizeable(this, 0)
 
@@ -96,67 +105,80 @@ export class Game {
 		// used to place the player correctly
 		this.update()
 
-		const colors_problem_finishing_ui = await Ui.create(this, "opened_book_ui.png", 880, 580, [
+		const colors_problem_finishing_ui = await Ui.create(this, "opened_book_ui.png", this.canvas.width * 0.6875, this.canvas.width * 0.453125, [
 			new Button(this, "button",
 				- this.canvas.width / 2, - this.canvas.height / 2, this.canvas.width, this.canvas.height,
 				true, (button) => {
 					button.ui.is_finished = true
 				})
-			], (ui) => {})
+			], (ui) => {}
+		)
 
 		const black_transition = new UnicoloreTransition(this, 500, "black")
 
+		const colors_problem_focus_tileset = await Tileset.create(this, "book_ui_focus.png", 4, this.canvas.width / 16, 0)
+
 		const colors_problem = await Problem.create(
-			this, "book_ui.png", 440, 580, "colors",
-			[
-				new NumberArea(this, "numberarea-pink", -100, -110, 60, 80, 1, true, (numberarea) => {}, 80, "black", "Times New Roman", ""),
+			this, "book_ui.png", this.canvas.width * 0.34375, this.canvas.width * 0.453125, "colors",
+			[	new Icon(this, "focus-icon", -100, -110, colors_problem_focus_tileset, 1, false),
+				
+				new NumberArea(this, "numberarea-pink", -this.canvas.width * 0.078125, -this.canvas.width * 0.0859375,
+					this.canvas.width * 0.046875, this.canvas.width / 16,
+					1, true, (numberarea) => {}, this.canvas.width / 16, "black", "Times New Roman", ""),
 
-				new NumberArea(this, "numberarea-blue", -20, -110, 60, 80, 1, true, (numberarea) => {}, 80, "black", "Times New Roman", ""),
+				new NumberArea(this, "numberarea-blue", -this.canvas.width * 0.015625, -this.canvas.width * 0.0859375,
+					this.canvas.width * 0.046875, this.canvas.width / 16,
+					1, true, (numberarea) => {}, this.canvas.width / 16, "black", "Times New Roman", ""),
 
-				new NumberArea(this, "numberarea-red", 60, -110, 60, 80, 1, true, (numberarea) => {}, 80, "black", "Times New Roman", ""),
+				new NumberArea(this, "numberarea-red", this.canvas.width * 0.046875, -this.canvas.width * 0.0859375,
+					this.canvas.width * 0.046875, this.canvas.width / 16,
+					1, true, (numberarea) => {}, this.canvas.width / 16, "black", "Times New Roman", ""),
 
-				// No more needed but I leave it there in case
-				// new Button(this, "button-submit", -50, 155, 100, 50, true, (button) => {
-					
-				// }),
-				new Button(this, "button-undo-1", 200, -(this.canvas.height / 2), this.canvas.width / 2 - 200, this.canvas.height, true,(button)=>{
-					button.ui.is_finished=true
-				}),
-				new Button(this, "button-undo-2", -(this.canvas.width / 2), -(this.canvas.height / 2), this.canvas.width / 2 - 200, this.canvas.height, true, (button)=>{
-					button.ui.is_finished=true
-				}),
-				new Button(this, "button-undo-3", -200, 230, 400, this.canvas.height / 2 - 230, true, (button)=>{
-					button.ui.is_finished=true
-				}),
-				new Button(this, "button-undo-4", -200, -(this.canvas.height / 2), 400, this.canvas.height / 2 - 270, true, (button)=>{
-					button.ui.is_finished=true
-				}),
+				new Button(this, "button-undo-1", this.canvas.width * 0.15625, new YResizeable(this, -(this.canvas.height / 2)),
+					this.canvas.width / 2 - this.canvas.width * 0.15625, new YResizeable(this, this.canvas.height), true,(button)=>{
+						button.ui.is_finished=true
+					}
+				),
+				new Button(this, "button-undo-2", -(this.canvas.width / 2), new YResizeable(this, -(this.canvas.height / 2)),
+					this.canvas.width / 2 - this.canvas.width * 0.15625, new YResizeable(this, this.canvas.height), true, (button)=>{
+						button.ui.is_finished=true
+					}
+				),
+				new Button(this, "button-undo-3", -this.canvas.width * 0.15625, this.canvas.width * 0.1796875,
+					this.canvas.width * 0.3125, new YResizeable(this, this.canvas.height / 2 - this.canvas.width * 0.1796875, (resizeable) => {
+						resizeable.set_value(this.canvas.height / 2 - this.canvas.width * 0.1796875)
+					}), true, (button)=>{
+						button.ui.is_finished=true
+					}
+				),
+				new Button(this, "button-undo-4", -this.canvas.width * 0.15625, new YResizeable(this, -(this.canvas.height / 2)),
+					this.canvas.width * 0.3125, new YResizeable(this, this.canvas.height / 2 - this.canvas.width * 0.2109375, (resizeable) => {
+						resizeable.set_value(this.canvas.height / 2 - this.canvas.width * 0.2109375)
+					}), true, (button)=>{
+						button.ui.is_finished=true
+					}
+				),
 
-				new Button(this, "open-button", this.canvas.width / 16, this.canvas.height / 16, 100, 100, false, (button)=>{
-					button.game.current_ui = colors_problem_finishing_ui
-				})
+				new Button(this, "open-button", this.canvas.width / 16, this.canvas.height / 16,
+					this.canvas.width * 0.078125, this.canvas.width * 0.078125, false, (button)=>{
+						button.game.current_ui = colors_problem_finishing_ui
+					}
+				)
 			],
 			(problem) => {
-				const numberarea_pink = problem.get_widget("numberarea-pink");
-				const numberarea_blue = problem.get_widget("numberarea-blue");
-				const numberarea_red = problem.get_widget("numberarea-red");
+				var numberarea_pink = problem.get_widget("numberarea-pink");
+				var numberarea_blue = problem.get_widget("numberarea-blue");
+				var numberarea_red = problem.get_widget("numberarea-red");
+				var focus_icon = problem.get_widget("focus-icon");
 
-				if(numberarea_pink.has_focus){
-
+				if(numberarea_pink.is_hovered || numberarea_pink.has_focus){
+					focus_icon.update_config(-this.canvas.width * 0.078125, -this.canvas.width * 0.0859375, null, 1, true)
+				}else if(numberarea_blue.is_hovered || numberarea_blue.has_focus){
+					focus_icon.update_config(-this.canvas.width * 0.015625, -this.canvas.width * 0.0859375, null, 2, true)
+				}else if(numberarea_red.is_hovered || numberarea_red.has_focus){
+					focus_icon.update_config(this.canvas.width * 0.046875, -this.canvas.width * 0.0859375, null, 3, true)
 				} else {
-
-				}
-
-				if(numberarea_blue.has_focus){
-
-				} else {
-
-				}
-
-				if(numberarea_red.has_focus){
-
-				} else {
-
+					focus_icon.rendered = false
 				}
 
 				if (numberarea_pink.content === "3" && numberarea_blue.content === "4" && numberarea_red.content === "4") {

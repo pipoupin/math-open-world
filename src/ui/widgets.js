@@ -1,6 +1,6 @@
 import { constants } from "../constants.js"
 import { Game } from "../core/game.js"
-import { Resizeable } from "../utils.js"
+import { Resizeable, YResizeable } from "../utils.js"
 import { Tileset } from "../world/tileset.js"
 import { Ui } from "./ui.js"
 
@@ -10,24 +10,33 @@ export class Widget{
      * @param {Game} game - The current game
      * @param {String} id - The widget's ID
      * @param {Number} x - the x coordinates of the top-left corner of the widget
-     * @param {Number} y - the y coordinates of the top-left corner of the widget
+     * @param {Number | YResizeable} y - the y coordinates of the top-left corner of the widget
      * @param {String} type - The widget's type
      * @param {Boolean} rendered - Boolean refearing to if this widget should be rendered
      */
     constructor(game, id, x, y, type, rendered){
         this.game = game
         this.x = new Resizeable(game, x)
-        this.y = new Resizeable(game, y)
+        if(y instanceof YResizeable)
+            this.y = y
+        else
+            this.y = new Resizeable(game, y)
         this.type = type
         this.id = id
-        this.has_focus = false
         /** @type {Ui} */
         this.ui = null
         this.rendered = rendered
+        this.is_clicked = false
+        this.has_focus = false
+        this.is_hovered = false
     }
     render(){}
     update_config(){}
     update(current_time){}
+
+    desctructor(){
+        this.ui.remove_widget(this)
+    }
 }
 
 export class Label extends Widget{
@@ -36,7 +45,7 @@ export class Label extends Widget{
      * @param {Game} game - The current game
      * @param {String} id - The widget's Id
      * @param {Number} x - the x coordinates of the top-left corner of the widget
-     * @param {Number} y - the y coordinates of the top-left corner of the widget
+     * @param {Number | YResizeable} y - the y coordinates of the top-left corner of the widget
      * @param {String} text - The text content of the label
      * @param {Boolean} rendered - Boolean refearing to if this widget should be rendered
      * @param {Number} [fontsize=5] - Label's text's fontsize
@@ -73,10 +82,10 @@ export class Label extends Widget{
 
     /**
      * Method used to change the widget's fields, left 'null' in order to not change the corresponding field
-     * @param {null} [x=null] - the x coordinates of the top-left corner of the widget
-     * @param {null} [y=null] - the y coordinates of the top-left corner of the widget
+     * @param {Number} [x=null] - the x coordinates of the top-left corner of the widget
+     * @param {Number} [y=null] - the y coordinates of the top-left corner of the widget
      * @param {String} [text = null] - The text content of the label
-     * @param {null} [rendered=null] - Boolean refearing to if this widget should be rendered
+     * @param {Boolean} [rendered=null] - Boolean refearing to if this widget should be rendered
      * @param {Number} [fontsize = null] - Label's text's fontsize
      * @param {String} [textcolor = null] - Label's text's color
      * @param {String} [font = null] - Label's text's font
@@ -98,18 +107,20 @@ export class Button extends Widget{
      * @param {Game} game - The current game
      * @param {String} id - The widget's Id
      * @param {Number} x - the x coordinates of the top-left corner of the widget
-     * @param {Number} y - the y coordinates of the top-left corner of the widget
+     * @param {Number | YResizeable} y - the y coordinates of the top-left corner of the widget
      * @param {Number} width - The button's width
-     * @param {Number} height - The button's height
+     * @param {Number | YResizeable} height - The button's height
      * @param {Boolean} rendered - Boolean refearing to if this widget should be rendered
      * @param {(button: Button) => void} command - Command executed when the button is being cliked, the 'button' parameter refers to the actual object, which is being clicked
      */
     constructor(game, id, x, y, width, height, rendered, command){
         super(game, id, x, y, constants.BUTTON_TYPE, rendered)
         this.width = new Resizeable(game, width)
-        this.height = new Resizeable(game, height)
+        if(height instanceof YResizeable)
+            this.height = height
+        else
+            this.height = new Resizeable(game, height)
         this.command = command
-        this.is_clicked = false
     }
 
     render(){
@@ -153,9 +164,9 @@ export class TextArea extends Widget{
      * @param {Game} game - The current game
      * @param {String} id - The widget's Id
      * @param {Number} x - the x coordinates of the top-left corner of the widget
-     * @param {Number} y - the y coordinates of the top-left corner of the widget
+     * @param {Number | YResizeable} y - the y coordinates of the top-left corner of the widget
      * @param {Number} width - The textarea's width
-     * @param {Number} height - The textarea's height
+     * @param {Number | YResizeable} height - The textarea's height
      * @param {Number} max_char_number - The maximum of character you can type in
      * @param {Boolean} rendered - Boolean refearing to if this widget should be rendered
      * @param {(textarea: TextArea) => void} command - Command executed when the submit method is called, 'textarea' refers to the textarea itself
@@ -167,7 +178,10 @@ export class TextArea extends Widget{
     constructor(game, id, x, y, width, height, max_char_number, rendered, command, fontsize=15, textcolor="black", font="arial", blink_bar="|"){
         super(game, id, x, y, constants.TEXTAREA_TYPE, rendered)
         this.width = new Resizeable(game, width)
-        this.height = new Resizeable(game, height)
+        if(height instanceof YResizeable)
+            this.height = height
+        else
+            this.height = new Resizeable(game, height)
         this.content = ""
         this.max_char_number = max_char_number
         this.command = command
@@ -250,9 +264,9 @@ export class NumberArea extends TextArea{
      * @param {Game} game - The current game
      * @param {String} id - The widget's Id
      * @param {Number} x - the x coordinates of the top-left corner of the widget
-     * @param {Number} y - the y coordinates of the top-left corner of the widget
+     * @param {Number | YResizeable} y - the y coordinates of the top-left corner of the widget
      * @param {Number} width - The numberarea's width
-     * @param {Number} height - The numberarea's height
+     * @param {Number | YResizeable} height - The numberarea's height
      * @param {Number} max_char_number - The maximum of character you can type in
      * @param {Boolean} rendered - Boolean refearing to if this widget should be rendered
      * @param {(numberarea: NumberArea) => void} command - Command executed when the submit method is called, 'numberarea' refers to the numberarea itself
@@ -273,7 +287,7 @@ export class Icon extends Widget{
      * @param {Game} game - The current game
      * @param {String} id - The widget's Id
      * @param {Number} x - the x coordinates of the top-left corner of the widget
-     * @param {Number} y - the y coordinates of the top-left corner of the widget
+     * @param {Number | YResizeable} y - the y coordinates of the top-left corner of the widget
      * @param {Tileset} tileset - The tileset from which the icon's image will be rendered
      * @param {Number} tile_nb - The image's index in the tileset
      * @param {Boolean} rendered - Boolean refearing to if this widget should be rendered
@@ -316,15 +330,18 @@ export class Texture extends Widget{
      * @param {Game} game - The current game
      * @param {String} id - The widget's Id
      * @param {Number} x - the x coordinates of the top-left corner of the widget
-     * @param {Number} y - the y coordinates of the top-left corner of the widget
+     * @param {Number | YResizeable} y - the y coordinates of the top-left corner of the widget
      * @param {Number} width - The texture's width on the screen
-     * @param {Number} height - The texture's height on the screen
+     * @param {Number | YResizeable} height - The texture's height on the screen
      * @param {Boolean} rendered - Boolean refearing to if this widget should be rendered
      */
     constructor(game, id, x, y, width, height, rendered){
         super(game, id, x, y, constants.TEXTURE_TYPE, rendered)
         this.width = width
-        this.height = height
+        if(height instanceof YResizeable)
+            this.height = height
+        else
+            this.height = new Resizeable(game, height)
     }
 
     /**
@@ -333,9 +350,9 @@ export class Texture extends Widget{
      * @param {String} id - The widget's Id
      * @param {String} src - The path to the image file used by the widget
      * @param {Number} x - the x coordinates of the top-left corner of the widget
-     * @param {Number} y - the y coordinates of the top-left corner of the widget
+     * @param {Number | YResizeable} y - the y coordinates of the top-left corner of the widget
      * @param {Number} width - The texture's width on the screen
-     * @param {Number} height - The texture's height on the screen
+     * @param {Number | YResizeable} height - The texture's height on the screen
      * @param {Boolean} rendered - Boolean refearing to if this widget should be rendered
      * @returns {Texture}
      */

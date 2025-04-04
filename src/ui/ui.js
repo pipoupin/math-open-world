@@ -2,7 +2,7 @@ import { config } from "../constants.js";
 import { Game } from "../core/game.js";
 import { Hitbox } from "../entities/hitbox.js";
 import { Talkable } from "../entities/talkable.js";
-import { Resizeable } from "../utils.js";
+import { Resizeable, YResizeable } from "../utils.js";
 import { Widget } from "./widgets.js";
 
 export class Ui {
@@ -10,14 +10,17 @@ export class Ui {
      * !!! One shouldn't use the constructor to make an ui, use the static create method instead
      * @param {Game} game - The current game
      * @param {Number} width - The Ui's width on the screen
-     * @param {Number} height - The Ui's height on the screen
+     * @param {Number | YResizeable} height - The Ui's height on the screen
      * @param {Array<Widget>} widgets - The list of widgets that shows up on the ui
      * @param {(ui: Ui) => void} widgets_states_handler - method made to handle widgets states (like widgets being 'cliked' on 'focused-on'), executed at each update
      */
     constructor(game, width, height, widgets, widgets_states_handler){
         this.game = game
         this.width = new Resizeable(game, width)
-        this.height = new Resizeable(game, height)
+        if(height instanceof YResizeable)
+            this.height = height
+        else
+            this.height = new Resizeable(game, height)
         this.source = null
         /** @type {Array<Widget>} */
         this.widgets = widgets

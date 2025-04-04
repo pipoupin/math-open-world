@@ -1,6 +1,6 @@
 import { config, constants } from "../constants.js";
 import { Game } from "../core/game.js";
-import { slice } from "../utils.js";
+import { slice, YResizeable } from "../utils.js";
 import { Tileset } from "../world/tileset.js";
 import { Ui } from "./ui.js";
 import { Button, Icon, Label } from "./widgets.js";
@@ -19,12 +19,12 @@ export class Dialogue extends Ui{
      */
     constructor(game, text, arrow_tileset, on_end, fontsize, textcolor, font){
         var widgets = [new Label(game, "dialogue-content",
-            - game.canvas.width / 2.25, game.canvas.height * 0.4, "",
+            - game.canvas.width / 2.25, new YResizeable(game, game.canvas.height * 0.4), "",
             true, fontsize, textcolor, font),
             new Button(game, "new-line-button",
-                - game.canvas.width / 2, - game.canvas.height / 2, game.canvas.width, game.canvas.height,
+                - game.canvas.width / 2, new YResizeable(game, - game.canvas.height / 2), game.canvas.width, new YResizeable(game, game.canvas.height),
                 true, (button) => button.ui.next()),
-            new Icon(game, "arrow-icon", game.canvas.width / 9 * 4, game.canvas.height / 9 * 4,
+            new Icon(game, "arrow-icon", game.canvas.width / 9 * 4, new YResizeable(game, game.canvas.height / 9 * 4),
                 arrow_tileset, 1, false)
         ]
 
@@ -32,7 +32,7 @@ export class Dialogue extends Ui{
 
         }
 
-        super(game, game.canvas.width, game.canvas.height, widgets, widgets_states_handler)
+        super(game, game.canvas.width, new YResizeable(game, game.canvas.height), widgets, widgets_states_handler)
 
         this.text = text
         this.on_end = on_end
@@ -119,12 +119,12 @@ export class QuestionDialogue extends Ui{
      */
     constructor(game, text, arrow_tileset, anwsers, anwsers_x, anwsers_y, anwsers_width, anwsers_height, anwser_box_tileset, on_end, fontsize, textcolor, font){
         var widgets = [new Label(game, "dialogue-content",
-            - game.canvas.width / 2.25, game.canvas.height * 0.4, "",
+            - game.canvas.width / 2.25, new YResizeable(game, game.canvas.height * 0.4), "",
             true, fontsize, textcolor, font),
             new Button(game, "new-line-button",
-                - game.canvas.width / 2, - game.canvas.height / 2, game.canvas.width, game.canvas.height,
+                - game.canvas.width / 2, new YResizeable(game, - game.canvas.height / 2), game.canvas.width, new YResizeable(game, game.canvas.height),
                 true, (button) => button.ui.next()),
-            new Icon(game, "arrow-icon", game.canvas.width / 9 * 4, game.canvas.height / 9 * 4,
+            new Icon(game, "arrow-icon", game.canvas.width / 9 * 4, new YResizeable(game, game.canvas.height / 9 * 4),
                 arrow_tileset, 1, false)
         ]
 
@@ -134,12 +134,12 @@ export class QuestionDialogue extends Ui{
                 let tile_nb = i == 0? 7: i + 1 == anwsers.length? 1: 4
                 tile_nb += j == 0? 0: j + 1 >= anwsers_width/anwsers_height? 2: 1
                 widgets.push(new Icon(game, `anwsers-box-icon-${i}-${j}`,
-                    anwsers_x + j * anwsers_height, anwsers_y - ((i + 1) * anwsers_height), anwser_box_tileset, tile_nb, false))
+                    anwsers_x + j * anwsers_height, new YResizeable(game, anwsers_y - ((i + 1) * anwsers_height)), anwser_box_tileset, tile_nb, false))
 
             }
 
             widgets.push(new Button(game, "anwser-button-"+i.toString(),
-            anwsers_x, anwsers_y - ((i + 1) * anwsers_height), anwsers_width, anwsers_height, false, (button) => {
+            anwsers_x, new YResizeable(game, anwsers_y - ((i + 1) * anwsers_height)), anwsers_width, new YResizeable(game, anwsers_height), false, (button) => {
                 if(!button.has_focus) return
                 if(button.ui.sentence + 1 != button.ui.sentences.length || button.ui.get_widget("dialogue-content").text != button.ui.sentences[this.sentence]) return
                 let anwser_number = parseInt(button.id.split("-").at(-1))
@@ -148,11 +148,11 @@ export class QuestionDialogue extends Ui{
             }))
 
             widgets.push(new Label(game, "anwser-label-"+i.toString(),
-                anwsers_x * 1.05, anwsers_y - ((i + 0.5) * anwsers_height), anwsers[i], false, fontsize, textcolor, font
+                anwsers_x * 1.05, new YResizeable(game, anwsers_y - ((i + 0.5) * anwsers_height)), anwsers[i], false, fontsize, textcolor, font
             ))
 
             widgets.push(new Icon(game, "anwser-arrow-"+i.toString(),
-            anwsers_x + anwsers_width - arrow_tileset.screen_tile_size.get(), anwsers_y - ((i + 0.75) * anwsers_height), arrow_tileset, 4, false))
+            anwsers_x + anwsers_width - arrow_tileset.screen_tile_size.get(), new YResizeable(game, anwsers_y - ((i + 0.75) * anwsers_height)), arrow_tileset, 4, false))
         }
 
         var widgets_states_handler = (dialogue) => {
@@ -165,7 +165,7 @@ export class QuestionDialogue extends Ui{
             }
         }
 
-        super(game, game.canvas.width, game.canvas.height, widgets, widgets_states_handler)
+        super(game, game.canvas.width, new YResizeable(game, game.canvas.height), widgets, widgets_states_handler)
 
         this.text = text
         this.anwsers = anwsers
@@ -197,7 +197,8 @@ export class QuestionDialogue extends Ui{
         anwsers_width = Math.round(anwsers_width)
         anwsers_height = Math.round(anwsers_height)
         let arrow_tileset = await Tileset.create(game, "arrow.png", 15, constants.TILE_SIZE / 8, 0)
-        let anwser_box_tileset = await Tileset.create(game, anwser_box_tileset_src, 16, anwsers_height, 0)
+        let anwser_box_tileset = await Tileset.create(game, anwser_box_tileset_src, 16, 0, 0)
+        anwser_box_tileset.screen_tile_size = new YResizeable(game, anwsers_height)
         const dialogue = new QuestionDialogue(game, text, arrow_tileset, anwsers, anwsers_x, anwsers_y, anwsers_width, anwsers_height, anwser_box_tileset, on_end, fontsize, textcolor, font)
         try {
 			await dialogue.load(config.IMG_DIR + src)
