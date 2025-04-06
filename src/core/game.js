@@ -125,7 +125,7 @@ export class Game {
 				
 				new NumberArea(this, "numberarea-pink", -this.canvas.width * 0.078125, -this.canvas.width * 0.0859375,
 					this.canvas.width * 0.046875, this.canvas.width / 16,
-					1, true, (numberarea) => {}, 1, this.canvas.width / 16, "black", "Times New Roman", ""),
+					5, true, (numberarea) => {}, 1, this.canvas.width / 16, "black", "Times New Roman", ""),
 
 				new NumberArea(this, "numberarea-blue", -this.canvas.width * 0.015625, -this.canvas.width * 0.0859375,
 					this.canvas.width * 0.046875, this.canvas.width / 16,
