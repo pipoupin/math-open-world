@@ -234,7 +234,6 @@ export class QuestionDialogue extends Ui{
                     this.get_widget("anwser-button-"+i.toString()).rendered = true
                     this.get_widget("anwser-label-"+i.toString()).rendered = true
                     for(let j = 0; j < this.get_widget("anwser-button-0").side_ratio(); j++){
-                        console.log(this.get_widget(`anwsers-box-icon-${i}-${j}`))
                         this.get_widget(`anwsers-box-icon-${i}-${j}`).rendered = true
                     }
                 }
@@ -260,7 +259,6 @@ export class QuestionDialogue extends Ui{
                     this.get_widget("anwser-button-"+i.toString()).rendered = true
                     this.get_widget("anwser-label-"+i.toString()).rendered = true
                     for(let j = 0; j < this.get_widget("anwser-button-0").side_ratio(); j++){
-                        console.log(this.get_widget(`anwsers-box-icon-${i}-${j}`))
                         this.get_widget(`anwsers-box-icon-${i}-${j}`).rendered = true
                     }
                 }
@@ -301,7 +299,5 @@ export class QuestionDialogue extends Ui{
                     anwsers_x + j * anwsers_height, new YResizeable(this.game, anwsers_y - ((i + 1) * anwsers_height)), anwser_box_tileset, tile_nb, anwser_box_rendering, 0))
             }
         }
-
-        console.log(this)
     }
 }

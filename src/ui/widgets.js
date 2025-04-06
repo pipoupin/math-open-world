@@ -32,6 +32,7 @@ export class Widget{
         this.has_focus = false
         this.is_hovered = false
     }
+    
     render(){}
     update_config(){}
     update(current_time){}

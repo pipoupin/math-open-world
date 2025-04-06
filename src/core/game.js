@@ -117,6 +117,7 @@ export class Game {
 		const black_transition = new UnicoloreTransition(this, 500, "black")
 
 		const colors_problem_focus_tileset = await Tileset.create(this, "book_ui_focus.png", 4, this.canvas.width / 16, 0)
+		const next_page_arrow_tileset = await Tileset.create(this, "next_page_arrow_tileset.png", 24, this.canvas.width * 0.078125, 0)
 
 		const colors_problem = await Problem.create(
 			this, "book_ui.png", this.canvas.width * 0.34375, this.canvas.width * 0.453125, "colors",
@@ -158,12 +159,12 @@ export class Game {
 						button.ui.is_finished=true
 					}
 				),
-
-				new Button(this, "open-button", this.canvas.width / 16, this.canvas.height / 16,
-					this.canvas.width * 0.078125, this.canvas.width * 0.078125, false, (button)=>{
+				new Button(this, "open-button", this.canvas.width / 32, this.canvas.height / 48,
+					next_page_arrow_tileset.screen_tile_size.get(), next_page_arrow_tileset.screen_tile_size.get(), false, (button)=>{
 						button.game.current_ui = colors_problem_finishing_ui
 					}
-				)
+				),
+				new Icon(this, "open-icon", this.canvas.width / 32, this.canvas.height / 48, next_page_arrow_tileset, 1, false)
 			],
 			(problem) => {
 				var numberarea_pink = problem.get_widget("numberarea-pink");
@@ -181,9 +182,15 @@ export class Game {
 					focus_icon.rendered = false
 				}
 
+				if(problem.get_widget("open-button").is_hovered)
+					problem.get_widget("open-icon").tile_nb = 2
+				else
+				problem.get_widget("open-icon").tile_nb = 1
+
 				if (numberarea_pink.content === "3" && numberarea_blue.content === "4" && numberarea_red.content === "4") {
 					problem.source.is_talkable = false
 					problem.get_widget("open-button").rendered = true;
+					problem.get_widget("open-icon").rendered = true;
 				}	
 			}
 		)
