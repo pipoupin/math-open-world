@@ -185,7 +185,7 @@ export class Game {
 				if(problem.get_widget("open-button").is_hovered)
 					problem.get_widget("open-icon").tile_nb = 2
 				else
-				problem.get_widget("open-icon").tile_nb = 1
+					problem.get_widget("open-icon").tile_nb = 1
 
 				if (numberarea_pink.content === "3" && numberarea_blue.content === "4" && numberarea_red.content === "4") {
 					problem.source.is_talkable = false

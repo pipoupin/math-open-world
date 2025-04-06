@@ -286,7 +286,6 @@ export class QuestionDialogue extends Ui{
                 icon_widgets.push(widget)
         })
         icon_widgets.forEach(widget => {
-            if(widget.id == "anwser-button-0") console.error("aaaaaaaaaaaaa")
             widget.destructor()
         })
 

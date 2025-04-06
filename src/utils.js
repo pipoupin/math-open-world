@@ -55,7 +55,7 @@ export class Resizeable{
 		if(!isNaN(new_value / this.game.canvas.width))
 			this.value = new_value / this.game.canvas.width
 		else
-			console.error("error")
+			console.error("value not a number")
 	}
 
 	get(){
