@@ -1,6 +1,6 @@
 import { config, constants } from "../constants.js";
 import { Game } from "../core/game.js";
-import { slice, YResizeable } from "../utils.js";
+import { Resizeable, slice, YResizeable } from "../utils.js";
 import { Tileset } from "../world/tileset.js";
 import { Ui } from "./ui.js";
 import { Button, Icon, Label } from "./widgets.js";
@@ -135,7 +135,6 @@ export class QuestionDialogue extends Ui{
                 tile_nb += j == 0? 0: j + 1 >= anwsers_width/anwsers_height? 2: 1
                 widgets.push(new Icon(game, `anwsers-box-icon-${i}-${j}`,
                     anwsers_x + j * anwsers_height, new YResizeable(game, anwsers_y - ((i + 1) * anwsers_height)), anwser_box_tileset, tile_nb, false))
-
             }
 
             widgets.push(new Button(game, "anwser-button-"+i.toString(),
@@ -174,6 +173,8 @@ export class QuestionDialogue extends Ui{
         
         this.sentences = slice(text, Math.round(1.75 * this.game.canvas.width / fontsize))
         this.sentence = 0
+
+        game.resizeables.push(this)
     }
 
     /**
@@ -268,5 +269,34 @@ export class QuestionDialogue extends Ui{
         if(this.sentence + 1 == this.sentences.length) return
         this.sentence += 1
         label.text = ""
+    }
+
+    resize(d){
+        var anwsers_width = this.get_widget("anwser-button-0").width.get()
+        var anwsers_height = this.get_widget("anwsers-box-icon-0-0").tileset.screen_tile_size.get()
+        var anwsers_x = this.get_widget("anwser-button-0").x.get()
+        var anwsers_y = this.get_widget("anwser-button-0").y.get() + anwsers_height
+        var anwser_box_tileset = this.get_widget("anwsers-box-icon-0-0").tileset
+    
+        /** @type {Array<Widget>} */
+        let icon_widgets = []
+        this.widgets.forEach(widget => {
+            if(widget.id.startsWith("anwsers-box-icon-"))
+                icon_widgets.push(widget)
+        })
+        icon_widgets.forEach(widget => {
+            if(widget.id == "anwser-button-0") console.error("aaaaaaaaaaaaa")
+            widget.destructor()
+        })
+
+
+        for(let i = 0; i < this.anwsers.length; i++){
+            for(let j = 0; j < anwsers_width/anwsers_height; j++){
+                let tile_nb = i == 0? 7: i + 1 == this.anwsers.length? 1: 4
+                tile_nb += j == 0? 0: j + 1 >= anwsers_width/anwsers_height? 2: 1
+                this.add_widget(new Icon(this.game, `anwsers-box-icon-${i}-${j}`,
+                    anwsers_x + j * anwsers_height, new YResizeable(this.game, anwsers_y - ((i + 1) * anwsers_height)), anwser_box_tileset, tile_nb, false))
+            }
+        }
     }
 }

@@ -34,7 +34,7 @@ export class Widget{
     update_config(){}
     update(current_time){}
 
-    desctructor(){
+    destructor(){
         this.ui.remove_widget(this)
     }
 }

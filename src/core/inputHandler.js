@@ -22,7 +22,7 @@ export class InputHandler {
                 if(game.current_ui && game.current_ui.focused_widgets.length != 0){
                     game.current_ui.focused_widgets.forEach(widget => {
                         if(widget.type != constants.TEXTAREA_TYPE && widget.type != constants.NUMBERAREA_TYPE) return
-                        widget.content = widget.content.slice(0, -1)
+                        widget.content.splice(-1, 1)
                     })
                     this.del_key_can_be_pressed = false
                 }

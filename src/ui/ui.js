@@ -107,7 +107,13 @@ export class Ui {
      * @param {Widget} widget 
      */
     add_widget(widget){
-        this.widgets.push(widget)
+        if(this.ids.includes(widget.id)){
+            console.error(`widget with id ${widget.id} already registered, this may cause widget traceabilty issues`)
+        }else{
+            this.ids.push(widget.id)
+            this.widgets.push(widget)
+            widget.ui = this
+        }
     }
 
     /**
@@ -115,8 +121,9 @@ export class Ui {
      * @param {Widget} widget 
      */
     remove_widget(widget){
-        if(widget in this.widgets){
-            this.widgets.slice(this.widgets.indexOf(widget), this.widgets.indexOf(widget) + 1)
+        if(this.ids.includes(widget.id)){
+            this.widgets.splice(this.widgets.indexOf(widget), 1)
+            this.ids.splice(this.ids.indexOf(widget.id), 1)
         } else {
             console.error("not such widget in ui's widgets:")
             console.log(this)
@@ -130,13 +137,15 @@ export class Ui {
      * @returns {Widget}
      */
     get_widget(id){
-        var id_matching_widget = null
-        this.widgets.forEach((widget) => {
-            if (widget.id == id) {
-                id_matching_widget = widget
-            }
-        })
-        if(id_matching_widget) return id_matching_widget
-        console.error(`no such widget ${id} in this ui`)
+        var matching_widget = null
+        if(this.ids.includes(id)){
+            this.widgets.forEach(widget => {
+                if (widget.id == id)
+                    matching_widget = widget
+            })
+            return matching_widget
+        }
+        else
+            console.error(`no such widget ${id} in this ui`)
     }
 }

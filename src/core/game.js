@@ -9,7 +9,7 @@ import { Attack } from '../entities/attack.js'
 import { Ui } from '../ui/ui.js'
 import { Button, NumberArea, Icon } from '../ui/widgets.js'
 import { Talkable } from '../entities/talkable.js'
-import { config, constants } from "../constants.js"
+import { constants } from "../constants.js"
 import { Transition, UnicoloreTransition } from '../ui/transition.js'
 import { Dialogue, QuestionDialogue } from '../ui/dialogue.js'
 import { Resizeable, YResizeable } from '../utils.js'
@@ -28,7 +28,7 @@ export class Game {
 		this.ctx = this.canvas.getContext('2d')
 		this.ctx.imageSmoothingEnabled = false
 		
-		/**@type {Array<Resizeable | YResizeable>} */
+		/**@type {Array} */
 		this.resizeables = []
 
 		window.addEventListener('resize', () => {
