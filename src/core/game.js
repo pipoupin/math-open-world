@@ -120,22 +120,22 @@ export class Game {
 
 		const colors_problem = await Problem.create(
 			this, "book_ui.png", this.canvas.width * 0.34375, this.canvas.width * 0.453125, "colors",
-			[	new Icon(this, "focus-icon", -100, -110, colors_problem_focus_tileset, 1, false),
+			[	new Icon(this, "focus-icon", -100, -110, colors_problem_focus_tileset, 1, false, 0),
 				
 				new NumberArea(this, "numberarea-pink", -this.canvas.width * 0.078125, -this.canvas.width * 0.0859375,
 					this.canvas.width * 0.046875, this.canvas.width / 16,
-					1, true, (numberarea) => {}, this.canvas.width / 16, "black", "Times New Roman", ""),
+					1, true, (numberarea) => {}, 1, this.canvas.width / 16, "black", "Times New Roman", ""),
 
 				new NumberArea(this, "numberarea-blue", -this.canvas.width * 0.015625, -this.canvas.width * 0.0859375,
 					this.canvas.width * 0.046875, this.canvas.width / 16,
-					1, true, (numberarea) => {}, this.canvas.width / 16, "black", "Times New Roman", ""),
+					1, true, (numberarea) => {}, 1, this.canvas.width / 16, "black", "Times New Roman", ""),
 
 				new NumberArea(this, "numberarea-red", this.canvas.width * 0.046875, -this.canvas.width * 0.0859375,
 					this.canvas.width * 0.046875, this.canvas.width / 16,
-					1, true, (numberarea) => {}, this.canvas.width / 16, "black", "Times New Roman", ""),
+					1, true, (numberarea) => {}, 1, this.canvas.width / 16, "black", "Times New Roman", ""),
 
 				new Button(this, "button-undo-1", this.canvas.width * 0.15625, new YResizeable(this, -(this.canvas.height / 2)),
-					this.canvas.width / 2 - this.canvas.width * 0.15625, new YResizeable(this, this.canvas.height), true,(button)=>{
+					this.canvas.width / 2 - this.canvas.width * 0.15625, new YResizeable(this, this.canvas.height), true, (button)=>{
 						button.ui.is_finished=true
 					}
 				),

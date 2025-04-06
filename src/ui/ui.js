@@ -24,6 +24,7 @@ export class Ui {
         this.source = null
         /** @type {Array<Widget>} */
         this.widgets = widgets
+        this.sort_widgets()
         this.ids = []
         this.widgets.forEach((widget) => {
             if(this.ids.includes(widget.id))
@@ -113,6 +114,7 @@ export class Ui {
             this.ids.push(widget.id)
             this.widgets.push(widget)
             widget.ui = this
+            this.sort_widgets()
         }
     }
 
@@ -147,5 +149,19 @@ export class Ui {
         }
         else
             console.error(`no such widget ${id} in this ui`)
+    }
+
+    sort_widgets(){
+        this.widgets.sort((a, b) => {
+            if(a.layer == null){
+                if(b.layer == null)
+                    return 0
+                else
+                    return -1
+            } else if(b.layer == null) return 1
+            else {
+                return a.layer - b.layer
+            }
+        })
     }
 }
