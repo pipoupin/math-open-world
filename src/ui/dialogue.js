@@ -170,6 +170,8 @@ export class QuestionDialogue extends Ui{
         this.anwsers = anwsers
         this.on_end = on_end
         this.last_time = 0
+
+        this.anwser_box_ratio = anwsers_width/anwsers_height
         
         this.sentences = slice(text, Math.round(1.75 * this.game.canvas.width / fontsize))
         this.sentence = 0
@@ -233,7 +235,7 @@ export class QuestionDialogue extends Ui{
                 for(let i = 0; i < this.anwsers.length; i++){
                     this.get_widget("anwser-button-"+i.toString()).rendered = true
                     this.get_widget("anwser-label-"+i.toString()).rendered = true
-                    for(let j = 0; j < this.get_widget("anwser-button-0").side_ratio(); j++){
+                    for(let j = 0; j < this.anwser_box_ratio; j++){
                         this.get_widget(`anwsers-box-icon-${i}-${j}`).rendered = true
                     }
                 }
@@ -258,7 +260,7 @@ export class QuestionDialogue extends Ui{
                 for(let i = 0; i < this.anwsers.length; i++){
                     this.get_widget("anwser-button-"+i.toString()).rendered = true
                     this.get_widget("anwser-label-"+i.toString()).rendered = true
-                    for(let j = 0; j < this.get_widget("anwser-button-0").side_ratio(); j++){
+                    for(let j = 0; j < this.anwser_box_ratio; j++){
                         this.get_widget(`anwsers-box-icon-${i}-${j}`).rendered = true
                     }
                 }

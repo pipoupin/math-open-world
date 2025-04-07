@@ -140,10 +140,6 @@ export class Button extends Widget{
         }
     }
 
-    side_ratio(){
-        return this.width.get()/this.height.get()
-    }
-
     /**
      * Method used to change the widget's fields, left 'null' in order to not change the corresponding field
      * @param {Number} [x = null] - the x coordinates of the top-left corner of the widget
