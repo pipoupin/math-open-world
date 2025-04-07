@@ -164,4 +164,19 @@ export class Ui {
             }
         })
     }
+
+    unfocus(condition=null){
+        if(condition == null)
+            condition = (w) => true
+
+        let removed_widgets = []
+        this.focused_widgets.forEach(widget => {
+            if(condition(widget))
+                removed_widgets.push(widget)
+        })
+        removed_widgets.forEach(widget => {
+            this.focused_widgets.splice(this.focused_widgets.indexOf(widget), 1)
+            widget.has_focus = false
+        })
+    }
 }

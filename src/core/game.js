@@ -117,23 +117,22 @@ export class Game {
 		const black_transition = new UnicoloreTransition(this, 500, "black")
 
 		const colors_problem_focus_tileset = await Tileset.create(this, "book_ui_focus.png", 4, this.canvas.width / 16, 0)
-		const next_page_arrow_tileset = await Tileset.create(this, "next_page_arrow_tileset.png", 24, this.canvas.width * 0.078125, 0)
+		const next_page_arrow_tileset = await Tileset.create(this, "next_page_arrow_tileset.png", 24, this.canvas.width * 0.05, 0)
 
 		const colors_problem = await Problem.create(
 			this, "book_ui.png", this.canvas.width * 0.34375, this.canvas.width * 0.453125, "colors",
 			[	new Icon(this, "focus-icon", -100, -110, colors_problem_focus_tileset, 1, false, 0),
-				
 				new NumberArea(this, "numberarea-pink", -this.canvas.width * 0.078125, -this.canvas.width * 0.0859375,
 					this.canvas.width * 0.046875, this.canvas.width / 16,
-					5, true, (numberarea) => {}, 1, this.canvas.width / 16, "black", "Times New Roman", ""),
+					1, true, 1, this.canvas.width / 16, "black", "Times New Roman", ""),
 
 				new NumberArea(this, "numberarea-blue", -this.canvas.width * 0.015625, -this.canvas.width * 0.0859375,
 					this.canvas.width * 0.046875, this.canvas.width / 16,
-					1, true, (numberarea) => {}, 1, this.canvas.width / 16, "black", "Times New Roman", ""),
+					1, true, 1, this.canvas.width / 16, "black", "Times New Roman", ""),
 
 				new NumberArea(this, "numberarea-red", this.canvas.width * 0.046875, -this.canvas.width * 0.0859375,
 					this.canvas.width * 0.046875, this.canvas.width / 16,
-					1, true, (numberarea) => {}, 1, this.canvas.width / 16, "black", "Times New Roman", ""),
+					1, true, 1, this.canvas.width / 16, "black", "Times New Roman", ""),
 
 				new Button(this, "button-undo-1", this.canvas.width * 0.15625, new YResizeable(this, -(this.canvas.height / 2)),
 					this.canvas.width / 2 - this.canvas.width * 0.15625, new YResizeable(this, this.canvas.height), true, (button)=>{
@@ -159,12 +158,12 @@ export class Game {
 						button.ui.is_finished=true
 					}
 				),
-				new Button(this, "open-button", this.canvas.width / 32, this.canvas.height / 48,
+				new Button(this, "open-button", this.canvas.width / 16, this.canvas.height / 16,
 					next_page_arrow_tileset.screen_tile_size.get(), next_page_arrow_tileset.screen_tile_size.get(), false, (button)=>{
 						button.game.current_ui = colors_problem_finishing_ui
 					}
 				),
-				new Icon(this, "open-icon", this.canvas.width / 32, this.canvas.height / 48, next_page_arrow_tileset, 1, false)
+				new Icon(this, "open-icon", this.canvas.width / 16, this.canvas.height / 16, next_page_arrow_tileset, 1, false)
 			],
 			(problem) => {
 				var numberarea_pink = problem.get_widget("numberarea-pink");
@@ -172,13 +171,23 @@ export class Game {
 				var numberarea_red = problem.get_widget("numberarea-red");
 				var focus_icon = problem.get_widget("focus-icon");
 
-				if(numberarea_pink.is_hovered || numberarea_pink.has_focus){
-					focus_icon.update_config(-this.canvas.width * 0.078125, -this.canvas.width * 0.0859375, null, 1, true)
-				}else if(numberarea_blue.is_hovered || numberarea_blue.has_focus){
-					focus_icon.update_config(-this.canvas.width * 0.015625, -this.canvas.width * 0.0859375, null, 2, true)
-				}else if(numberarea_red.is_hovered || numberarea_red.has_focus){
-					focus_icon.update_config(this.canvas.width * 0.046875, -this.canvas.width * 0.0859375, null, 3, true)
-				} else {
+				if(!problem.get_widget("open-button").rendered){
+					if(numberarea_pink.has_focus){
+						focus_icon.update_config(-this.canvas.width * 0.078125, -this.canvas.width * 0.0859375, null, 1, true)
+					}else if(numberarea_blue.has_focus){
+						focus_icon.update_config(-this.canvas.width * 0.015625, -this.canvas.width * 0.0859375, null, 2, true)
+					}else if(numberarea_red.has_focus){
+						focus_icon.update_config(this.canvas.width * 0.046875, -this.canvas.width * 0.0859375, null, 3, true)
+					} else if(numberarea_pink.is_hovered) {
+						focus_icon.update_config(-this.canvas.width * 0.078125, -this.canvas.width * 0.0859375, null, 1, true)
+					} else if(numberarea_blue.is_hovered) {
+						focus_icon.update_config(-this.canvas.width * 0.015625, -this.canvas.width * 0.0859375, null, 2, true)
+					} else if(numberarea_red.is_hovered) {
+						focus_icon.update_config(this.canvas.width * 0.046875, -this.canvas.width * 0.0859375, null, 3, true)
+					} else {
+						focus_icon.rendered = false
+					}
+				}else{
 					focus_icon.rendered = false
 				}
 
@@ -191,6 +200,10 @@ export class Game {
 					problem.source.is_talkable = false
 					problem.get_widget("open-button").rendered = true;
 					problem.get_widget("open-icon").rendered = true;
+					numberarea_pink.usable = false
+					numberarea_blue.usable = false
+					numberarea_red.usable = false
+					problem.unfocus()
 				}	
 			}
 		)

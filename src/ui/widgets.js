@@ -175,14 +175,13 @@ export class TextArea extends Widget{
      * @param {Number | YResizeable} height - The textarea's height
      * @param {Number} max_char_number - The maximum of character you can type in
      * @param {Boolean} rendered - Boolean refearing to if this widget should be rendered
-     * @param {(textarea: TextArea) => void} command - Command executed when the submit method is called, 'textarea' refers to the textarea itself
      * @param {Number} [layer=0] - The layer on which the widget will be rendered, higher numbers means that the widget will be rendered on top
      * @param {Number} [fontsize=5] - The textarea's text fontsize
      * @param {String} [textcolor="black"] - The textarea's text color
      * @param {String} [font="arial"] - The textarea's text font
      * @param {String} [blink_bar="I"] - The blinking bar when the textarea is selected
      */
-    constructor(game, id, x, y, width, height, max_char_number, rendered, command, layer, fontsize=15, textcolor="black", font="arial", blink_bar="|"){
+    constructor(game, id, x, y, width, height, max_char_number, rendered, layer, fontsize=15, textcolor="black", font="arial", blink_bar="|"){
         super(game, id, x, y, constants.TEXTAREA_TYPE, rendered, layer)
         this.width = new Resizeable(game, width)
         if(height instanceof YResizeable)
@@ -191,17 +190,13 @@ export class TextArea extends Widget{
             this.height = new Resizeable(game, height)
         this.content = ""
         this.max_char_number = max_char_number
-        this.command = command
         this.fontsize = new Resizeable(game, fontsize)
         this.textcolor = textcolor
         this.font = font
         this.last_blink = 0
         this.has_bar = false
         this.blink_bar = blink_bar
-    }
-
-    submit(){
-        this.command(this)
+        this.usable = true
     }
 
     render(){
@@ -243,14 +238,14 @@ export class TextArea extends Widget{
      * @param {String} [content = null] - The textarea's content, what has been typed in it
      * @param {Number} [max_char_number = null] - The maximum of character you can type in
      * @param {Boolean} [rendered=null] - Boolean refearing to if this widget should be rendered
-     * @param {(textarea: TextArea) => void} [command = null] - Command executed when the submit method is called, 'textarea' refers to the textarea itself
      * @param {Number} [layer=null] - The layer on which the widget will be rendered, higher numbers means that the widget will be rendered on top
      * @param {Number} [fontsize = null] - The textarea's text fontsize
      * @param {String} [textcolor = null] - The textarea's text color
      * @param {String} [font = null] - The textarea's text font
      * @param {String} [blink_bar=null] - The blinking bar when the textarea is selected
+     * @param {Boolean} [usable=null] - Boolean making the textarea unwritteable if false
      */
-    update_config(x=null, y=null, width=null, height=null, content=null, max_char_number=null, rendered=null, command=null, layer=null, fontsize=null, textcolor=null, font=null, blink_bar=null){
+    update_config(x=null, y=null, width=null, height=null, content=null, max_char_number=null, rendered=null, layer=null, fontsize=null, textcolor=null, font=null, blink_bar=null, usable=null){
         if(x != null) this.x.set_value(x)
         if(y != null) this.y.set_value(y)
         if(width != null) this.width.set_value(width)
@@ -258,12 +253,12 @@ export class TextArea extends Widget{
         if(max_char_number != null) this.max_char_number = max_char_number
         if(rendered != null) this.rendered = rendered
         if(content != null) this.content = content.slice(0, this.max_char_number)
-        if(command != null) this.command = command
         if(layer != null) this.layer = layer
         if(fontsize != null) this.fontsize.set_value(fontsize)
         if(textcolor != null) this.textcolor = textcolor
         if(font != null) this.font = font
         if(blink_bar != null) this.blink_bar = blink_bar
+        if(usable != null) this.usable = usable
     }
 }
 
@@ -278,15 +273,14 @@ export class NumberArea extends TextArea{
      * @param {Number | YResizeable} height - The numberarea's height
      * @param {Number} max_char_number - The maximum of character you can type in
      * @param {Boolean} rendered - Boolean refearing to if this widget should be rendered
-     * @param {(numberarea: NumberArea) => void} command - Command executed when the submit method is called, 'numberarea' refers to the numberarea itself
      * @param {Number} [layer=0] - The layer on which the widget will be rendered, higher numbers means that the widget will be rendered on top
      * @param {Number} [fontsize=5] - The numberarea's text fontsize
      * @param {String} [textcolor="black"] - The numberarea's text color
      * @param {String} [font="arial"] - The numberarea's text font
      * @param {String} [blink_bar="I"] - The blinking bar when the numberarea is selected
      */
-    constructor(game, id, x, y, width, height, max_char_number, rendered, command, layer=0, fontsize=15, textcolor="black", font="arial", blink_bar="I"){
-        super(game, id, x, y, width, height, max_char_number, rendered, command, layer, fontsize, textcolor, font, blink_bar)
+    constructor(game, id, x, y, width, height, max_char_number, rendered, layer=0, fontsize=15, textcolor="black", font="arial", blink_bar="I"){
+        super(game, id, x, y, width, height, max_char_number, rendered, layer, fontsize, textcolor, font, blink_bar)
         this.type = constants.NUMBERAREA_TYPE
     }
 }
