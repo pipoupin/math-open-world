@@ -1,4 +1,4 @@
-import { constants } from "../constants.js"
+import { config, constants } from "../constants.js"
 import { Game } from "../core/game.js"
 import { Resizeable } from "../utils.js"
 import { Tileset } from "../world/tileset.js"
@@ -342,7 +342,7 @@ export class Texture extends Widget{
     static async create(game, id, src, x, y, width, height, rendered){
         var texture = new Texture(game, id, x, y, width, height, rendered)
         try {
-			await texture.load(src)
+			await texture.load(config.IMG_DIR + src)
 		} catch (error) {
 			console.error(`couldn't load file "${src}" : ${error.message}`)
 			return

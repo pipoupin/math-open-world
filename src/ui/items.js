@@ -1,6 +1,6 @@
-import { constants } from "../constants"
-import { Game } from "../core/game"
-import { Label, Texture, Widget, Button } from "./widgets"
+import { constants } from "../constants.js"
+import { Game } from "../core/game.js"
+import { Label, Texture, Widget } from "./widgets.js"
 
 export class Item{
     /**

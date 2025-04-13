@@ -1,18 +1,19 @@
 import { config, constants } from "../constants.js";
 import { Game } from "../core/game.js";
+import { Talkable } from "../entities/talkable.js";
 import { Tileset } from "../world/tileset.js";
 import { ItemStack } from "./items.js";
 import { Ui } from "./ui.js";
-import { Button, Icon } from "./widgets.js";
+import { Button, Texture } from "./widgets.js";
 
 export class Inventory extends Ui{
     /**
      * 
      * @param {Game} game 
-     * @param {Tileset} hovered_tileset 
+     * @param {Texture} hovered_texture 
      */
-    constructor(game, hovered_tileset){
-        widgets = [
+    constructor(game, hovered_texture){
+        var widgets = [
             new Button(game, "inventory-button-0", constants.TILE_SIZE / 2, constants.TILE_SIZE / 2,
                 constants.TILE_SIZE / 8, constants.TILE_SIZE / 8, true, (button) => {
                     // chais pas mdr
@@ -49,10 +50,10 @@ export class Inventory extends Ui{
                 constants.TILE_SIZE / 8, constants.TILE_SIZE / 8, true, (button) => {
                     // chais pas mdr
                 }),
-            new Icon(game, "hovered_icon", 0, 0, hovered_tileset, 1, false)
+            hovered_texture
         ]
         /**@type {(inv: Inventory) => void} */
-        widgets_states_handler = (inv)=>{
+        var widgets_states_handler = (inv)=>{
             var hovered_icon = inv.get_widget("hovered_icon")
             var has_hovered = false
             
@@ -82,8 +83,8 @@ export class Inventory extends Ui{
      * @returns {Inventory}
      */
     static async create(game, src){
-        let hovered_tileset = await Tileset.create(game, "inventory_hovered_tileset.png", 16, constants.TILE_SIZE / 8, 0)
-        var inventory = new Inventory(game, hovered_tileset)
+        let hovered_texture = await Texture.create(game, "hovered-texture", "inventory_hovered_tileset.png", 0, 0, constants.TILE_SIZE / 8, constants.TILE_SIZE / 8, false)
+        var inventory = new Inventory(game, hovered_texture)
         try{
             await inventory.load(config.IMG_DIR + src)
         }catch (error){
@@ -91,6 +92,16 @@ export class Inventory extends Ui{
 			return
         }
         return inventory
+    }
+
+    update(current_time){
+        if(this.game.current_ui === this)
+            super.update(current_time)
+        else
+            if(this.game.current_ui) return
+            if(this.game.inputHandler.isKeyPressed("e")){
+                this.game.current_ui = this
+            }
     }
 
     /**

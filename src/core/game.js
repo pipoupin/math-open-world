@@ -13,6 +13,7 @@ import { config, constants } from "../constants.js"
 import { Transition, UnicoloreTransition } from '../ui/transition.js'
 import { Dialogue, QuestionDialogue } from '../ui/dialogue.js'
 import { Resizeable } from '../utils.js'
+import { Inventory } from '../ui/inventory.js'
 
 export class Game {
 	constructor() {
@@ -90,7 +91,8 @@ export class Game {
 		)
 
 		const player_tileset = await Tileset.create(this, 'spritesheet.png', 16, constants.TILE_SIZE, 0)
-		this.player = new Player(this, player_tileset)
+		const inventory = await Inventory.create(this, "inventory.png")
+		this.player = new Player(this, player_tileset, inventory)
 		this.player.set_map(this.get_current_map())
 		
 		// used to place the player correctly
@@ -334,6 +336,8 @@ export class Game {
 		})
 
 		this.talkables.forEach(talkable => {talkable.update()})
+
+		this.player.inventory.update(current_time)
 	}
 
 	render() {
