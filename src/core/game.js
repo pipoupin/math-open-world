@@ -70,10 +70,6 @@ export class Game {
 		/** @type {Ui | Transition} */
 		this.current_ui = null
 
-		
-
-		this.zero = new Resizeable(this, 0)
-
 		this.camera = { x: new Resizeable(this, -1000), y: new Resizeable(this, -1000)}
 	}
 

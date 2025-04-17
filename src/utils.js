@@ -84,7 +84,10 @@ export class YResizeable{
 	}
 
 	set_value(new_value){
-		this.value = new_value / this.game.canvas.height
+		if(!isNaN(new_value / this.game.canvas.width))
+			this.value = new_value / this.game.canvas.height
+		else
+			console.error("value not a number")
 	}
 
 	get(){
