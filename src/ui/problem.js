@@ -85,6 +85,25 @@ export class TimedProblem extends Problem{
 		return problem
     }
 
+    get_time_left(current_time, raw_time=true){
+        let time_left = this.start_time + this.time_limit - current_time
+        if(raw_time)
+            return time_left
+        else
+        return {sec: (Math.floor(time_left / 1000)) % 60,
+                min: (Math.floor(Math.floor(time_left / 1000) / 60)) % 60,
+                h: (Math.floor(Math.floor(time_left / 1000) / 3600))}
+    }
+
+    /**
+     * 
+     * @param {Number} time 
+     */
+    start(time){
+        this.start_time = time
+        this.game.current_ui = this
+    }
+
     trigger(){
         this.start_time = null
         this.game.current_ui = this

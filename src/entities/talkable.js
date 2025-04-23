@@ -53,6 +53,6 @@ export class Talkable{
     }
 
     destructor(){
-        this.game.talkables.slice(this.game.talkables.indexOf(this), 1)
+        this.game.talkables.splice(this.game.talkables.indexOf(this), 1)
     }
 }

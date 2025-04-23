@@ -22,6 +22,7 @@ export class InputHandler {
                 if(game.current_ui && game.current_ui.focused_widgets.length != 0){
                     game.current_ui.focused_widgets.forEach(widget => {
                         if(widget.type != constants.TEXTAREA_TYPE && widget.type != constants.NUMBERAREA_TYPE) return
+                        if(!widget.usable) return
                         widget.content = widget.content.slice(0, -1)
                     })
                     this.del_key_can_be_pressed = false
@@ -40,6 +41,23 @@ export class InputHandler {
                     x: e.x - (game.canvas.width / 2), 
                     y: e.y - (game.canvas.height / 2)
                 }
+            if(game.current_ui && game.current_ui instanceof Ui){
+                game.current_ui.widgets.forEach(widget => {
+                    if(widget.type == constants.BUTTON_TYPE
+                        || widget.type == constants.TEXTAREA_TYPE
+                        || widget.type == constants.NUMBERAREA_TYPE){
+
+                        if(widget.x.get() <= this.mouse_pos.x
+                            && (widget.x.get() + widget.width.get()) >= this.mouse_pos.x
+                            && widget.y.get() <= this.mouse_pos.y
+                            && (widget.y.get() + widget.height.get()) >= this.mouse_pos.y){
+
+                            widget.is_hovered = true
+                        } else 
+                            widget.is_hovered = false
+                    }
+                })
+            }
         }
 
         document.addEventListener('click', (e) => {
@@ -95,6 +113,7 @@ export class InputHandler {
                     if(widget.content.length != widget.max_char_number){
                         if(widget.type == constants.NUMBERAREA_TYPE
                             && !(["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"].includes(e.key))) return
+                        if(!widget.usable) return
                         widget.content += e.key
                     }
                 })
@@ -104,16 +123,8 @@ export class InputHandler {
         document.addEventListener("mousedown", (e) => {
             if(game.current_ui && game.current_ui instanceof Ui){
                 game.current_ui.widgets.forEach(widget => {
-                    if(widget.type == constants.BUTTON_TYPE
-                        || widget.type == constants.TEXTAREA_TYPE
-                        || widget.type == constants.NUMBERAREA_TYPE){
-                        if(widget.x <= this.mouse_pos.x
-                            && (widget.x + widget.width) >= this.mouse_pos.x
-                            && widget.y <= this.mouse_pos.y
-                            && (widget.y + widget.height) >= this.mouse_pos.y){
-                            
-                            widget.is_clicked = true
-                        }
+                    if(widget.is_hovered){
+                        widget.is_clicked = true
                     }
                 })
             }

@@ -39,21 +39,31 @@ export class Resizeable{
 	 * 
 	 * @param {Game} game 
 	 * @param {Number} value 
+	 * @param {(resizeable: Resizeable) => void} [resize=null] 
 	 */
-	constructor(game, value){
+	constructor(game, value, resize=null){
 		this.game = game
 		this.value = value / this.game.canvas.width
+		if(resize){
+			this.resize = resize
+			this.game.resizeables.push(this)
+		}
+		
 	}
 
 	set_value(new_value){
 		if(!isNaN(new_value / this.game.canvas.width))
 			this.value = new_value / this.game.canvas.width
 		else
-			console.error("error")
+			console.error("value not a number")
 	}
 
 	get(){
 		return this.value * this.game.canvas.width
+	}
+
+	resize(){
+		this.resize(this)
 	}
 }
 
@@ -62,14 +72,22 @@ export class YResizeable{
 	 * 
 	 * @param {Game} game 
 	 * @param {Number} value 
+	 * @param {(resizeable: YResizeable) => void} [resize=null] 
 	 */
-	constructor(game, value){
+	constructor(game, value, resize=null){
 		this.game = game
 		this.value = value / this.game.canvas.height
+		if(resize){
+			this.resize = resize
+			this.game.resizeables.push(this)
+		}
 	}
 
 	set_value(new_value){
-		this.value = new_value / this.game.canvas.height
+		if(!isNaN(new_value / this.game.canvas.width))
+			this.value = new_value / this.game.canvas.height
+		else
+			console.error("value not a number")
 	}
 
 	get(){

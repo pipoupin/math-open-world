@@ -185,10 +185,10 @@ export class Entity {
 
     isWithinCameraView() {
         return (
-            this.worldX.get() + this.combat_hitbox.width.get() / 2 >= this.game.camera.x.get() &&
-            this.worldX.get() - this.combat_hitbox.width.get() / 2 <= this.game.camera.x.get() + this.game.canvas.width &&
-            this.worldY.get() + this.combat_hitbox.height.get() / 2 >= this.game.camera.y.get() &&
-            this.worldY.get() - this.combat_hitbox.height.get() / 2 <= this.game.camera.y.get() + this.game.canvas.height
+            this.worldX.get() + this.tileset.screen_tile_size.get() / 2 >= this.game.camera.x.get() &&
+            this.worldX.get() - this.tileset.screen_tile_size.get() / 2 <= this.game.camera.x.get() + this.game.canvas.width &&
+            this.worldY.get() + this.tileset.screen_tile_size.get() / 2 >= this.game.camera.y.get() &&
+            this.worldY.get() - this.tileset.screen_tile_size.get() / 2 <= this.game.camera.y.get() + this.game.canvas.height
         )
     }
 
