@@ -4,6 +4,7 @@ import { Entity } from './entity.js'
 import { Hitbox } from './hitbox.js'
 import { Map } from '../world/map.js'
 import { clamp, Resizeable } from '../utils.js'
+import { ProjectileAttack, SwingingAttack, MeleeAttack } from './attack.js'
 
 export class Player extends Entity {
 	/**
@@ -25,8 +26,8 @@ export class Player extends Entity {
 
 		this.inputHandler = game.inputHandler
 
-		this.fullSpeed = new Resizeable(game, 0.078125 * constants.TILE_SIZE)
-		this.acceleration = new Resizeable(game, 0.03125 * constants.TILE_SIZE)
+		this.fullSpeed = new Resizeable(game, 10)
+		this.acceleration = new Resizeable(game, 4)
 		this.last_dash = -constants.PLAYER_DASH_COOLDOWN // used both for during the dash and for waiting state
 		this.dash_reset = false
 		this.dashing = false
@@ -36,7 +37,7 @@ export class Player extends Entity {
 
 	reset_dash_cooldown() {
 		if (this.dashing)
-			this.dash_reset = true;
+			this.dash_reset = true
 		else
 			this.last_dash = -constants.PLAYER_DASH_COOLDOWN
 	}
@@ -63,11 +64,50 @@ export class Player extends Entity {
 			this.acceleration.set_value(4)
 		}
 	
-		if (this.inputHandler.isKeyDown(constants.UP_KEY)) this.dy.set_value(this.dy.get() - this.acceleration.get())
-		if (this.inputHandler.isKeyDown(constants.DOWN_KEY)) this.dy.set_value(this.dy.get() + this.acceleration.get())
-		if (this.inputHandler.isKeyDown(constants.LEFT_KEY)) this.dx.set_value(this.dx.get() - this.acceleration.get())
-		if (this.inputHandler.isKeyDown(constants.RIGHT_KEY)) this.dx.set_value(this.dx.get() + this.acceleration.get())
+		if (this.inputHandler.isKeyDown(constants.UP_KEY)) {
+			this.direction = constants.UP_DIRECTION
+			this.dy.set_value(this.dy.get() - this.acceleration.get())
+		}
+		if (this.inputHandler.isKeyDown(constants.DOWN_KEY)) {
+			this.direction = constants.DOWN_DIRECTION
+			this.dy.set_value(this.dy.get() + this.acceleration.get())
+		}
+		if (this.inputHandler.isKeyDown(constants.LEFT_KEY)) {
+			this.direction = constants.LEFT_DIRECTION
+			this.dx.set_value(this.dx.get() - this.acceleration.get())
+		}
+		if (this.inputHandler.isKeyDown(constants.RIGHT_KEY)) {
+			this.direction = constants.RIGHT_DIRECTION
+			this.dx.set_value(this.dx.get() + this.acceleration.get())
+		}
 
+		// ATTACKS
+		if (this.inputHandler.isMousePressed(constants.MOUSE_RIGHT_BUTTON)) {
+			const mouseWorldX = this.game.camera.x.get() + (this.inputHandler.mouse_pos.x + this.game.canvas.width / 2)
+			const mouseWorldY = this.game.camera.y.get() + (this.inputHandler.mouse_pos.y + this.game.canvas.height / 2)
+			
+			const playerWorldX = this.worldX.get()
+			const playerWorldY = this.worldY.get()
+			
+			const dx = mouseWorldX - playerWorldX
+			const dy = mouseWorldY - playerWorldY
+			
+			const distance = Math.hypot(dx, dy)
+			if (distance <= 10) return
+		   
+			const speed = 20
+			const velX = (dx / distance) * speed
+			const velY = (dy / distance) * speed
+			
+			const hb = new Hitbox(this.game, this.game.get_current_map(), playerWorldX, playerWorldY, 20, 20, false, false)
+			new ProjectileAttack(this.game, this, this.game.get_current_map(), current_time, 2000, [hb], velX, velY,(e) => { e.life -= 2 })
+		}
+
+		if (this.inputHandler.isKeyPressed('a')) {
+			this.game.effects.MOTIONLESS.apply(current_time, this, 100)
+			new SwingingAttack(this.game, this, this.game.get_current_map(), current_time, 100, {x: this.worldX.get(), y: this.worldY.get()}, this.direction, constants.TILE_SIZE/5, constants.TILE_SIZE, constants.TILE_SIZE, (e) => { e.life -= 2 })
+		}
+	
 		// Handle deceleration
 		if (!this.inputHandler.isKeyDown(constants.UP_KEY) && !this.inputHandler.isKeyDown(constants.DOWN_KEY))
 			this.dy.set_value(Math.sign(this.dy.get()) * Math.max(Math.abs(this.dy.get()) - this.acceleration.get(), 0))

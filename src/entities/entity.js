@@ -3,10 +3,10 @@ import { Hitbox } from "./hitbox.js"
 import { Map } from "../world/map.js"
 import { Tileset } from "../world/tileset.js"
 import { constants } from "../constants.js"
+import { Attack } from "./attack.js"
 import { clamp, Resizeable } from "../utils.js"
 
 export class Entity {
-
     /**
     * @param {Game} game - The current game
     * @param {Map} map - The map in which the entity should show up
@@ -62,6 +62,9 @@ export class Entity {
     update(current_time) {
         if(this.game.get_current_map() != this.map)
             return
+		
+		if (this.life === 0)
+			this.destroy()
 
         // Split movement into X and Y components to handle collisions separately
         this.updatePositionX()
@@ -79,16 +82,21 @@ export class Entity {
         }
 
         this.collision_hitbox.get_colliding_hitboxes(true, false).forEach(hitbox => {
-                hitbox.command(this, hitbox, current_time)
-            })
+			hitbox.command(this, hitbox, current_time)
+		})
 
-            this.combat_hitbox.get_colliding_hitboxes(false, true).forEach(hitbox => {
-                hitbox.command(this, hitbox, current_time)
-            })
+		this.combat_hitbox.get_colliding_hitboxes(false, true).forEach(hitbox => {
+			if (hitbox.owner instanceof Attack && hitbox.owner !== this) {
+				hitbox.owner.apply(this, current_time)
+			} else {
+				hitbox.command(this, hitbox, current_time)
+			}
+		})
 
-            this.combat_hitbox.get_colliding_hitboxes(false, false).forEach(hitbox => {
-                hitbox.command(this, hitbox, current_time)
-            })
+		// only apply to comabt hitboxes as they're included in collision ones, so don't need to apply to collisions
+		this.combat_hitbox.get_colliding_hitboxes(false, false).forEach(hitbox => {
+			hitbox.command(this, hitbox, current_time)
+		})
 
         this.handleAnimation(current_time)
     }
@@ -203,4 +211,12 @@ export class Entity {
         if (this.raycast_hitbox)
             this.raycast_hitbox.set_map(new_map)
     }
+
+	destroy() {
+		this.combat_hitbox.destroy()
+		this.collision_hitbox.destroy()
+
+		const i = this.game.entities.indexOf(this)
+		this.game.entities.splice(i, 1)
+	}
 }

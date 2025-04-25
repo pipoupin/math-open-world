@@ -52,7 +52,6 @@ export class Hitbox {
 	}
 
 	/**
-	 * 
 	 * @param {Attack | Entity} owner 
 	 */
 	set_owner(owner){
@@ -89,14 +88,14 @@ export class Hitbox {
 	 */
 	get_colliding_hitboxes(collision=true, combat=true) {
 		const colliding_hitboxes = []
-		if (collision) {
+		if (combat) {
 			for (let i = 0; i < this.game.combat_hitboxes.length; i++) {
 				if (this.is_colliding(this.game.combat_hitboxes[i]))
 					colliding_hitboxes.push(this.game.combat_hitboxes[i])
 			}
 		}
 
-		if (combat) {
+		if (collision) {
 			for (let i = 0; i < this.game.collision_hitboxes.length; i++) {
 				if (this.is_colliding(this.game.collision_hitboxes[i]))
 					colliding_hitboxes.push(this.game.collision_hitboxes[i])
@@ -127,7 +126,6 @@ export class Hitbox {
 	}
 
 	/**
-	 * 
 	 * @param {Number} x 
 	 * @param {Number} y 
 	 * @param {Number} [width=null] 
@@ -153,15 +151,14 @@ export class Hitbox {
 	}
 
 	/**
-	 * 
 	 * @param {Number} dx 
 	 * @param {Number} dy 
 	 */
 	move_by(dx, dy) {
-		this.x1.set_value(this.x1.get() + dx.get())
-		this.x2.set_value(this.x2.get() + dx.get())
-		this.y1.set_value(this.y1.get() + dy.get())
-		this.y2.set_value(this.y2.get() + dy.get())
+		this.x1.set_value(this.x1.get() + dx)
+		this.x2.set_value(this.x2.get() + dx)
+		this.y1.set_value(this.y1.get() + dy)
+		this.y2.set_value(this.y2.get() + dy)
 	}
 
 	/**
@@ -172,7 +169,7 @@ export class Hitbox {
 		this.map = new_map
 	}
 
-	destructor() {
+	destroy() {
 		this.game.collision_hitboxes.splice(this.game.collision_hitboxes.indexOf(this), 1)
 		this.game.hitboxes.splice(this.game.hitboxes.indexOf(this), 1)
 		this.game.combat_hitboxes.splice(this.game.combat_hitboxes.indexOf(this), 1)

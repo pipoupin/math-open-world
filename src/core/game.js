@@ -13,6 +13,7 @@ import { constants } from "../constants.js"
 import { Transition, UnicoloreTransition } from '../ui/transition.js'
 import { Dialogue, QuestionDialogue } from '../ui/dialogue.js'
 import { Resizeable, YResizeable } from '../utils.js'
+import { Effect } from '../entities/effect.js'
 
 export class Game {
 	constructor() {
@@ -71,6 +72,20 @@ export class Game {
 		this.current_ui = null
 
 		this.camera = { x: new Resizeable(this, -1000), y: new Resizeable(this, -1000)}
+		
+		this.effects = {
+			MOTIONLESS: new Effect((entity) => {
+				entity.e.fullSpeed = entity.new_fullSpeed
+				entity.e.direction = entity.direction
+			}, (entity) => {
+				entity.direction = entity.e.direction
+				entity.fullSpeed = entity.e.fullSpeed
+				entity.new_fullSpeed = new Resizeable(this, 0)
+			}, (entity) => {
+				entity.e.fullSpeed = entity.fullSpeed
+				entity.e.direction = entity.direction
+			}, 0),
+		}
 	}
 
 	async run() {
@@ -220,10 +235,10 @@ export class Game {
 			["Ok", "No"], // anything can be added here and the box will be automatically generated
 			this.canvas.width / 4, this.canvas.height / 4, this.canvas.width / 8, this.canvas.height / 16,
 			"anwser_box.png", (dialogue, anwser) => {
-				if(anwser == "No"){
+				if (anwser === "No"){
 					dialogue.game.current_ui = threats_dialogue
 				}
-				dialogue.source.destructor()
+				dialogue.source.destroy()
 			}, constants.TILE_SIZE / 5, "black", "arial"
 		)
 		var dialogue_test = new Hitbox(this, this.get_current_map(), 0, 4 * constants.TILE_SIZE, constants.TILE_SIZE, constants.TILE_SIZE, false, false, null, (e, h, t) => {
@@ -252,6 +267,7 @@ export class Game {
 
 			black_transition.start(time)
 		})
+
 		// -- from the house (auto)
 		new Hitbox(this, this.get_current_map(), 3 * constants.TILE_SIZE, 8.75 * constants.TILE_SIZE, constants.TILE_SIZE, constants.TILE_SIZE / 4, false, false, null, (e, h, time) => {
 			if(!e instanceof Player) return
@@ -333,7 +349,7 @@ export class Game {
 			if(this.current_ui.is_finished){
 				this.current_ui.is_finished = false
 				this.current_ui = null
-			} else{
+			} else {
 				if((this.current_ui instanceof Transition
 					|| this.current_ui instanceof TimedProblem)
 					&& !this.current_ui.start_time)
@@ -363,19 +379,14 @@ export class Game {
 			this.camera.y.set_value(Math.max(0, Math.min(this.camera.y.get(), this.get_current_map().world.height.get() - this.canvas.height)));
 		}
 
+		this.attacks.forEach(attack => attack.update(current_time))
 
-		this.attacks.forEach(attack => {
-			if (current_time - attack.time_origin > attack.duration) {
-				attack.destroy()
-				this.attacks.pop(attack)
-			}
-		})
+		Object.values(this.effects).forEach(effect => effect.update(current_time))
 
-		this.talkables.forEach(talkable => {talkable.update()})
+		this.talkables.forEach(talkable => talkable.update())
 	}
 
 	render() {
-
 		this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
 		this.get_current_map().render_ground_blocks()
 

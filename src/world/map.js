@@ -41,7 +41,7 @@ export class Map {
 		try {
 			await map.load(src)
 		} catch (error) {
-			console.error(`Failed to load map "${src}": ${error.message}`);
+			console.error(`Failed to load map "${src}": ${error.message}`)
 		}
 		return map
 	}
@@ -97,8 +97,8 @@ export class Map {
 							if (!layer.data[i])
 								continue
 
-							const tileX = (i % layer.width) * constants.TILE_SIZE;
-							const tileY = Math.floor(i / layer.width) * constants.TILE_SIZE;
+							const tileX = (i % layer.width) * constants.TILE_SIZE
+							const tileY = Math.floor(i / layer.width) * constants.TILE_SIZE
 
 							var new_x = 0
 							var new_y = 0
@@ -131,7 +131,7 @@ export class Map {
 										new_height = constants.TILE_SIZE - new_y
 								}
 							}
-							new Hitbox(this.game, this, tileX + new_x, tileY + new_y, new_width, new_height, true, false, null, (e, h, t) => {});
+							new Hitbox(this.game, this, tileX + new_x, tileY + new_y, new_width, new_height, true, false, null, (e, h, t) => {})
 						}
 					}
 				}
@@ -189,18 +189,18 @@ export class Map {
 	render_ground_blocks() {
 		this.game.ctx.fillStyle = this.background
 		this.game.ctx.fillRect(0, 0, this.game.canvas.width, this.game.canvas.height)
-		const startTileX = Math.max(0, Math.floor(this.game.camera.x.get() / constants.TILE_SIZE));
-		const startTileY = Math.max(0, Math.floor(this.game.camera.y.get() / constants.TILE_SIZE));
-		const endTileX = Math.min(this.width, Math.ceil((this.game.camera.x.get() + this.game.canvas.width) / constants.TILE_SIZE));
-		const endTileY = Math.min(this.height, Math.ceil((this.game.camera.y.get() + this.game.canvas.height) / constants.TILE_SIZE));
+		const startTileX = Math.max(0, Math.floor(this.game.camera.x.get() / constants.TILE_SIZE))
+		const startTileY = Math.max(0, Math.floor(this.game.camera.y.get() / constants.TILE_SIZE))
+		const endTileX = Math.min(this.width, Math.ceil((this.game.camera.x.get() + this.game.canvas.width) / constants.TILE_SIZE))
+		const endTileY = Math.min(this.height, Math.ceil((this.game.camera.y.get() + this.game.canvas.height) / constants.TILE_SIZE))
 
 		for (let y = startTileY; y < endTileY; y++) {
 			for (let x = startTileX; x < endTileX; x++) {
-				const screenX = x * constants.TILE_SIZE - this.game.camera.x.get();
-				const screenY = y * constants.TILE_SIZE - this.game.camera.y.get();
+				const screenX = x * constants.TILE_SIZE - this.game.camera.x.get()
+				const screenY = y * constants.TILE_SIZE - this.game.camera.y.get()
 
 				for (let i = 0; i < this.layers.length; i++) {
-					const tile_num = this.get_cell(i, x, y);
+					const tile_num = this.get_cell(i, x, y)
 					if(this.animated_tiles[tile_num]){
 						this.animation_tilesets[tile_num].drawTile(
 							this.animated_tiles[tile_num].frameorder[
@@ -208,7 +208,7 @@ export class Map {
 							], screenX, screenY)
 					}
 					else if (tile_num !== 0) // skips empty tiles 
-						this.tileset.drawTile(tile_num, screenX, screenY);
+						this.tileset.drawTile(tile_num, screenX, screenY)
 				}
 			}
 		}

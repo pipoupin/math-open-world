@@ -13,6 +13,9 @@ export class InputHandler {
         /** @type {x: Number, y: Number} */
         this.mouse_pos = {x:null, y:null}
 
+		this.mouse_buttons_down = {}
+		this.mouse_buttons_pressed = {}
+
         document.addEventListener('keydown', (e) => {
             if (!this.keys_down[e.key.toLowerCase()]) {
                 this.keys_pressed[e.key.toLowerCase()] = true
@@ -62,24 +65,20 @@ export class InputHandler {
 
         document.addEventListener('click', (e) => {
             if(game.current_ui && game.current_ui instanceof Ui){
-                
                 var new_focused_widgets = []
                 game.current_ui.widgets.forEach(widget => { 
                     if(!widget.rendered) return
                     if(widget.type == constants.BUTTON_TYPE
                         || widget.type == constants.TEXTAREA_TYPE
                         || widget.type == constants.NUMBERAREA_TYPE){
-                        
                         if(widget.x.get() <= this.mouse_pos.x
                             && (widget.x.get() + widget.width.get()) >= this.mouse_pos.x
                             && widget.y.get() <= this.mouse_pos.y
                             && (widget.y.get() + widget.height.get()) >= this.mouse_pos.y){
-
                             if(widget.type == constants.BUTTON_TYPE) {
                                 widget.command(widget)
                                 new_focused_widgets.push(widget)
                             }
-
                             else if(widget.type == constants.TEXTAREA_TYPE || widget.type == constants.NUMBERAREA_TYPE){
                                 new_focused_widgets.push(widget)
                             }
@@ -104,6 +103,7 @@ export class InputHandler {
                     })
                 }
             }
+
         })
 
         document.addEventListener("keypress", (e) => {
@@ -121,6 +121,9 @@ export class InputHandler {
         })
 
         document.addEventListener("mousedown", (e) => {
+			this.mouse_buttons_down[e.button] = true
+			this.mouse_buttons_pressed[e.button] = true
+
             if(game.current_ui && game.current_ui instanceof Ui){
                 game.current_ui.widgets.forEach(widget => {
                     if(widget.is_hovered){
@@ -131,6 +134,8 @@ export class InputHandler {
         })
 
         document.addEventListener("mouseup", (e) => {
+			this.mouse_buttons_down[e.button] = false
+
             if(game.current_ui && game.current_ui instanceof Ui){
                 game.current_ui.widgets.forEach((widget) => {
                     if(widget.type == constants.BUTTON_TYPE
@@ -144,14 +149,14 @@ export class InputHandler {
     }
 
     /**
-     * 
+	 * Check if a key is down
      * @param {String} key 
      * @returns {Boolean}
      */
     isKeyDown(key) { return this.keys_down[key] }
 
     /**
-     * 
+     * Check if a key is pressed (returns true only once per press)
      * @param {String} key 
      * @returns {Boolean}
      */
@@ -163,4 +168,27 @@ export class InputHandler {
             return false
         }
     }
+
+	/**
+	 * Check if a mouse button is down
+	 * @param {Number} button
+	 * @returns {Boolean}
+	 */
+	isMouseDown(button) {
+		return this.mouse_buttons_down[button] || false
+	}
+
+	/**
+     * Check if a mouse button is pressed (returns true only once per press)
+	 * @param {Number} button
+	 * @returns {Boolean}
+	 */
+	isMousePressed(button) {
+		if (this.mouse_buttons_pressed[button]) {
+			this.mouse_buttons_pressed[button] = false
+			return true
+		}
+		return false
+	}
+
 }

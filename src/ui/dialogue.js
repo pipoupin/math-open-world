@@ -100,7 +100,7 @@ export class Dialogue extends Ui{
     }
 }
 
-export class QuestionDialogue extends Ui{
+export class QuestionDialogue extends Ui {
     /**
      * !!! One shouldn't use the constructor to make an dialogue, use the static create method instead
      * @param {Game} game 
@@ -137,14 +137,18 @@ export class QuestionDialogue extends Ui{
                     anwsers_x + j * anwsers_height, new YResizeable(game, anwsers_y - ((i + 1) * anwsers_height)), anwser_box_tileset, tile_nb, false, 0))
             }
 
-            widgets.push(new Button(game, "anwser-button-"+i.toString(),
-            anwsers_x, new YResizeable(game, anwsers_y - ((i + 1) * anwsers_height)), anwsers_width, new YResizeable(game, anwsers_height), false, (button) => {
-                if(!button.has_focus) return
-                if(button.ui.sentence + 1 != button.ui.sentences.length || button.ui.get_widget("dialogue-content").text != button.ui.sentences[this.sentence]) return
-                let anwser_number = parseInt(button.id.split("-").at(-1))
-                this.is_finished = true
-                button.ui.on_end(button.ui, button.ui.anwsers[anwser_number])
-            }))
+            widgets.push(
+				new Button(game, "anwser-button-"+i.toString(),
+					anwsers_x, new YResizeable(game, anwsers_y - ((i + 1) * anwsers_height)), anwsers_width, new YResizeable(game, anwsers_height), false,
+					(button) => {
+						if(!button.has_focus) return
+						if(button.ui.sentence + 1 != button.ui.sentences.length || button.ui.get_widget("dialogue-content").text != button.ui.sentences[button.ui.sentence]) return
+						let anwser_number = parseInt(button.id.split("-").at(-1))
+						button.ui.is_finished = true
+						button.ui.on_end(button.ui, button.ui.anwsers[anwser_number])
+					}
+				)
+			)
 
             widgets.push(new Label(game, "anwser-label-"+i.toString(),
                 anwsers_x * 1.05, new YResizeable(game, anwsers_y - ((i + 0.5) * anwsers_height)), anwsers[i], false, 1, fontsize, textcolor, font
