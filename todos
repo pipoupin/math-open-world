@@ -1,11 +1,8 @@
-- add on key interaction tp 
-- move "clamp" to utils
-- border hitboxes loaded directly during the load of the map
-
-#TODO: implement fully working attacks
 #TODO: implement the "block" tiles classes (so that they are not fully blocking the tile)
-#TODO: implement a test for the timed problems
-#TODO: rewrite the coordinate system using the resizeables (don't worry i'll handle it, maybe... sometime...)
+#TODO: implement the whole map
+#TODO: add mobs and "AI" for them
+
+#FIX: rendering by layers
 
 # Maybe we could separate collision hitboxes and action hitboxes by making sub-classes
 # As collision hitboxes' commands are not meant to ever be triggered

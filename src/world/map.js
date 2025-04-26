@@ -107,7 +107,6 @@ export class Map {
 
 							if(src in collisions){
 								if(layer.data[i] in collisions[src]){
-
 									if(collisions[src][layer.data[i]].x)
 										new_x = collisions[src][layer.data[i]].x
 										new_x = new_x * constants.TILE_SIZE / 128

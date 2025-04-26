@@ -20,6 +20,10 @@ export class Hitbox {
 	constructor(game, map, x, y, width, height, collision=false, player=false, owner = null,command=((e, h, t) => {})){
 		this.game = game
 		this.map = map
+		this.active = true
+
+		this.id = this.game.next_hitbox_id
+		this.game.next_hitbox_id++
 
 		this.x1 = new Resizeable(game, x)
 		this.x2 = new Resizeable(game, x + width)
@@ -29,9 +33,9 @@ export class Hitbox {
 		this.width = new Resizeable(game, width)
 		this.height = new Resizeable(game, height)
 
+		this.game.hitboxes.push(this)
 		if (collision) game.collision_hitboxes.push(this)
 		else game.combat_hitboxes.push(this)
-		this.game.hitboxes.push(this)
 		
 		this.player = player
 		this.owner = owner
@@ -60,7 +64,12 @@ export class Hitbox {
 
 	render() {
 		if(this.game.get_current_map() == this.map){
-			this.game.ctx.strokeStyle = this.player ? "blue" : "red"
+			if (this.active) {
+				this.game.ctx.strokeStyle = this.player ? "blue" : "red"
+			} else {
+				this.game.ctx.strokeStyle = "gray"
+			}
+
 			this.game.ctx.strokeRect(
 				this.x1.get() - this.game.camera.x.get(),
 				this.y1.get() - this.game.camera.y.get(),
@@ -90,6 +99,8 @@ export class Hitbox {
 		const colliding_hitboxes = []
 		if (combat) {
 			for (let i = 0; i < this.game.combat_hitboxes.length; i++) {
+				if (!this.game.combat_hitboxes[i].active)
+					continue
 				if (this.is_colliding(this.game.combat_hitboxes[i]))
 					colliding_hitboxes.push(this.game.combat_hitboxes[i])
 			}
@@ -97,6 +108,8 @@ export class Hitbox {
 
 		if (collision) {
 			for (let i = 0; i < this.game.collision_hitboxes.length; i++) {
+				if (!this.game.collision_hitboxes[i].active)
+					continue
 				if (this.is_colliding(this.game.collision_hitboxes[i]))
 					colliding_hitboxes.push(this.game.collision_hitboxes[i])
 			}
@@ -105,6 +118,8 @@ export class Hitbox {
 		if(!(combat || collision)){
 			for (let i = 0; i < this.game.hitboxes.length; i++) {
 				if( (! this.game.hitboxes[i] in colliding_hitboxes) && (!this.game.hitboxes[i] in this.game.collision_hitboxes) && (! this.game.hitboxes[i] in this.game.combat_hitboxes)){
+					if (!this.game.hitboxes[i].active)
+						continue
 					if (this.is_colliding(this.game.hitboxes[i]))
 						colliding_hitboxes.push(this.game.collision_hitboxes[i])
 				}
@@ -170,8 +185,13 @@ export class Hitbox {
 	}
 
 	destroy() {
+		// to prevent unexpected behaviour
+		// we rather use "active" and remove the inactive at each frame in the game than remove while iterating
+		this.active = false
+		/*
 		this.game.collision_hitboxes.splice(this.game.collision_hitboxes.indexOf(this), 1)
 		this.game.hitboxes.splice(this.game.hitboxes.indexOf(this), 1)
 		this.game.combat_hitboxes.splice(this.game.combat_hitboxes.indexOf(this), 1)
+		*/
 	}
 }

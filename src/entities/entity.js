@@ -23,6 +23,9 @@ export class Entity {
         this.game = game
         this.map = map
 
+		this.id = game.next_entity_id
+		game.next_entity_id++
+
         // World position at the center
         this.worldX = new Resizeable(game, worldX)
         this.worldY = new Resizeable(game, worldY)
@@ -63,8 +66,10 @@ export class Entity {
         if(this.game.get_current_map() != this.map)
             return
 		
-		if (this.life === 0)
+		if (this.life === 0) {
 			this.destroy()
+			return
+		}
 
         // Split movement into X and Y components to handle collisions separately
         this.updatePositionX()
@@ -214,9 +219,16 @@ export class Entity {
 
 	destroy() {
 		this.combat_hitbox.destroy()
+		this.combat_hitbox = null
+
 		this.collision_hitbox.destroy()
+		this.collision_hitbox = null
 
 		const i = this.game.entities.indexOf(this)
-		this.game.entities.splice(i, 1)
+		if (i !== 1) {
+			this.game.entities.splice(i, 1)
+		} else {
+			throw new Error("entity should be contained in game.entities")
+		}
 	}
 }

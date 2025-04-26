@@ -28,6 +28,10 @@ export class Game {
 		/** @type {CanvasRenderingContext2D} */
 		this.ctx = this.canvas.getContext('2d')
 		this.ctx.imageSmoothingEnabled = false
+
+		this.next_hitbox_id = 0
+		this.next_attack_id = 0
+		this.next_entity_id = 0
 		
 		/**@type {Array} */
 		this.resizeables = []
@@ -103,7 +107,7 @@ export class Game {
 		this.map = this.maps[this.current_map]
 
 		// test entity
-		const test_spider_entity = new Entity(this, this.maps[1], spider_tile_set,
+		new Entity(this, this.maps[1], spider_tile_set,
 			new Hitbox(this, this.maps[1], 0, 0, constants.TILE_SIZE * 2, constants.TILE_SIZE * 2.5, true, false, null, (e, h, t) => {}),
 			new Hitbox(this, this.maps[1], 0, 0, constants.TILE_SIZE * 2, constants.TILE_SIZE * 2.5, false, false, null, (e, h, t) => {}),
 			constants.TILE_SIZE * 2, constants.TILE_SIZE * 2, 150, {combat: {x: 0, y: -0.15625 * constants.TILE_SIZE}, collision: {x: 0, y: -0.15625 * constants.TILE_SIZE}}, 10
@@ -345,7 +349,11 @@ export class Game {
 	 * @returns 
 	 */
 	update(current_time) {
-		if(this.current_ui){
+		this.collision_hitboxes = this.collision_hitboxes.filter(h => h.active)
+		this.combat_hitboxes = this.combat_hitboxes.filter(h => h.active)
+		this.hitboxes = this.hitboxes.filter(h => h.active)
+
+		if(this.current_ui) {
 			if(this.current_ui.is_finished){
 				this.current_ui.is_finished = false
 				this.current_ui = null
@@ -362,7 +370,7 @@ export class Game {
 
 		this.get_current_map().update(current_time)
 
-		this.entities.forEach(entity => {entity.update(current_time)})
+		this.entities.forEach(entity => entity.update(current_time))
 
 		this.camera.x.set_value(this.player.worldX.get() - this.canvas.width / 2)
 		this.camera.y.set_value(this.player.worldY.get() - this.canvas.height / 2)
@@ -390,7 +398,8 @@ export class Game {
 		this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
 		this.get_current_map().render_ground_blocks()
 
-		this.entities.forEach(entity => {entity.render()})
+		this.entities.forEach(entity => entity.render())
+		this.attacks.forEach(attack => attack.render())
 
 		this.player.render()
 
