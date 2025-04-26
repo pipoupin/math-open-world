@@ -4,7 +4,7 @@ import { Entity } from './entity.js'
 import { Hitbox } from './hitbox.js'
 import { Map } from '../world/map.js'
 import { clamp, Resizeable } from '../utils.js'
-import { ProjectileAttack, SwingingAttack, MeleeAttack } from './attack.js'
+import { ProjectileAttack, SwingingAttack } from './attack.js'
 
 export class Player extends Entity {
 	/**
@@ -42,13 +42,27 @@ export class Player extends Entity {
 			this.last_dash = -constants.PLAYER_DASH_COOLDOWN
 	}
 
+    updateDirectionFromMouse() {
+		const mouseWorldX = this.game.camera.x.get() + (this.inputHandler.mouse_pos.x + this.game.canvas.width / 2)
+		const mouseWorldY = this.game.camera.y.get() + (this.inputHandler.mouse_pos.y + this.game.canvas.height / 2)
+        const playerWorldX = this.worldX.get()
+        const playerWorldY = this.worldY.get()
+        const dx = mouseWorldX - playerWorldX
+        const dy = mouseWorldY - playerWorldY
+
+        if (Math.abs(dx) >= Math.abs(dy)) {
+            this.direction = dx > 0 ? constants.RIGHT_DIRECTION : constants.LEFT_DIRECTION
+        } else {
+            this.direction = dy > 0 ? constants.DOWN_DIRECTION : constants.UP_DIRECTION
+        }
+    }
+
 	/**
 	 * 
 	 * @param {Number} current_time 
 	 */
 	update(current_time) {
 		// Handle player movement
-		
 		if (!this.dashing && this.inputHandler.isKeyDown(constants.DASH_KEY) && current_time - this.last_dash >= constants.PLAYER_DASH_COOLDOWN) {
 			this.dashing = true
 			this.acceleration.set_value(10)
@@ -83,15 +97,15 @@ export class Player extends Entity {
 
 		// ATTACKS
 		if (this.inputHandler.isMousePressed(constants.MOUSE_RIGHT_BUTTON)) {
-			const mouseWorldX = this.game.camera.x.get() + (this.inputHandler.mouse_pos.x + this.game.canvas.width / 2)
-			const mouseWorldY = this.game.camera.y.get() + (this.inputHandler.mouse_pos.y + this.game.canvas.height / 2)
-			
 			const playerWorldX = this.worldX.get()
 			const playerWorldY = this.worldY.get()
-			
+
+			const mouseWorldX = this.game.camera.x.get() + (this.inputHandler.mouse_pos.x + this.game.canvas.width / 2)
+			const mouseWorldY = this.game.camera.y.get() + (this.inputHandler.mouse_pos.y + this.game.canvas.height / 2)
+
 			const dx = mouseWorldX - playerWorldX
 			const dy = mouseWorldY - playerWorldY
-			
+
 			const distance = Math.hypot(dx, dy)
 			if (distance <= 10) return
 		   
@@ -103,7 +117,14 @@ export class Player extends Entity {
 			new ProjectileAttack(this.game, this, this.game.get_current_map(), current_time, 2000, [hb], velX, velY,(e) => { e.life -= 2 })
 		}
 
-		if (this.inputHandler.isKeyPressed('a')) {
+		let mouse_input = this.inputHandler.isMousePressed(constants.MOUSE_LEFT_BUTTON)
+		if (mouse_input || this.inputHandler.isKeyPressed('a')) {
+
+			// fancy stuff
+			if (mouse_input) {
+				this.updateDirectionFromMouse()
+			}
+
 			this.game.effects.MOTIONLESS.apply(current_time, this, 100)
 			new SwingingAttack(this.game, this, this.game.get_current_map(), current_time, 100, {x: this.worldX.get(), y: this.worldY.get()}, this.direction, constants.TILE_SIZE/5, constants.TILE_SIZE, constants.TILE_SIZE, (e) => { e.life -= 2 })
 		}

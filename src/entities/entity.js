@@ -3,7 +3,7 @@ import { Hitbox } from "./hitbox.js"
 import { Map } from "../world/map.js"
 import { Tileset } from "../world/tileset.js"
 import { constants } from "../constants.js"
-import { Attack } from "./attack.js"
+import { Attack, SwingingAttack } from "./attack.js"
 import { clamp, Resizeable } from "../utils.js"
 
 export class Entity {
@@ -92,6 +92,8 @@ export class Entity {
 
 		this.combat_hitbox.get_colliding_hitboxes(false, true).forEach(hitbox => {
 			if (hitbox.owner instanceof Attack && hitbox.owner !== this) {
+				if (hitbox.owner instanceof SwingingAttack) {
+				}
 				hitbox.owner.apply(this, current_time)
 			} else {
 				hitbox.command(this, hitbox, current_time)

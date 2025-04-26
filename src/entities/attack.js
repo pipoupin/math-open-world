@@ -2,7 +2,7 @@ import { Hitbox } from './hitbox.js'
 import { Entity } from './entity.js'
 import { Game } from '../core/game.js'
 import { Map } from '../world/map.js'
-import { Resizeable } from '../utils.js'
+import { Resizeable, isWithinMapBounds } from '../utils.js'
 import { constants } from '../constants.js'
 import { Tileset } from '../world/tileset.js'
 
@@ -10,12 +10,11 @@ import { Tileset } from '../world/tileset.js'
 // TO READ:
 //
 // How to use attacks:
-// - Create an instance of `Attack` or a subclass (`SwingingAttack`, `MeleeAttack`, `ProjectileAttack`) when you want an entity to perform an attack.
+// - Create an instance of `Attack` or a subclass (`SwingingAttack`, `ProjectileAttack`) when you want an entity to perform an attack.
 // - Each attack takes a list of `Hitbox`es that define the area where collisions are checked.
 // - When a `Hitbox` overlaps an `Entity`, `attack(entity)` is called to apply damage or effects.
 // - Subclasses:
 //   - `SwingingAttack`: For attacks that swing/move (mimicking rotated attacks).
-//   - `MeleeAttack`: For simple, stationary melee attacks (no extra behavior needed).
 //   - `ProjectileAttack`: For moving attacks like bullets or magic projectiles.
 //
 // Important options:
@@ -57,9 +56,7 @@ export class Attack {
 		this.id = game.next_attack_id
 		game.next_attack_id++
 
-		console.log(`Attack ${this.id}:`)
 		for (const hitbox of hitboxes) {
-			console.log(`- hitbox ${hitbox.id}`)
 			hitbox.owner = this
 		}
 		/** @type {Array<Hitbox>} */
@@ -145,12 +142,10 @@ export class Attack {
 				return
 			if (current - this.last_applies[i] >= this.cooldown) {
 				this.attack(entity)
-				console.log(`Attack ${this.id} landed to ${entity}`)
 				this.last_applies[i] = current
 			}
 		} else {
 			this.attack(entity)
-			console.log(`Attack ${this.id} landed to entity ${entity.id}`)
 			this.entities.push(entity)
 			if (this.still)
 				this.last_applies.push(current)
@@ -227,6 +222,7 @@ export class SwingingAttack extends Attack {
 			this.animation_cords.x.set_value(this.hitboxes[0].x1.get())
 			this.animation_cords.y.set_value(this.hitboxes[0].y1.get())
 		}
+		
 
         this.direction = direction
         this.attack_width = new Resizeable(game, attack_width)
@@ -268,12 +264,6 @@ export class SwingingAttack extends Attack {
 }
 
 
-/**
- * just a still attack
- */
-export class MeleeAttack extends Attack {
-}
-
 export class ProjectileAttack extends Attack {
 	/**
 	 * @param {Game} game
@@ -285,14 +275,16 @@ export class ProjectileAttack extends Attack {
 	 * @param {Number} dx
 	 * @param {Number} dy
 	 * @param {(e: Entity) => void} attack
+	 * @param {Boolean} [piercing=false]
 	 * @param {Tileset} [tileset=null]
 	 * @param {Number} [frame_duration=null]
 	 * @param {{x:number, y:number}} [animation_cords=null]
 	 * @param {Boolean} [persistent=false]
 	 * @param {Number} [cooldown=null] - time between each apply in ms
 	 */
-	constructor(game, attacker, map, timeOrigin, duration, hitboxes, dx, dy, attack = (((e) => {})), tileset=null, frame_duration=null, animation_cords=null, persistent=false, cooldown=null) {
+	constructor(game, attacker, map, timeOrigin, duration, hitboxes, dx, dy, attack = (((e) => {})), piercing=false, tileset=null, frame_duration=null, animation_cords=null, persistent=false, cooldown=null) {
 		super(game, attacker, map, timeOrigin, duration, hitboxes, attack, tileset, frame_duration, animation_cords, false, persistent, cooldown)
+		this.piercing = piercing
 		this.dx = new Resizeable(game, dx)
 		this.dy = new Resizeable(game, dy)
 	}
@@ -305,6 +297,19 @@ export class ProjectileAttack extends Attack {
 
 	updateHitboxes(current) {
 		for (const hb of this.hitboxes) {
+			let is_colliding = false
+			for (const col_hb of hb.get_colliding_hitboxes(true, false)) {
+				if (col_hb.owner !== this.attacker) {
+					is_colliding = true
+					break
+				}
+			}
+
+			if (is_colliding || !isWithinMapBounds(this.map, hb)) {
+				this.destroy()
+				return
+			}
+
 			hb.move_by(this.dx.get(), this.dy.get())
 		}
 	}

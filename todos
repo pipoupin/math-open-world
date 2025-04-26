@@ -1,6 +1,11 @@
-#TODO: implement the "block" tiles classes (so that they are not fully blocking the tile)
 #TODO: implement the whole map
-#TODO: add mobs and "AI" for them
+#TODO: introduction of "states" in entity class
+# the states define how the update will function, how the render will function
+# for instance, if the state is "attacking", there'll be a certain animation, the input will be handled in a certain way etc
+#TODO: implement the "block" tiles classes (so that they are not fully blocking the tile)
+#TODO: add mobs and get them AI driven
+#TODO: inventory
+#TODO: add problems
 
 #FIX: rendering by layers
 

@@ -435,7 +435,7 @@ export class Game {
 	}
 
 	/**
-	 * 
+	 *
 	 * @returns {Map}
 	 */
 	get_current_map(){
