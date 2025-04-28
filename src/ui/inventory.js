@@ -2,7 +2,7 @@ import { config, constants } from "../constants.js";
 import { Game } from "../core/game.js";
 import { Talkable } from "../entities/talkable.js";
 import { Tileset } from "../world/tileset.js";
-import { ItemStack } from "./items.js";
+import { Item, ItemStack } from "./items.js";
 import { Ui } from "./ui.js";
 import { Button, Texture } from "./widgets.js";
 
@@ -102,13 +102,25 @@ export class Inventory extends Ui{
             if(this.game.inputHandler.isKeyPressed("e")){
                 this.game.current_ui = this
             }
+        for(let i = 0; i < 9; i++){
+            if(this.get_slot(i)){
+                if(this.get_slot(i).count == 0){
+                    this.get_widget(this.get_slot(i).item.name + "-texture").destructor()
+                    this.get_widget(this.get_slot(i).item.name + "-label").destructor()
+                }
+            }
+        }
     }
 
     /**
      * 
+     * @param {Item} item 
      * @returns {Number}
      */
-    get_next_empty_slot(){
+    get_next_empty_slot(item){
+        for(let i = 0; i < 9; i++){
+            if(this.get_slot(i).item == item) return i
+        }
         for(let i = 0; i < 9; i++){
             if(this.get_slot(i) == null) return i
         }
@@ -134,15 +146,27 @@ export class Inventory extends Ui{
 
     /**
      * 
+     * @param {Number} n 
+     * @returns {{x: Number; y: Number}}
+     */
+    static get_slot_coordinates(n){
+        let row = Math.floor(n / 3)
+        let column = n % 3
+        return {x: 0, y: 0}
+    }
+
+    /**
+     * 
      * @param {Array<ItemStack>} itemstacks 
      */
     async add_items(itemstacks){
         for(let itemstack of itemstacks){
-            let widgets = await itemstack.make_widget()
+            var slot = this.get_next_empty_slot(itemstack.item)
+            let widgets = await itemstack.make_widget(get_slot_coordinates(slot))
             widgets.forEach(widget => {
                 this.add_widget(widget)
             })
-            this.set_slot(this.get_next_empty_slot(), itemstack)
+            this.set_slot(slot, itemstack)
         }
     }
 }

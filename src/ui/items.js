@@ -44,6 +44,15 @@ export class ItemStack{
 
     /**
      * 
+     * @param {Number} n 
+     */
+    add_count(n){
+        if(this.count < -n) console.error("Negative item count")
+        this.count += n
+    }
+
+    /**
+     * 
      * @param {Number} x 
      * @param {Number} y 
      * @returns {Array<Widget>}

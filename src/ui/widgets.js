@@ -28,6 +28,10 @@ export class Widget{
     render(){}
     update_config(){}
     update(current_time){}
+
+    destructor(){
+        this.ui.widgets.splice(this.ui.widgets.indexOf(this), 1)
+    }
 }
 
 export class Label extends Widget{
