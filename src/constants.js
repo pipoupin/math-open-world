@@ -4,7 +4,7 @@ export const config = {
 }
 
 export const constants = {
-    DEBUG: true,
+    DEBUG: false,
 
     TILE_SIZE: 128,
 
@@ -37,11 +37,15 @@ export const constants = {
 	RIGHT_DIRECTION: 2,
 	LEFT_DIRECTION: 3,
 
+
 	MOUSE_LEFT_BUTTON: 0,
 	MOUSE_MIDDLE_BUTTON: 1,
 	MOUSE_RIGHT_BUTTON: 2,
 	MOUSE_BACK_BUTTON: 3,
 	MOUSE_FORWARD_BUTTON: 4,
+
+	WALK_STATE: 0,
+	ATTACK_STATE: 1
 }
 
 // The future has arrived

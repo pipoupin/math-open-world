@@ -89,20 +89,20 @@ export class ImageTransition extends Transition{
         try{
             await transition.load(config.IMG_DIR + src)
         }catch (error){
-            console.error(`Couldn't load file "${src}": ${error.message}`);
-            throw new Error(`Failed to load tileset image: ${error.message}`);
+            console.error(`Couldn't load file "${src}": ${error.message}`)
+            throw new Error(`Failed to load tileset image: ${error.message}`)
         }
     }
 
     async load(src){
-        const img = new Image();
-        img.src = src;
-        this.img = img;
+        const img = new Image()
+        img.src = src
+        this.img = img
 
         await new Promise((resolve, reject) => {
-            img.onload = resolve;
-            img.onerror = () => reject(new Error(`Failed to load image: ${src}`));
-        });
+            img.onload = resolve
+            img.onerror = () => reject(new Error(`Failed to load image: ${src}`))
+        })
     }
 
     render(){

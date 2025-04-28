@@ -85,10 +85,19 @@ export class Game {
 				entity.direction = entity.e.direction
 				entity.fullSpeed = entity.e.fullSpeed
 				entity.new_fullSpeed = new Resizeable(this, 0)
+
+				entity.e.fullSpeed = entity.new_fullSpeed
+				entity.e.direction = entity.direction
 			}, (entity) => {
 				entity.e.fullSpeed = entity.fullSpeed
 				entity.e.direction = entity.direction
 			}, 0),
+			ATTACK: new Effect((e) => {}, (entity) => {
+				entity.state = entity.e.state
+				entity.e.state = constants.ATTACK_STATE
+			}, (entity) => {
+				entity.e.state = entity.state
+			}, 1000)
 		}
 	}
 
@@ -113,9 +122,11 @@ export class Game {
 			constants.TILE_SIZE * 2, constants.TILE_SIZE * 2, 150, {combat: {x: 0, y: -0.15625 * constants.TILE_SIZE}, collision: {x: 0, y: -0.15625 * constants.TILE_SIZE}}, 10
 		)
 
-		const player_tileset = await Tileset.create(this, 'spritesheet.png', 16, constants.TILE_SIZE, 0)
+		const player_tileset = await Tileset.create(this, 'Kanji.png', 16, constants.TILE_SIZE, 0)
 		this.player = new Player(this, player_tileset)
 		this.player.set_map(this.get_current_map())
+
+		this.axe_tileset = await Tileset.create(this, 'Axe.png', 16, constants.TILE_SIZE, 0)
 		
 		// used to place the player correctly
 		this.update()
@@ -181,10 +192,10 @@ export class Game {
 				new Icon(this, "open-icon", this.canvas.width / 16, this.canvas.height / 16, next_page_arrow_tileset, 1, false)
 			],
 			(problem) => {
-				var numberarea_pink = problem.get_widget("numberarea-pink");
-				var numberarea_blue = problem.get_widget("numberarea-blue");
-				var numberarea_red = problem.get_widget("numberarea-red");
-				var focus_icon = problem.get_widget("focus-icon");
+				var numberarea_pink = problem.get_widget("numberarea-pink")
+				var numberarea_blue = problem.get_widget("numberarea-blue")
+				var numberarea_red = problem.get_widget("numberarea-red")
+				var focus_icon = problem.get_widget("focus-icon")
 
 				if(!problem.get_widget("open-button").rendered){
 					if(numberarea_pink.has_focus){
@@ -213,8 +224,8 @@ export class Game {
 
 				if (numberarea_pink.content === "3" && numberarea_blue.content === "4" && numberarea_red.content === "4") {
 					problem.source.is_talkable = false
-					problem.get_widget("open-button").rendered = true;
-					problem.get_widget("open-icon").rendered = true;
+					problem.get_widget("open-button").rendered = true
+					problem.get_widget("open-icon").rendered = true
 					numberarea_pink.usable = false
 					numberarea_blue.usable = false
 					numberarea_red.usable = false
@@ -376,15 +387,15 @@ export class Game {
 		this.camera.y.set_value(this.player.worldY.get() - this.canvas.height / 2)
 
 		if (this.get_current_map().world.width.get() <= this.canvas.width) {
-			this.camera.x.set_value((this.get_current_map().world.width.get() - this.canvas.width) / 2);
+			this.camera.x.set_value((this.get_current_map().world.width.get() - this.canvas.width) / 2)
 		} else {
-			this.camera.x.set_value(Math.max(0, Math.min(this.camera.x.get(), this.get_current_map().world.width.get() - this.canvas.width)));
+			this.camera.x.set_value(Math.max(0, Math.min(this.camera.x.get(), this.get_current_map().world.width.get() - this.canvas.width)))
 		}
 
 		if (this.get_current_map().world.height.get() <= this.canvas.height) {
-			this.camera.y.set_value((this.get_current_map().world.height.get() - this.canvas.height) / 2);
+			this.camera.y.set_value((this.get_current_map().world.height.get() - this.canvas.height) / 2)
 		} else {
-			this.camera.y.set_value(Math.max(0, Math.min(this.camera.y.get(), this.get_current_map().world.height.get() - this.canvas.height)));
+			this.camera.y.set_value(Math.max(0, Math.min(this.camera.y.get(), this.get_current_map().world.height.get() - this.canvas.height)))
 		}
 
 		this.attacks.forEach(attack => attack.update(current_time))

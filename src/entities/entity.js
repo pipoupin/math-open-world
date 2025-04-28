@@ -16,7 +16,7 @@ export class Entity {
     * @param {Number} worldX - the entity's x position in the world
     * @param {Number} worldY - the entity's y position in the world
     * @param {Number} animation_duration - the animation's frames' duration
-    * @param {{ combat: { x: Number; y: Number; }; collision: { x: Number; y: Number; }; }} [hitboxes_offset={combat:{x:0,y:0},collision:{x:0,y:0}}] - The entity's hitboxes' offset in case you need them to be a little bit offcentered
+    * @param {{ combat: { x: Number, y: Number; }; collision: { x: Number, y: Number; }; }} [hitboxes_offset={combat:{x:0,y:0},collision:{x:0,y:0}}] - The entity's hitboxes' offset in case you need them to be a little bit offcentered
     * @param {number} [life=-1] - The entity's life
     */
     constructor(game, map, tileset, collision_hitbox, combat_hitbox, worldX, worldY, animation_duration, hitboxes_offset={combat:{x:0,y:0},collision:{x:0,y:0}}, life=-1) {
@@ -25,6 +25,9 @@ export class Entity {
 
 		this.id = game.next_entity_id
 		game.next_entity_id++
+
+		this.state = constants.WALK_STATE // each state takes 4 lines in the tileset (down, up, right, left)
+		this.framesPerState = [5] // first walk, then attack, ...
 
         // World position at the center
         this.worldX = new Resizeable(game, worldX)
@@ -163,7 +166,14 @@ export class Entity {
         
         if (current_time - this.last_time < this.animation_duration) return
 
-        this.animation_step = (this.dx.get() || this.dy.get()) ? (this.animation_step + 1) % 4 : 0
+		switch(this.state) {
+			case constants.WALK_STATE:
+				this.animation_step = (this.dx.get() || this.dy.get()) ? (this.animation_step + 1) % this.framesPerState[constants.WALK_STATE] : 0
+				break
+			case constants.ATTACK_STATE:
+				this.animation_step = (this.animation_step + 1) % this.framesPerState[constants.ATTACK_STATE]
+				break
+		}
 
         this.last_time = current_time
     }
@@ -172,22 +182,20 @@ export class Entity {
         if (this.dy.get() === 0 && this.dx.get() === 0) return
 
         if (Math.abs(this.dy.get()) > Math.abs(this.dx.get())) {
-            this.direction = this.dy.get() > 0 ? 0 : 1
+            this.direction = this.dy.get() > 0 ? constants.DOWN_DIRECTION : constants.UP_DIRECTION
         } else {
-            this.direction = this.dx.get() > 0 ? 2 : 3
+            this.direction = this.dx.get() > 0 ? constants.RIGHT_DIRECTION : constants.LEFT_DIRECTION
         }
 
     }
 
     render() {
-        if (this.game.get_current_map() !== this.map) return;
+        if (this.game.get_current_map() !== this.map) return
 
         if (this.isWithinCameraView()) {
-            const tileNum = 4 * this.direction + (this.animation_step !== -1 ? this.animation_step : 0) + 1;
-            const screenX = this.worldX.get() - this.game.camera.x.get() - this.tileset.screen_tile_size.get() / 2;
-            const screenY = this.worldY.get() - this.game.camera.y.get() - this.tileset.screen_tile_size.get() / 2;
-
-            this.tileset.drawTile(tileNum, screenX, screenY);
+            const screenX = this.worldX.get() - this.game.camera.x.get() - this.tileset.screen_tile_size.get() / 2
+            const screenY = this.worldY.get() - this.game.camera.y.get() - this.tileset.screen_tile_size.get() / 2
+			this.tileset.drawEntity(this, screenX, screenY)
         }
 
         if(constants.DEBUG){

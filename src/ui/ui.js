@@ -1,9 +1,9 @@
-import { config } from "../constants.js";
-import { Game } from "../core/game.js";
-import { Hitbox } from "../entities/hitbox.js";
-import { Talkable } from "../entities/talkable.js";
-import { Resizeable, YResizeable } from "../utils.js";
-import { Widget } from "./widgets.js";
+import { config } from "../constants.js"
+import { Game } from "../core/game.js"
+import { Hitbox } from "../entities/hitbox.js"
+import { Talkable } from "../entities/talkable.js"
+import { Resizeable, YResizeable } from "../utils.js"
+import { Widget } from "./widgets.js"
 
 export class Ui {
     /**
@@ -100,7 +100,7 @@ export class Ui {
         this.widgets_states_handler(this)
         this.widgets.forEach(widget => {
             widget.update(current_time)
-        });
+        })
     }
 
     /**

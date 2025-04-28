@@ -116,14 +116,14 @@ export class Attack {
 	}
 
 	render() {
-		if (!this.tileset) return
+		if (!this.tileset || !this.tileset.drawTile) return
 		const screenX = this.animation_cords.x.get() - this.game.camera.x.get()
 		const screenY = this.animation_cords.y.get() - this.game.camera.y.get()
 		this.tileset.drawTile(this.current_frame, screenX, screenY)
 	}
 
 	updateFrame() {
-		this.current_frame += 1 // don't need to worry about it thanks to the modulo in  tileset.drawTile
+		this.current_frame = (this.current_frame + 1) % this.tileset.tiles_length + 1// don't need to worry about it thanks to the modulo in  tileset.drawTile
 	}
 
 	updateHitboxes(current) {
@@ -159,7 +159,10 @@ export class Attack {
 
 		const index = this.game.attacks.indexOf(this)
 		if (index === -1) {
-			throw new Error("Attack not found in game.attacks")
+			//console.log(this.game)
+			//console.log(this)
+			//throw new Error("Attack not found in game.attacks")
+			return
 		}
 		this.game.attacks.splice(index, 1)
 	}
@@ -291,8 +294,6 @@ export class ProjectileAttack extends Attack {
 
 	updateFrame() {
 		super.updateFrame()
-		this.animation_cords.x.set_value(this.animation_cords.x.get() + this.dx.get())
-		this.animation_cords.y.set_value(this.animation_cords.y.get() + this.dy.get())
 	}
 
 	updateHitboxes(current) {
@@ -312,5 +313,8 @@ export class ProjectileAttack extends Attack {
 
 			hb.move_by(this.dx.get(), this.dy.get())
 		}
+
+		this.animation_cords.x.set_value(this.animation_cords.x.get() + this.dx.get())
+		this.animation_cords.y.set_value(this.animation_cords.y.get() + this.dy.get())
 	}
 }

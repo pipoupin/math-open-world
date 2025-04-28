@@ -36,6 +36,11 @@ export class Tileset {
             console.error(`Couldn't load file "${src}": ${error.message}`)
             throw new Error(`Failed to load tileset image: ${error.message}`)
         }
+		tileset.tiles_length = Math.round(tileset.img.width * tileset.img.height / Math.pow(tileset.img_tile_size, 2))
+		tileset.tilesPerRow = Math.floor(
+			(tileset.img.width + tileset_spacing) / (tileset.img_tile_size + tileset_spacing)
+		)
+
         return tileset
     }
 
@@ -67,12 +72,12 @@ export class Tileset {
 		if (!this.img) {
 			throw new Error("Tileset image not loaded.")
 		}
-		tile_num--
 
-		const tilesPerRow = Math.floor((this.img.width + this.tileset_spacing)/ (this.img_tile_size + this.tileset_spacing))
+		// Just subtract 1 (1-based index to 0-based index)
+		tile_num = (tile_num - 1) % this.tiles_length // just in case
 
-		const tile_num_x = tile_num % tilesPerRow
-		const tile_num_y = Math.floor(tile_num / tilesPerRow)
+		const tile_num_x = tile_num % this.tilesPerRow
+		const tile_num_y = Math.floor(tile_num / this.tilesPerRow)
 
 		const tileX = tile_num_x * (this.img_tile_size + this.tileset_spacing)
 		const tileY = tile_num_y * (this.img_tile_size + this.tileset_spacing)
@@ -85,5 +90,15 @@ export class Tileset {
 			Math.round(this.screen_tile_size.get()), Math.round(this.screen_tile_size.get())
 		)
 	}
+
+	drawEntity(entity, screenX, screenY) {
+		let offset = 1 + this.tilesPerRow * 4 * entity.state
+		
+		const frame = entity.animation_step !== -1 ? entity.animation_step : 0
+		const tileNum = offset + this.tilesPerRow * entity.direction + frame
+
+		this.drawTile(tileNum, screenX, screenY)
+	}
+
 }
 

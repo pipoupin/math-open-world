@@ -16,11 +16,13 @@ export class Player extends Entity {
 			game, game.get_current_map(), player_tileset,
 			new Hitbox(game, game.get_current_map(), 400, 400 + constants.TILE_SIZE / 2, 2 * constants.TILE_SIZE / 3, constants.TILE_SIZE / 2, true, true, null, (e, h, t) => {}),
 			new Hitbox(game, game.get_current_map(), 400, 400, 2 * constants.TILE_SIZE / 3, constants.TILE_SIZE, false, true, null, (e, h, t) => {}),
-			600, 600, 175, {combat: {x: 0, y: 0}, collision: {x: 0, y: constants.TILE_SIZE / 4}}, -1
+			600, 600, 125, {combat: {x: 0, y: 0}, collision: {x: 0, y: constants.TILE_SIZE / 4}}, -1
 		)
 
 		this.collision_hitbox.owner = this
 		this.combat_hitbox.owner = this
+
+		this.framesPerState.push(6)
 
 		this.player = true
 
@@ -96,37 +98,40 @@ export class Player extends Entity {
 		}
 
 		// ATTACKS
-		if (this.inputHandler.isMousePressed(constants.MOUSE_RIGHT_BUTTON)) {
-			const playerWorldX = this.worldX.get()
-			const playerWorldY = this.worldY.get()
+		if (this.state !== constants.ATTACK_STATE) {
 
-			const mouseWorldX = this.game.camera.x.get() + (this.inputHandler.mouse_pos.x + this.game.canvas.width / 2)
-			const mouseWorldY = this.game.camera.y.get() + (this.inputHandler.mouse_pos.y + this.game.canvas.height / 2)
+			if (this.inputHandler.isMousePressed(constants.MOUSE_RIGHT_BUTTON)) {
+				const playerWorldX = this.worldX.get()
+				const playerWorldY = this.worldY.get()
 
-			const dx = mouseWorldX - playerWorldX
-			const dy = mouseWorldY - playerWorldY
+				const mouseWorldX = this.game.camera.x.get() + (this.inputHandler.mouse_pos.x + this.game.canvas.width / 2)
+				const mouseWorldY = this.game.camera.y.get() + (this.inputHandler.mouse_pos.y + this.game.canvas.height / 2)
 
-			const distance = Math.hypot(dx, dy)
-			if (distance <= 10) return
-		   
-			const speed = 20
-			const velX = (dx / distance) * speed
-			const velY = (dy / distance) * speed
-			
-			const hb = new Hitbox(this.game, this.game.get_current_map(), playerWorldX, playerWorldY, 20, 20, false, false)
-			new ProjectileAttack(this.game, this, this.game.get_current_map(), current_time, 2000, [hb], velX, velY,(e) => { e.life -= 2 })
-		}
+				const dx = mouseWorldX - playerWorldX
+				const dy = mouseWorldY - playerWorldY
 
-		let mouse_input = this.inputHandler.isMousePressed(constants.MOUSE_LEFT_BUTTON)
-		if (mouse_input || this.inputHandler.isKeyPressed('a')) {
-
-			// fancy stuff
-			if (mouse_input) {
-				this.updateDirectionFromMouse()
+				const distance = Math.hypot(dx, dy)
+				if (distance <= 10) return
+			   
+				const speed = 20
+				const velX = (dx / distance) * speed
+				const velY = (dy / distance) * speed
+				
+				const hb = new Hitbox(this.game, this.game.get_current_map(), playerWorldX, playerWorldY, constants.TILE_SIZE / 2, constants.TILE_SIZE / 2, false, false)
+				new ProjectileAttack(this.game, this, this.game.get_current_map(), current_time, 2000, [hb], velX, velY,(e) => { e.life -= 2 }, false, this.game.axe_tileset, 50, {x: playerWorldX - hb.width.get() / 2, y: playerWorldY - hb.height.get() /2})
 			}
 
-			this.game.effects.MOTIONLESS.apply(current_time, this, 100)
-			new SwingingAttack(this.game, this, this.game.get_current_map(), current_time, 100, {x: this.worldX.get(), y: this.worldY.get()}, this.direction, constants.TILE_SIZE/5, constants.TILE_SIZE, constants.TILE_SIZE, (e) => { e.life -= 2 })
+			let mouse_input = this.inputHandler.isMousePressed(constants.MOUSE_LEFT_BUTTON)
+			if (mouse_input || this.inputHandler.isKeyPressed('a')) {
+				// fancy stuff
+				if (mouse_input) {
+					this.updateDirectionFromMouse()
+				}
+
+				this.game.effects.ATTACK.apply(current_time,this, 300)
+				this.game.effects.MOTIONLESS.apply(current_time, this, 300)
+				new SwingingAttack(this.game, this, this.game.get_current_map(), current_time, 300, {x: this.worldX.get(), y: this.worldY.get()}, this.direction, constants.TILE_SIZE/5, constants.TILE_SIZE, constants.TILE_SIZE/2, (e) => { e.life -= 2 })
+			}
 		}
 	
 		// Handle deceleration
@@ -148,17 +153,20 @@ export class Player extends Entity {
 
 		super.updateHitboxes()
 
-		if(this.direction == 0){
-			this.raycast_hitbox.set(this.worldX.get(), this.worldY.get(), 0, constants.TILE_SIZE / 1.5)
-		}
-		if(this.direction == 1){
-			this.raycast_hitbox.set(this.worldX.get(), this.worldY.get(), 0, - constants.TILE_SIZE / 1.5)
-		}
-		if(this.direction == 2){
-			this.raycast_hitbox.set(this.worldX.get(), this.worldY.get(), constants.TILE_SIZE / 1.5, 0)
-		}
-		if(this.direction == 3){
-			this.raycast_hitbox.set(this.worldX.get(), this.worldY.get(), - constants.TILE_SIZE / 1.5, 0)
+		switch(this.direction) {
+			case constants.UP_DIRECTION:
+				this.raycast_hitbox.set(this.worldX.get(), this.worldY.get(), 0, - constants.TILE_SIZE / 1.5)
+				break
+			case constants.DOWN_DIRECTION:
+				this.raycast_hitbox.set(this.worldX.get(), this.worldY.get(), 0, constants.TILE_SIZE / 1.5)
+				break
+			case constants.RIGHT_DIRECTION:
+				this.raycast_hitbox.set(this.worldX.get(), this.worldY.get(), constants.TILE_SIZE / 1.5, 0)
+				break
+			case constants.LEFT_DIRECTION:
+				this.raycast_hitbox.set(this.worldX.get(), this.worldY.get(), - constants.TILE_SIZE / 1.5, 0)
+				break
+
 		}
 	}
 

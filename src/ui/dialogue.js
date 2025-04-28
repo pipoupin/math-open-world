@@ -1,9 +1,9 @@
-import { config, constants } from "../constants.js";
-import { Game } from "../core/game.js";
-import { Resizeable, slice, YResizeable } from "../utils.js";
-import { Tileset } from "../world/tileset.js";
-import { Ui } from "./ui.js";
-import { Button, Icon, Label } from "./widgets.js";
+import { config, constants } from "../constants.js"
+import { Game } from "../core/game.js"
+import { Resizeable, slice, YResizeable } from "../utils.js"
+import { Tileset } from "../world/tileset.js"
+import { Ui } from "./ui.js"
+import { Button, Icon, Label } from "./widgets.js"
 
 export class Dialogue extends Ui{
 

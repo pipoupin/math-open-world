@@ -1,6 +1,6 @@
-import { config } from "../constants.js";
-import { Game } from "../core/game.js";
-import { Ui } from "./ui.js";
+import { config } from "../constants.js"
+import { Game } from "../core/game.js"
+import { Ui } from "./ui.js"
 
 export class Problem extends Ui{
 
