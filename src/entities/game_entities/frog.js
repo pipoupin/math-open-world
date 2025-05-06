@@ -19,7 +19,7 @@ export class Frog extends Entity{
         super(game, map, tileset,
             new Hitbox(game, map, 0, 0, constants.TILE_SIZE * size * 0.8125, constants.TILE_SIZE * 0.5 * size, true, false, null, (e, h, t) => {}),
             new Hitbox(game, map, 0, 0, constants.TILE_SIZE * size * 0.8125, constants.TILE_SIZE * 0.5 * size, false, false, null, (e, h, t) => {}),
-            worldX, worldY, 200, 5, {combat: {x: constants.TILE_SIZE * 0.03125, y: constants.TILE_SIZE * 0.125}, collision: {x: constants.TILE_SIZE * 0.03125, y: constants.TILE_SIZE * 0.125}}
+            worldX, worldY, 200, 5, {combat: {x: constants.TILE_SIZE * size * 0.03125, y: constants.TILE_SIZE * size * 0.125}, collision: {x: constants.TILE_SIZE * size * 0.03125, y: constants.TILE_SIZE * size * 0.125}}
         )
         this.collision_hitbox.set_owner(this)
         this.combat_hitbox.set_owner(this)

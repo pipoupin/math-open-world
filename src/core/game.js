@@ -118,7 +118,7 @@ export class Game {
 
 		// test entities
 		await Spider.create(this, this.maps[1], constants.TILE_SIZE * 2, constants.TILE_SIZE * 2)
-		await Frog.create(this, this.maps[1], constants.TILE_SIZE * 12, constants.TILE_SIZE * 12)
+		await Frog.create(this, this.maps[1], constants.TILE_SIZE * 12, constants.TILE_SIZE * 12, 0.5)
 
 		const player_tileset = await Tileset.create(this, 'Kanji.png', 16, constants.TILE_SIZE, 0)
 		this.player = new Player(this, player_tileset)
