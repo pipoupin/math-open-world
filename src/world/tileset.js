@@ -1,6 +1,7 @@
 import { Game } from "../core/game.js"
 import { config, constants } from "../constants.js"
 import { Resizeable } from "../utils.js"
+import { Entity } from "../entities/entity.js"
 
 export class Tileset {
     /**
@@ -91,8 +92,16 @@ export class Tileset {
 		)
 	}
 
+    /**
+     * 
+     * @param {Entity} entity 
+     * @param {Number} screenX 
+     * @param {Number} screenY 
+     */
 	drawEntity(entity, screenX, screenY) {
-		let offset = 1 + this.tilesPerRow * 4 * entity.state
+		let offset = 1 + this.tilesPerRow * 4 * (entity.state -
+            ((entity.framesPerState[constants.IDLE_STATE] == null && entity.state != constants.IDLE_STATE)?
+            1: 0))
 		
 		const frame = entity.animation_step !== -1 ? entity.animation_step : 0
 		const tileNum = offset + this.tilesPerRow * entity.direction + frame

@@ -67,7 +67,7 @@ export class Dialogue extends Ui{
 
     update(current_time){
         super.update(current_time)
-        if(current_time - this.last_time < 100) return
+        if(current_time - this.last_time < 80) return
         this.last_time = current_time
         /** @type {Label} */
         var label = this.get_widget("dialogue-content")
@@ -219,7 +219,7 @@ export class QuestionDialogue extends Ui {
     update(current_time){
         super.update(current_time)
 
-        if(current_time - this.last_time < 100) return
+        if(current_time - this.last_time < 80) return
         this.last_time = current_time
         
         /** @type {Label} */

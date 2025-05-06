@@ -53,7 +53,7 @@ export class Resizeable{
 		if(!isNaN(new_value / this.game.canvas.width))
 			this.value = new_value / this.game.canvas.width
 		else
-			throw new Error("value nan")
+			throw new Error(`value ${new_value} nan`)
 	}
 
 	get() {
@@ -85,7 +85,7 @@ export class YResizeable{
 		if(!isNaN(new_value / this.game.canvas.width))
 			this.value = new_value / this.game.canvas.height
 		else
-			throw new Error("value nan")
+			throw new Error(`value ${new_value} nan`)
 	}
 
 	get(){
