@@ -14,6 +14,8 @@ import { Transition, UnicoloreTransition } from '../ui/transition.js'
 import { Dialogue, QuestionDialogue } from '../ui/dialogue.js'
 import { Resizeable, YResizeable } from '../utils.js'
 import { Effect } from '../entities/effect.js'
+import { Frog } from '../entities/game_entities/frog.js'
+import { Spider } from '../entities/game_entities/spider.js'
 
 export class Game {
 	constructor() {
@@ -106,7 +108,6 @@ export class Game {
 		this.inputHandler = new InputHandler(this)
 		const default_tileset = await Tileset.create(this, "map.png", 16, constants.TILE_SIZE, 0)
 		const cabane_tilset = await Tileset.create(this, "cabane_tileset.png", 16, constants.TILE_SIZE, 0)
-		const spider_tile_set = await Tileset.create(this, "spider_tileset.png", 100, constants.TILE_SIZE * 4, 0)
 		this.maps = [
 			await Map.create(this, 'house.json', cabane_tilset, "black", {x: constants.TILE_SIZE * 1.5, y: 3 * constants.TILE_SIZE}),
 			await Map.create(this, 'map.json', default_tileset, "grey", {x: 15.5 * constants.TILE_SIZE, y: 14.01 * constants.TILE_SIZE})
@@ -115,12 +116,9 @@ export class Game {
 		this.current_map = 0 // "scene"
 		this.map = this.maps[this.current_map]
 
-		// test entity
-		new Entity(this, this.maps[1], spider_tile_set,
-			new Hitbox(this, this.maps[1], 0, 0, constants.TILE_SIZE * 2, constants.TILE_SIZE * 2.5, true, false, null, (e, h, t) => {}),
-			new Hitbox(this, this.maps[1], 0, 0, constants.TILE_SIZE * 2, constants.TILE_SIZE * 2.5, false, false, null, (e, h, t) => {}),
-			constants.TILE_SIZE * 2, constants.TILE_SIZE * 2, 150, {combat: {x: 0, y: -0.15625 * constants.TILE_SIZE}, collision: {x: 0, y: -0.15625 * constants.TILE_SIZE}}, 10
-		)
+		// test entities
+		await Spider.create(this, this.maps[1], constants.TILE_SIZE * 2, constants.TILE_SIZE * 2)
+		await Frog.create(this, this.maps[1], constants.TILE_SIZE * 12, constants.TILE_SIZE * 12)
 
 		const player_tileset = await Tileset.create(this, 'Kanji.png', 16, constants.TILE_SIZE, 0)
 		this.player = new Player(this, player_tileset)
