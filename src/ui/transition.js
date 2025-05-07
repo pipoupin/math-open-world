@@ -83,6 +83,7 @@ export class ImageTransition extends Transition{
      * @param {String} src - The source of the transition's image
      * @param {String} color - The color of the screen during the transition
      * @param {(t: ImageTransition) => void} [on_end=(t) => {}] - The function executed when the transition is finished, allows for scripts or ui to follow
+     * @returns {Promise<ImageTransition>}
      */
     static async create(game, duration, src, on_end=(t) => {}){
         var transition = new ImageTransition(game, duration, on_end)
@@ -92,6 +93,7 @@ export class ImageTransition extends Transition{
             console.error(`Couldn't load file "${src}": ${error.message}`)
             throw new Error(`Failed to load tileset image: ${error.message}`)
         }
+        return transition
     }
 
     async load(src){

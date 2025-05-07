@@ -51,7 +51,7 @@ export class Dialogue extends Ui{
      * @param {Number} fontsize - Dialogue's text's font size
      * @param {String} [textcolor="black"] - Dialogue's text's color
      * @param {string} [font="arial"] - Dialogue's text's font
-     * @returns {Dialogue}
+     * @returns {Promise<Dialogue>}
      */
     static async create(game, src, text, on_end=(d) => {}, fontsize=15, textcolor="black", font="arial"){
         let arrow_tileset = await Tileset.create(game, "arrow.png", 15, constants.TILE_SIZE / 8, 0)
@@ -198,7 +198,7 @@ export class QuestionDialogue extends Ui {
      * @param {number} [fontsize=15] - Dialogue's text's font size
      * @param {String} [textcolor="black"] - Dialogue's text's color
      * @param {string} [font="arial"] - Dialogue's text's font
-     * @returns {Dialogue}
+     * @returns {Promise<Dialogue>}
      */
     static async create(game, src, text, anwsers, anwsers_x, anwsers_y, anwsers_width, anwsers_height, anwser_box_tileset_src, on_end=(d, a) => {}, fontsize=15, textcolor="black", font="arial"){
         anwsers_width = Math.round(anwsers_width)

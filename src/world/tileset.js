@@ -41,7 +41,7 @@ export class Tileset {
 		tileset.tilesPerRow = Math.floor(
 			(tileset.img.width + tileset_spacing) / (tileset.img_tile_size + tileset_spacing)
 		)
-
+        game.tilesets[src.split(".").slice(0, -1).join(".")] = tileset
         return tileset
     }
 

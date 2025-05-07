@@ -79,6 +79,11 @@ export class Player extends Entity {
 			this.fullSpeed.set_value(constants.TILE_SIZE / 12)
 			this.acceleration.set_value(constants.TILE_SIZE / 32)
 		}
+
+		if(!this.dashing && this.state != constants.ATTACK_STATE){
+			this.fullSpeed.set_value(constants.TILE_SIZE / 12)
+			this.acceleration.set_value(constants.TILE_SIZE / 32)
+		}
 	
 		if (this.inputHandler.isKeyDown(constants.UP_KEY)) {
 			this.direction = constants.UP_DIRECTION
@@ -120,7 +125,7 @@ export class Player extends Entity {
 				const hb = new Hitbox(this.game, this.game.get_current_map(), playerWorldX, playerWorldY,
 					constants.TILE_SIZE / 2, constants.TILE_SIZE / 2, false, false)
 				new ProjectileAttack(this.game, this, this.game.get_current_map(), current_time,
-					2000, [hb], velX, velY,(e) => { e.life -= 2 }, false, this.game.axe_tileset, 50,
+					2000, [hb], velX, velY,(e) => { e.life -= 2 }, false, this.game.tilesets["Axe"], 50,
 					{x: playerWorldX - hb.width.get() / 2, y: playerWorldY - hb.height.get() /2})
 			}
 

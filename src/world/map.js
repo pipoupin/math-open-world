@@ -34,7 +34,7 @@ export class Map {
 	 * @param {Tileset} tileset - The tileset used to render the map
 	 * @param {String} background - The color of the tileless background
 	 * @param {{x: Number, y: Number}} player_pos - The position of the player on this specific map
-	 * @returns {Map}
+	 * @returns {Promise<Map>}
 	 */
 	static async create(game, src, tileset, background, player_pos) {
 		const map = new Map(game, tileset, background, player_pos)
@@ -43,6 +43,7 @@ export class Map {
 		} catch (error) {
 			console.error(`Failed to load map "${src}": ${error.message}`)
 		}
+		game.maps[src.slice(0, src.length - 5)] = map
 		return map
 	}
 

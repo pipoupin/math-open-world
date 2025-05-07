@@ -359,7 +359,7 @@ export class Texture extends Widget{
      * @param {Number | YResizeable} height - The texture's height on the screen
      * @param {Boolean} rendered - Boolean refearing to if this widget should be rendered
      * @param {Number} [layer=0] - The layer on which the widget will be rendered, higher numbers means that the widget will be rendered on top
-     * @returns {Texture}
+     * @returns {Promise<Texture>}
      */
     static async create(game, id, src, x, y, width, height, rendered, layer=0){
         var texture = new Texture(game, id, x, y, width, height, rendered, layer)

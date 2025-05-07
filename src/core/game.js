@@ -77,6 +77,12 @@ export class Game {
 		/** @type {Ui | Transition} */
 		this.current_ui = null
 
+		/** @type {{String: Map}} */
+		this.maps = {}
+
+		/** @type {{String: Tileset}} */
+		this.tilesets = {}
+
 		this.camera = { x: new Resizeable(this, -1000), y: new Resizeable(this, -1000)}
 		
 		this.effects = {
@@ -106,27 +112,30 @@ export class Game {
 	async run() {
 		// create class objects
 		this.inputHandler = new InputHandler(this)
-		const default_tileset = await Tileset.create(this, "map.png", 16, constants.TILE_SIZE, 0)
-		const cabane_tilset = await Tileset.create(this, "cabane_tileset.png", 16, constants.TILE_SIZE, 0)
-		this.maps = [
-			await Map.create(this, 'house.json', cabane_tilset, "black", {x: constants.TILE_SIZE * 1.5, y: 3 * constants.TILE_SIZE}),
-			await Map.create(this, 'map.json', default_tileset, "grey", {x: 15.5 * constants.TILE_SIZE, y: 14.01 * constants.TILE_SIZE})
 
-		]
-		this.current_map = 0 // "scene"
+		await Tileset.create(this, "map.png", 16, constants.TILE_SIZE, 0)
+		await Tileset.create(this, "cabane_tileset.png", 16, constants.TILE_SIZE, 0)
+		await Tileset.create(this, "frog.png", 16, constants.TILE_SIZE * 0.5, 0)
+		await Tileset.create(this, "spider_tileset.png", 100, constants.TILE_SIZE * 4, 0)
+		await Tileset.create(this, "book_ui_focus.png", 4, this.canvas.width / 16, 0)
+		await Tileset.create(this, "next_page_arrow_tileset.png", 24, this.canvas.width * 0.05, 0)
+		await Tileset.create(this, 'Axe.png', 16, constants.TILE_SIZE, 0)
+
+		await Map.create(this, 'house.json', this.tilesets["cabane_tileset"], "black", {x: constants.TILE_SIZE * 1.5, y: 3 * constants.TILE_SIZE}),
+		await Map.create(this, 'map.json', this.tilesets["map"], "grey", {x: 15.5 * constants.TILE_SIZE, y: 14.01 * constants.TILE_SIZE})
+		
+		this.current_map = "house" // "scene"
 		this.map = this.maps[this.current_map]
 
 		// test entities
-		await Spider.create(this, this.maps[1], constants.TILE_SIZE * 2, constants.TILE_SIZE * 2)
-		await Frog.create(this, this.maps[1], constants.TILE_SIZE * 12, constants.TILE_SIZE * 12, 0.5)
+		new Spider(this, this.maps["map"], constants.TILE_SIZE * 2, constants.TILE_SIZE * 2)
+		new Frog(this, this.maps["map"], constants.TILE_SIZE * 12, constants.TILE_SIZE * 12, 0.5)
 
-		const player_tileset = await Tileset.create(this, 'Kanji.png', 16, constants.TILE_SIZE, 0)
-		this.player = new Player(this, player_tileset)
+		await Tileset.create(this, 'Kanji.png', 16, constants.TILE_SIZE, 0)
+		this.player = new Player(this, this.tilesets["Kanji"])
 		this.player.set_map(this.get_current_map())
-
-		this.axe_tileset = await Tileset.create(this, 'Axe.png', 16, constants.TILE_SIZE, 0)
 		
-		// used to place the player correctly
+		// needed to place the player correctly
 		this.update()
 
 		const colors_problem_finishing_ui = await Ui.create(this, "opened_book_ui.png", this.canvas.width * 0.6875, this.canvas.width * 0.453125, [
@@ -140,12 +149,9 @@ export class Game {
 
 		const black_transition = new UnicoloreTransition(this, 500, "black")
 
-		const colors_problem_focus_tileset = await Tileset.create(this, "book_ui_focus.png", 4, this.canvas.width / 16, 0)
-		const next_page_arrow_tileset = await Tileset.create(this, "next_page_arrow_tileset.png", 24, this.canvas.width * 0.05, 0)
-
 		const colors_problem = await Problem.create(
 			this, "book_ui.png", this.canvas.width * 0.34375, this.canvas.width * 0.453125, "colors",
-			[	new Icon(this, "focus-icon", -100, -110, colors_problem_focus_tileset, 1, false, 0),
+			[	new Icon(this, "focus-icon", -100, -110, this.tilesets["book_ui_focus"], 1, false, 0),
 				new NumberArea(this, "numberarea-pink", -this.canvas.width * 0.078125, -this.canvas.width * 0.0859375,
 					this.canvas.width * 0.046875, this.canvas.width / 16,
 					1, true, 1, this.canvas.width / 16, "black", "Times New Roman", ""),
@@ -183,11 +189,11 @@ export class Game {
 					}
 				),
 				new Button(this, "open-button", this.canvas.width / 16, this.canvas.height / 16,
-					next_page_arrow_tileset.screen_tile_size.get(), next_page_arrow_tileset.screen_tile_size.get(), false, (button)=>{
+					this.tilesets["next_page_arrow_tileset"].screen_tile_size.get(), this.tilesets["next_page_arrow_tileset"].screen_tile_size.get(), false, (button)=>{
 						button.game.current_ui = colors_problem_finishing_ui
 					}
 				),
-				new Icon(this, "open-icon", this.canvas.width / 16, this.canvas.height / 16, next_page_arrow_tileset, 1, false)
+				new Icon(this, "open-icon", this.canvas.width / 16, this.canvas.height / 16, this.tilesets["next_page_arrow_tileset"], 1, false)
 			],
 			(problem) => {
 				var numberarea_pink = problem.get_widget("numberarea-pink")
@@ -265,10 +271,10 @@ export class Game {
 		new Hitbox(this, this.get_current_map(), 3 * constants.TILE_SIZE, 8 * constants.TILE_SIZE, constants.TILE_SIZE, constants.TILE_SIZE, false, false, null, (e, h, time) => {
 			if(!e instanceof Player) return
 			if (!this.inputHandler.isKeyPressed(constants.INTERACTION_KEY)) return // one must press INTERACTION_KEY to switch map
-			this.maps[0].set_player_pos({x: this.player.worldX.get(), y: this.player.worldY.get() - constants.TILE_SIZE / 2})
-			this.set_map(1)
+			this.maps["house"].set_player_pos({x: this.player.worldX.get(), y: this.player.worldY.get() - constants.TILE_SIZE / 2})
+			this.set_map("map")
 
-			this.player.set_map(this.maps[1])
+			this.player.set_map(this.maps["map"])
 			this.player.direction = 0
 
 			// reset dash
@@ -284,10 +290,10 @@ export class Game {
 		// -- from the house (auto)
 		new Hitbox(this, this.get_current_map(), 3 * constants.TILE_SIZE, 8.75 * constants.TILE_SIZE, constants.TILE_SIZE, constants.TILE_SIZE / 4, false, false, null, (e, h, time) => {
 			if(!e instanceof Player) return
-			this.maps[0].set_player_pos({x: this.player.worldX.get(), y: this.player.worldY.get() - constants.TILE_SIZE / 2})
-			this.set_map(1)
+			this.maps["house"].set_player_pos({x: this.player.worldX.get(), y: this.player.worldY.get() - constants.TILE_SIZE / 2})
+			this.set_map("map")
 
-			this.player.set_map(this.maps[1])
+			this.player.set_map(this.maps["map"])
 			this.player.direction = 0
 
 			// reset dash
@@ -301,7 +307,7 @@ export class Game {
 
 		// -- from the outside (manually activated)
 		new Hitbox(this,
-			this.maps[1],
+			this.maps["map"],
 			15 * constants.TILE_SIZE,
 			13.5 * constants.TILE_SIZE,
 			constants.TILE_SIZE,
@@ -312,11 +318,11 @@ export class Game {
 			(e, h, time) => {
 				if(!e instanceof Player) return
 				if (!this.inputHandler.isKeyPressed(constants.INTERACTION_KEY)) return
-				this.maps[1].set_player_pos({x: 15.5 * constants.TILE_SIZE, y: 14.01 * constants.TILE_SIZE})
+				this.maps["map"].set_player_pos({x: 15.5 * constants.TILE_SIZE, y: 14.01 * constants.TILE_SIZE})
 
-				this.set_map(0)
+				this.set_map("house")
 
-				this.player.set_map(this.maps[0])
+				this.player.set_map(this.maps["house"])
 				this.player.direction = 1
 
 				this.player.reset_dash_cooldown()
@@ -326,7 +332,7 @@ export class Game {
 		)
 		// -- from the outside (automatic)
 		new Hitbox(this,
-			this.maps[1],
+			this.maps["map"],
 			15 * constants.TILE_SIZE,
 			13 * constants.TILE_SIZE,
 			constants.TILE_SIZE,
@@ -336,11 +342,11 @@ export class Game {
 			null, 
 			(e, h, time) => {
 				if(!e instanceof Player) return
-				this.maps[1].set_player_pos({x: 15.5 * constants.TILE_SIZE, y: 14.01 * constants.TILE_SIZE})
+				this.maps["map"].set_player_pos({x: 15.5 * constants.TILE_SIZE, y: 14.01 * constants.TILE_SIZE})
 
-				this.set_map(0)
+				this.set_map("house")
 
-				this.player.set_map(this.maps[0])
+				this.player.set_map(this.maps["house"])
 				this.player.direction = 1
 
 				this.player.reset_dash_cooldown()
@@ -436,10 +442,10 @@ export class Game {
 
 	/**
 	 * 
-	 * @param {Number} new_map_nb 
+	 * @param {String} new_map_name 
 	 */
-	set_map(new_map_nb){
-		this.current_map = new_map_nb
+	set_map(new_map_name){
+		this.current_map = new_map_name
 		this.map = this.maps[this.current_map]
 	}
 

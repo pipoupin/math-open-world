@@ -46,7 +46,7 @@ export class Ui {
      * @param {Number} height - The Ui's height on the screen
      * @param {Array<Widget>} widgets - The list of widgets that shows up on the ui
      * @param {(ui: Ui) => void} widgets_state_handler - method made to handle widgets states (like widgets being 'cliked' on 'focused-on'), executed at each update
-     * @returns {Ui}
+     * @returns {Promise<Ui>}
      */
     static async create(game, src, width, height, widgets, widgets_state_handler){
         const ui = new Ui(game, width, height, widgets, widgets_state_handler)
