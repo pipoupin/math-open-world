@@ -50,7 +50,8 @@ export class Inventory extends Ui{
                 constants.TILE_SIZE / 8, constants.TILE_SIZE / 8, true, (button) => {
                     // chais pas mdr
                 }),
-            hovered_texture
+            hovered_texture,
+            new Texture(game, "hovered_icon", -100, -100, constants.TILE_SIZE / 8, constants.TILE_SIZE / 8, false)
         ]
         /**@type {(inv: Inventory) => void} */
         var widgets_states_handler = (inv)=>{
@@ -94,14 +95,18 @@ export class Inventory extends Ui{
         return inventory
     }
 
-    update(current_time){
-        if(this.game.current_ui === this)
-            super.update(current_time)
-        else
-            if(this.game.current_ui) return
-            if(this.game.inputHandler.isKeyPressed("e")){
-                this.game.current_ui = this
+    update(current_time) {
+        if (this.game.inputHandler.isKeyPressed("e")) {
+            if (this.game.current_ui === this) {
+                this.game.current_ui = null;
+            } else if (!this.game.current_ui) {
+                this.game.current_ui = this;
             }
+        }
+    
+        if (this.game.current_ui === this) {
+            super.update(current_time);
+        }
     }
 
     /**
