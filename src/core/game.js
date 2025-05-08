@@ -238,7 +238,7 @@ export class Game {
 			}
 		)
 		const colors_problem_shelf = new Talkable(this, this.get_current_map(),
-			new Hitbox(this, this.get_current_map(), constants.TILE_SIZE * 3, constants.TILE_SIZE * 3, constants.TILE_SIZE, constants.TILE_SIZE, false, false, null, (e, h, t) => {}),
+			new Hitbox(this, this.get_current_map(), constants.TILE_SIZE * 3, constants.TILE_SIZE * 3, constants.TILE_SIZE, constants.TILE_SIZE, false, false, null, (h, c_h, t) => {}),
 			colors_problem, null
 		)
 		colors_problem.set_source(colors_problem_shelf)
@@ -260,16 +260,16 @@ export class Game {
 				dialogue.source.destroy()
 			}, constants.TILE_SIZE / 5, "black", "arial"
 		)
-		var dialogue_test = new Hitbox(this, this.get_current_map(), 0, 4 * constants.TILE_SIZE, constants.TILE_SIZE, constants.TILE_SIZE, false, false, null, (e, h, t) => {
-			if(!e instanceof Player) return
-			h.game.current_ui = mqc_dialogue
+		var dialogue_test = new Hitbox(this, this.get_current_map(), 0, 4 * constants.TILE_SIZE, constants.TILE_SIZE, constants.TILE_SIZE, false, false, null, (h, c_h, t) => {
+			if(!c_h.owner instanceof Player) return
+			this.game.current_ui = mqc_dialogue
 		})
 		mqc_dialogue.set_source(dialogue_test)
 
 		// SWITCH MAP HITBOXES
 		// -- from the house (manual)
-		new Hitbox(this, this.get_current_map(), 3 * constants.TILE_SIZE, 8 * constants.TILE_SIZE, constants.TILE_SIZE, constants.TILE_SIZE, false, false, null, (e, h, time) => {
-			if(!e instanceof Player) return
+		new Hitbox(this, this.get_current_map(), 3 * constants.TILE_SIZE, 8 * constants.TILE_SIZE, constants.TILE_SIZE, constants.TILE_SIZE, false, false, null, (h, c_h, time) => {
+			if(!c_h.owner instanceof Player) return
 			if (!this.inputHandler.isKeyPressed(constants.INTERACTION_KEY)) return // one must press INTERACTION_KEY to switch map
 			this.maps["house"].set_player_pos({x: this.player.worldX.get(), y: this.player.worldY.get() - constants.TILE_SIZE / 2})
 			this.set_map("map")
@@ -283,13 +283,12 @@ export class Game {
 			else
 				this.player.last_dash = -constants.PLAYER_DASH_COOLDOWN
 
-
 			black_transition.start(time)
 		})
 
 		// -- from the house (auto)
-		new Hitbox(this, this.get_current_map(), 3 * constants.TILE_SIZE, 8.75 * constants.TILE_SIZE, constants.TILE_SIZE, constants.TILE_SIZE / 4, false, false, null, (e, h, time) => {
-			if(!e instanceof Player) return
+		new Hitbox(this, this.get_current_map(), 3 * constants.TILE_SIZE, 8.75 * constants.TILE_SIZE, constants.TILE_SIZE, constants.TILE_SIZE / 4, false, false, null, (h, c_h, time) => {
+			if(!c_h.owner instanceof Player) return
 			this.maps["house"].set_player_pos({x: this.player.worldX.get(), y: this.player.worldY.get() - constants.TILE_SIZE / 2})
 			this.set_map("map")
 
@@ -315,8 +314,8 @@ export class Game {
 			false,
 			false,
 			null,
-			(e, h, time) => {
-				if(!e instanceof Player) return
+			(h, c_h, time) => {
+				if(!c_h.owner instanceof Player) return
 				if (!this.inputHandler.isKeyPressed(constants.INTERACTION_KEY)) return
 				this.maps["map"].set_player_pos({x: 15.5 * constants.TILE_SIZE, y: 14.01 * constants.TILE_SIZE})
 
@@ -340,8 +339,8 @@ export class Game {
 			false, 
 			false, 
 			null, 
-			(e, h, time) => {
-				if(!e instanceof Player) return
+			(h, c_h, time) => {
+				if(!c_h.owner instanceof Player) return
 				this.maps["map"].set_player_pos({x: 15.5 * constants.TILE_SIZE, y: 14.01 * constants.TILE_SIZE})
 
 				this.set_map("house")
@@ -367,6 +366,7 @@ export class Game {
 		this.collision_hitboxes = this.collision_hitboxes.filter(h => h.active)
 		this.combat_hitboxes = this.combat_hitboxes.filter(h => h.active)
 		this.hitboxes = this.hitboxes.filter(h => h.active)
+		this.entities = this.entities.filter(e => e.active)
 
 		if(this.current_ui) {
 			if(this.current_ui.is_finished){

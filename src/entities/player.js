@@ -14,8 +14,8 @@ export class Player extends Entity {
 	constructor(game, player_tileset) {
 		super(
 			game, game.get_current_map(), player_tileset,
-			new Hitbox(game, game.get_current_map(), 400, 400 + constants.TILE_SIZE / 2, 2 * constants.TILE_SIZE / 3, constants.TILE_SIZE / 2, true, true, null, (e, h, t) => {}),
-			new Hitbox(game, game.get_current_map(), 400, 400, 2 * constants.TILE_SIZE / 3, constants.TILE_SIZE, false, true, null, (e, h, t) => {}),
+			new Hitbox(game, game.get_current_map(), 400, 400 + constants.TILE_SIZE / 2, 2 * constants.TILE_SIZE / 3, constants.TILE_SIZE / 2, true, true),
+			new Hitbox(game, game.get_current_map(), 400, 400, 2 * constants.TILE_SIZE / 3, constants.TILE_SIZE, false, true),
 			600, 600, 125, null, {combat: {x: 0, y: 0}, collision: {x: 0, y: constants.TILE_SIZE / 4}}
 		)
 
@@ -34,7 +34,7 @@ export class Player extends Entity {
 		this.dash_reset = false
 		this.dashing = false
 
-		this.raycast_hitbox = new Hitbox(game, game.get_current_map(), 400, 400, 0, 100, false, true, this, (e, h, t) => {})
+		this.raycast_hitbox = new Hitbox(game, game.get_current_map(), 400, 400, 0, 100, false, true, this)
 	}
 
 	reset_dash_cooldown() {
@@ -117,6 +117,7 @@ export class Player extends Entity {
 
 				const distance = Math.hypot(dx, dy)
 				if (distance <= 10) return
+				
 			   
 				const speed = 20
 				const velX = (dx / distance) * speed
@@ -124,9 +125,10 @@ export class Player extends Entity {
 				
 				const hb = new Hitbox(this.game, this.game.get_current_map(), playerWorldX, playerWorldY,
 					constants.TILE_SIZE / 2, constants.TILE_SIZE / 2, false, false)
-				new ProjectileAttack(this.game, this, this.game.get_current_map(), current_time,
+				let test = new ProjectileAttack(this.game, this, this.game.get_current_map(), current_time,
 					2000, [hb], velX, velY,(e) => { e.life -= 2 }, false, this.game.tilesets["Axe"], 50,
 					{x: playerWorldX - hb.width.get() / 2, y: playerWorldY - hb.height.get() /2})
+				console.log(test)
 			}
 
 			let mouse_input = this.inputHandler.isMousePressed(constants.MOUSE_LEFT_BUTTON)

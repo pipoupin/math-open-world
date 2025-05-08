@@ -92,11 +92,3 @@ export class YResizeable{
 		return this.value * this.game.canvas.height
 	}
 }
-
-/**
- * 
- * @returns {Boolean}
- */
-export function isWithinMapBounds(map, hitbox) {
-	return !(map.world.width.get() <= hitbox.x2.get() || hitbox.x1.get() <= 0 || hitbox.y2.get() >= map.world.height.get() || hitbox.y1.get() <= 0)
-}

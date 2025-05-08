@@ -131,7 +131,7 @@ export class Map {
 										new_height = constants.TILE_SIZE - new_y
 								}
 							}
-							new Hitbox(this.game, this, tileX + new_x, tileY + new_y, new_width, new_height, true, false, null, (e, h, t) => {})
+							new Hitbox(this.game, this, tileX + new_x, tileY + new_y, new_width, new_height, true, false)
 						}
 					}
 				}

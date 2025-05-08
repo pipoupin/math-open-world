@@ -15,9 +15,9 @@ export class Hitbox {
 	 * @param {boolean} collision - is the hitbox a collision hitbox
 	 * @param {boolean} [player=false] - is the hitbox a player's hitbox
 	 * @param {Attack | Entity} [owner=null] - the hitbox's owner, let null to make it unmovable
-	 * @param {(entity: Entity, hitbox: Hitbox, time: Number) => void} [command=((e, h, t) => {})] - function executed when colliding with the an entity, the 'hitbox' argument refers to the actual hitbox object
+	 * @param {(hitbox: Hitbox, colliding_hitbox: Hitbox, time: Number) => void} [command=((e, h, t) => {})] - function executed when colliding with the anonther one
 	 */
-	constructor(game, map, x, y, width, height, collision=false, player=false, owner = null,command=((e, h, t) => {})){
+	constructor(game, map, x, y, width, height, collision=false, player=false, owner=null, command=((h, c_h, t) => {})){
 		this.game = game
 		this.map = map
 		this.active = true
@@ -98,32 +98,32 @@ export class Hitbox {
 	get_colliding_hitboxes(collision=true, combat=true) {
 		const colliding_hitboxes = []
 		if (combat) {
-			for (let i = 0; i < this.game.combat_hitboxes.length; i++) {
-				if (!this.game.combat_hitboxes[i].active)
-					continue
-				if (this.is_colliding(this.game.combat_hitboxes[i]))
-					colliding_hitboxes.push(this.game.combat_hitboxes[i])
-			}
+			this.game.combat_hitboxes.forEach(hitbox => {
+				if (!hitbox.active)
+					return
+				if (this.is_colliding(hitbox))
+					colliding_hitboxes.push(hitbox)
+			})
 		}
 
 		if (collision) {
-			for (let i = 0; i < this.game.collision_hitboxes.length; i++) {
-				if (!this.game.collision_hitboxes[i].active)
-					continue
-				if (this.is_colliding(this.game.collision_hitboxes[i]))
-					colliding_hitboxes.push(this.game.collision_hitboxes[i])
-			}
+			this.game.collision_hitboxes.forEach(hitbox => {
+				if (!hitbox.active)
+					return
+				if (this.is_colliding(hitbox))
+					colliding_hitboxes.push(hitbox)
+			})
 		}
 
 		if(!(combat || collision)){
-			for (let i = 0; i < this.game.hitboxes.length; i++) {
-				if( (! this.game.hitboxes[i] in colliding_hitboxes) && (!this.game.hitboxes[i] in this.game.collision_hitboxes) && (! this.game.hitboxes[i] in this.game.combat_hitboxes)){
-					if (!this.game.hitboxes[i].active)
-						continue
-					if (this.is_colliding(this.game.hitboxes[i]))
+			this.game.hitboxes.forEach(hitbox => {
+				if( (!hitbox in colliding_hitboxes) && (!hitbox in this.game.collision_hitboxes) && (!hitbox in this.game.combat_hitboxes)){
+					if (!hitbox.active)
+						return
+					if (this.is_colliding(hitbox))
 						colliding_hitboxes.push(this.game.collision_hitboxes[i])
 				}
-			}
+			})
 		}
 		return colliding_hitboxes
 	}
@@ -182,6 +182,15 @@ export class Hitbox {
 	 */
 	set_map(new_map){
 		this.map = new_map
+	}
+
+	/**
+	 * 
+	 * @param {Map} map 
+	 * @returns {Boolean}
+	 */
+	isWithinMapBounds(map) {
+		return !(map.world.width.get() <= this.x2.get() || this.x1.get() <= 0 || this.y2.get() >= map.world.height.get() || this.y1.get() <= 0)
 	}
 
 	destroy() {
