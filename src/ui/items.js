@@ -1,18 +1,37 @@
-import { constants } from "../constants.js"
+import { config } from "../constants.js"
 import { Game } from "../core/game.js"
-import { Label, Texture, Widget } from "./widgets.js"
 
 export class Item{
     /**
      * 
      * @param {Game} game 
-     * @param {String} src 
      * @param {String} name 
      */
-    constructor(game, src, name){
+    constructor(game, name){
         this.game = game
-        this.src = src
         this.name = name
+        this.game.items[name] = this
+    }
+
+    static async create(game, src, name){
+        let item = new Item(game, name)
+        try{
+            item.load(config.IMG_DIR + src)
+        } catch (error){
+            console.error(`Couldn't load file "${src}": ${error.message}`);
+        }
+        return item
+    }
+
+    async load(src){
+        const img = new Image();
+        img.src = src;
+        this.img = img;
+
+        await new Promise((resolve, reject) => {
+            img.onload = resolve;
+            img.onerror = () => reject(new Error(`Failed to load image: ${src}`));
+        });
     }
 }
 

@@ -81,8 +81,7 @@ export class Inventory extends Ui{
         for(let i = 0; i < 9; i++){
             if(this.get_slot(i)){
                 if(this.get_slot(i).count == 0){
-                    this.get_widget(this.get_slot(i).item.name + "-texture").destructor()
-                    this.get_widget(this.get_slot(i).item.name + "-label").destructor()
+                    this.get_widget(`item-texture-${i}`).rendered = false
                 }
             }
         }
@@ -136,10 +135,10 @@ export class Inventory extends Ui{
      * 
      * @param {Array<ItemStack>} itemstacks 
      */
-    async add_items(itemstacks){
+    add_items(itemstacks){
         for(let itemstack of itemstacks){
             var slot = this.get_next_empty_slot(itemstack.item)
-            await this.get_widget(`item-texture-${slot}`).change_image(itemstack.item.src)
+            this.get_widget(`item-texture-${slot}`).img = this.game.items[itemstack.item.name]
             this.get_widget(`item-texture-${slot}`).rendered = true
             this.set_slot(slot, itemstack)
         }

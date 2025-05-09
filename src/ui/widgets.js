@@ -345,14 +345,12 @@ export class Texture extends Widget{
      */
     static async create(game, id, src, x, y, width, height, rendered){
         var texture = new Texture(game, id, x, y, width, height, rendered)
-        if(src!=null){
-            try {
-			    await texture.load(config.IMG_DIR + src)
-		    } catch (error) {
-			    console.error(`couldn't load file "${src}" : ${error.message}`)
-	    		return
-		    }
-        }
+        try {
+		    await texture.load(src)
+	    } catch (error) {
+			console.error(`couldn't load file "${src}" : ${error.message}`)
+	    	return
+	    }
         return texture
     }
 
@@ -361,13 +359,16 @@ export class Texture extends Widget{
      * @param {String} src 
      */
     async load(src){
-        const img = new Image()
-		img.src = src
+        var img = null
+        if(src!=null){
+            img = new Image()
+		    img.src = config.IMG_DIR + src
+    		await new Promise((resolve, reject) => { 
+	    		img.onload = resolve
+		    	img.onerror = reject
+		    })
+        }
 		this.img = img
-		await new Promise((resolve, reject) => { 
-			img.onload = resolve
-			img.onerror = reject
-		})
     }
 
     render(){

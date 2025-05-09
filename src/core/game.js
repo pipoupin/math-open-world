@@ -14,6 +14,7 @@ import { Transition, UnicoloreTransition } from '../ui/transition.js'
 import { Dialogue, QuestionDialogue } from '../ui/dialogue.js'
 import { Resizeable } from '../utils.js'
 import { Inventory } from '../ui/inventory.js'
+import { Item } from '../ui/items.js'
 
 export class Game {
 	constructor() {
@@ -60,6 +61,9 @@ export class Game {
 
 		/** @type {Array<Talkable>} */
 		this.talkables = []
+
+		/** @type {Item} */
+		this.items = {}
 
 		/** @type {Ui | Transition} */
 		this.current_ui = null
