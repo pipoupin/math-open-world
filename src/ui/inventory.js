@@ -4,6 +4,7 @@ import { Item, ItemStack } from "./items.js";
 import { Ui } from "./ui.js";
 import { Button, Texture, Widget } from "./widgets.js";
 
+var inventory_side = Math.min(window.innerWidth,window.innerHeight) / 2
 export class Inventory extends Ui{
     /**
      * 
@@ -24,6 +25,7 @@ export class Inventory extends Ui{
         }
         textures_array.forEach(texture => {widgets.push(texture)})
         widgets.push(hovered_texture)
+          
         /**@type {(inv: Inventory) => void} */
         var widgets_states_handler = (inv)=>{
             var hovered_icon = inv.get_widget("hovered_icon")
@@ -39,7 +41,7 @@ export class Inventory extends Ui{
             if(!has_hovered)
                 hovered_icon.rendered = false
         }
-        super(game, game.canvas.width, game.canvas.height, widgets, widgets_states_handler)
+        super(game, inventory_side, inventory_side, widgets, widgets_states_handler)
         /** @type {Array<Array<ItemStack>>} */
         this.itemstacks = [
             [null, null, null],
@@ -70,13 +72,16 @@ export class Inventory extends Ui{
         return inventory
     }
 
-    update(current_time){
-        if(this.game.current_ui === this)
-            super.update(current_time)
-        else
-            if(this.game.current_ui) return
-            if(this.game.inputHandler.isKeyPressed("e")){
-                this.game.current_ui = this
+    update(current_time) {    //update_config(x=null, y=null, width=null, height=null, rendered=null, command=null)
+        inventory_side = Math.min(window.innerWidth,window.innerHeight) / 2
+        for (let i = 0; i < 9; i++){
+            this.get_widget(`inventory-button-${i}`).update_config(0, 0,inventory_side / 3.85 , inventory_side / 3.85)
+        }   
+        if (this.game.inputHandler.isKeyPressed("e")) {
+            if (this.game.current_ui === this) {
+                this.game.current_ui = null;
+            } else if (!this.game.current_ui) {
+                this.game.current_ui = this;
             }
         for(let i = 0; i < 9; i++){
             if(this.get_slot(i)){
