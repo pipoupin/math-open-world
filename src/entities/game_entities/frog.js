@@ -14,11 +14,11 @@ export class Frog extends Entity{
      */
     constructor(game, map, worldX, worldY){
         super(game, map, game.tilesets["frog"],
-            new Hitbox(game, map, 0, 0, constants.TILE_SIZE * 0.8125, constants.TILE_SIZE * 0.5, true, false),
-            new Hitbox(game, map, 0, 0, constants.TILE_SIZE * 0.8125, constants.TILE_SIZE * 0.5, false, false),
+            new Hitbox(game, map, 0, 0, constants.TILE_SIZE * 0.40625, constants.TILE_SIZE * 0.25, true, false),
+            new Hitbox(game, map, 0, 0, constants.TILE_SIZE * 0.40625, constants.TILE_SIZE * 0.25, false, false),
             worldX, worldY, 200, 5,
-            {combat: {x: constants.TILE_SIZE * 0.03125, y: constants.TILE_SIZE * 0.125},
-            collision: {x: constants.TILE_SIZE * 0.03125, y: constants.TILE_SIZE * 0.125}}
+            {combat: {x: constants.TILE_SIZE * 0.015625, y: constants.TILE_SIZE * 0.0625},
+            collision: {x: constants.TILE_SIZE * 0.015625, y: constants.TILE_SIZE * 0.0625}}
         )
         this.framesPerState = [5, 3]
     }

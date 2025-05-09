@@ -262,7 +262,7 @@ export class Game {
 		)
 		var dialogue_test = new Hitbox(this, this.get_current_map(), 0, 4 * constants.TILE_SIZE, constants.TILE_SIZE, constants.TILE_SIZE, false, false, null, (h, c_h, t) => {
 			if(!c_h.owner instanceof Player) return
-			this.game.current_ui = mqc_dialogue
+			this.current_ui = mqc_dialogue
 		})
 		mqc_dialogue.set_source(dialogue_test)
 
