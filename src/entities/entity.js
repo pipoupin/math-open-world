@@ -16,7 +16,7 @@ export class Entity {
     * @param {Number} worldX - the entity's x position in the world
     * @param {Number} worldY - the entity's y position in the world
     * @param {Number} animation_duration - the animation's frames' duration
-    * @param {number} [life=null] - The entity's life
+    * @param {number} [life=null] - The entity's life, the entity is being invincible if life is null
     * @param {{ combat: { x: Number, y: Number; }; collision: { x: Number, y: Number; }; }} [hitboxes_offset={combat:{x:0,y:0},collision:{x:0,y:0}}] - The entity's hitboxes' offset in case you need them to be a little bit offcentered
     */
     constructor(game, map, tileset, collision_hitbox, combat_hitbox, worldX, worldY, animation_duration, life=null, hitboxes_offset={combat:{x:0,y:0},collision:{x:0,y:0}}) {
@@ -259,6 +259,6 @@ export class Entity {
      * @param {Attack} attack 
      */
     on_attacked(attack){
-        if(this.life <= 0) this.on_death(attack)
+        if(this.life != null && this.life <= 0) this.on_death(attack)
     }
 }

@@ -125,10 +125,9 @@ export class Player extends Entity {
 				
 				const hb = new Hitbox(this.game, this.game.get_current_map(), playerWorldX, playerWorldY,
 					constants.TILE_SIZE / 2, constants.TILE_SIZE / 2, false, false)
-				let test = new ProjectileAttack(this.game, this, this.game.get_current_map(), current_time,
+				new ProjectileAttack(this.game, this, this.game.get_current_map(), current_time,
 					2000, [hb], velX, velY,(e) => { e.life -= 2 }, false, this.game.tilesets["Axe"], 50,
 					{x: playerWorldX - hb.width.get() / 2, y: playerWorldY - hb.height.get() /2})
-				console.log(test)
 			}
 
 			let mouse_input = this.inputHandler.isMousePressed(constants.MOUSE_LEFT_BUTTON)
