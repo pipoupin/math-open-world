@@ -345,12 +345,14 @@ export class Texture extends Widget{
      */
     static async create(game, id, src, x, y, width, height, rendered){
         var texture = new Texture(game, id, x, y, width, height, rendered)
-        try {
-			await texture.load(config.IMG_DIR + src)
-		} catch (error) {
-			console.error(`couldn't load file "${src}" : ${error.message}`)
-			return
-		}
+        if(src!=null){
+            try {
+			    await texture.load(config.IMG_DIR + src)
+		    } catch (error) {
+			    console.error(`couldn't load file "${src}" : ${error.message}`)
+	    		return
+		    }
+        }
         return texture
     }
 

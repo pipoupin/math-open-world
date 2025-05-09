@@ -50,21 +50,4 @@ export class ItemStack{
         if(this.count < -n) console.error("Negative item count")
         this.count += n
     }
-
-    /**
-     * 
-     * @param {Number} x 
-     * @param {Number} y 
-     * @returns {Array<Widget>}
-     */
-    async make_widget(x, y){
-        var texture = await Texture.create(this.game, this.item.name + "-texture", this.item.src,
-            x, y, constants.TILE_SIZE / 8, constants.TILE_SIZE / 8, false)
-
-        var label = new Label(this.game, this.item.name + "-label",
-            x + constants.TILE_SIZE / 16, y, /** we'll need to tweak this */
-            this.count.toString(), false, constants.TILE_SIZE / 4)
-
-        return [texture, label]
-    }
 }

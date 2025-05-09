@@ -1,57 +1,29 @@
 import { config, constants } from "../constants.js";
 import { Game } from "../core/game.js";
-import { Talkable } from "../entities/talkable.js";
-import { Tileset } from "../world/tileset.js";
 import { Item, ItemStack } from "./items.js";
 import { Ui } from "./ui.js";
-import { Button, Texture } from "./widgets.js";
+import { Button, Texture, Widget } from "./widgets.js";
 
 export class Inventory extends Ui{
     /**
      * 
      * @param {Game} game 
+     * @param {Array<Texture>} textures_array 
      * @param {Texture} hovered_texture 
      */
-    constructor(game, hovered_texture){
-        var widgets = [
-            new Button(game, "inventory-button-0", constants.TILE_SIZE / 2, constants.TILE_SIZE / 2,
-                constants.TILE_SIZE / 8, constants.TILE_SIZE / 8, true, (button) => {
-                    // chais pas mdr
-                }),
-            new Button(game, "inventory-button-1", constants.TILE_SIZE / 2, constants.TILE_SIZE / 2,
-                constants.TILE_SIZE / 8, constants.TILE_SIZE / 8, true, (button) => {
-                    // chais pas mdr
-                }),
-            new Button(game, "inventory-button-2", constants.TILE_SIZE / 2, constants.TILE_SIZE / 2,
-                constants.TILE_SIZE / 8, constants.TILE_SIZE / 8, true, (button) => {
-                    // chais pas mdr
-                }),
-            new Button(game, "inventory-button-3", constants.TILE_SIZE / 2, constants.TILE_SIZE / 2,
-                constants.TILE_SIZE / 8, constants.TILE_SIZE / 8, true, (button) => {
-                    // chais pas mdr
-                }),
-            new Button(game, "inventory-button-4", constants.TILE_SIZE / 2, constants.TILE_SIZE / 2,
-                constants.TILE_SIZE / 8, constants.TILE_SIZE / 8, true, (button) => {
-                    // chais pas mdr
-                }),
-            new Button(game, "inventory-button-5", constants.TILE_SIZE / 2, constants.TILE_SIZE / 2,
-                constants.TILE_SIZE / 8, constants.TILE_SIZE / 8, true, (button) => {
-                    // chais pas mdr
-                }),
-            new Button(game, "inventory-button-6", constants.TILE_SIZE / 2, constants.TILE_SIZE / 2,
-                constants.TILE_SIZE / 8, constants.TILE_SIZE / 8, true, (button) => {
-                    // chais pas mdr
-                }),
-            new Button(game, "inventory-button-7", constants.TILE_SIZE / 2, constants.TILE_SIZE / 2,
-                constants.TILE_SIZE / 8, constants.TILE_SIZE / 8, true, (button) => {
-                    // chais pas mdr
-                }),
-            new Button(game, "inventory-button-8", constants.TILE_SIZE / 2, constants.TILE_SIZE / 2,
-                constants.TILE_SIZE / 8, constants.TILE_SIZE / 8, true, (button) => {
-                    // chais pas mdr
-                }),
-            hovered_texture
-        ]
+    constructor(game, textures_array, hovered_texture){
+        /**@type {Array<Widget>} */
+        var widgets = []
+        for(let i=0; i<9; i++){
+            widgets.push(new Button(game, `inventory-button-${i}`,
+                Inventory.get_slot_coordinates(i).x, Inventory.get_slot_coordinates(i).y,
+                constants.TILE_SIZE, constants.TILE_SIZE, true,
+                (button) => {
+
+                }))
+        }
+        textures_array.forEach(texture => {widgets.push(texture)})
+        widgets.push(hovered_texture)
         /**@type {(inv: Inventory) => void} */
         var widgets_states_handler = (inv)=>{
             var hovered_icon = inv.get_widget("hovered_icon")
@@ -80,11 +52,15 @@ export class Inventory extends Ui{
      * 
      * @param {Game} game 
      * @param {String} src 
-     * @returns {Inventory}
+     * @returns {Promise<Inventory>}
      */
     static async create(game, src){
         let hovered_texture = await Texture.create(game, "hovered-texture", "inventory_hovered_tileset.png", 0, 0, constants.TILE_SIZE / 8, constants.TILE_SIZE / 8, false)
-        var inventory = new Inventory(game, hovered_texture)
+        let textures_array = []
+        for(let i=0; i<9; i++){
+            textures_array.push(await Texture.create(game, `item-texture-${i}`, null, Inventory.get_slot_coordinates(i).x, Inventory.get_slot_coordinates(i).y, constants.TILE_SIZE, constants.TILE_SIZE, false))
+        }
+        var inventory = new Inventory(game, textures_array, hovered_texture)
         try{
             await inventory.load(config.IMG_DIR + src)
         }catch (error){
@@ -150,9 +126,10 @@ export class Inventory extends Ui{
      * @returns {{x: Number; y: Number}}
      */
     static get_slot_coordinates(n){
-        let row = Math.floor(n / 3)
-        let column = n % 3
-        return {x: 0, y: 0}
+        return {
+            x: ((n % 3) * constants.TILE_SIZE * 1.1) - (constants.TILE_SIZE * 1.6),
+            y: (Math.floor(n / 3) * constants.TILE_SIZE * 1.1) - (constants.TILE_SIZE * 1.6)
+        }
     }
 
     /**
@@ -162,10 +139,8 @@ export class Inventory extends Ui{
     async add_items(itemstacks){
         for(let itemstack of itemstacks){
             var slot = this.get_next_empty_slot(itemstack.item)
-            let widgets = await itemstack.make_widget(get_slot_coordinates(slot))
-            widgets.forEach(widget => {
-                this.add_widget(widget)
-            })
+            await this.get_widget(`item-texture-${slot}`).change_image(itemstack.item.src)
+            this.get_widget(`item-texture-${slot}`).rendered = true
             this.set_slot(slot, itemstack)
         }
     }
