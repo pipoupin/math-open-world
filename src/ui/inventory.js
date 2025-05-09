@@ -1,59 +1,31 @@
 import { config, constants } from "../constants.js";
 import { Game } from "../core/game.js";
-import { Talkable } from "../entities/talkable.js";
-import { Tileset } from "../world/tileset.js";
-import { ItemStack } from "./items.js";
+import { Item, ItemStack } from "./items.js";
 import { Ui } from "./ui.js";
-import { Button, Texture } from "./widgets.js";
+import { Button, Texture, Widget } from "./widgets.js";
 
-var inventory_side = Math.min(window.innerWidth,window.innerHeight) / 2
+
 export class Inventory extends Ui{
     /**
      * 
      * @param {Game} game 
+     * @param {Array<Texture>} textures_array 
      * @param {Texture} hovered_texture 
      */
-    constructor(game, hovered_texture){
-        var widgets = [
-            new Button(game, "inventory-button-0", constants.TILE_SIZE / 2 - 10, constants.TILE_SIZE / 2 -10,
-                inventory_side / 3.85 , inventory_side / 3.85, true, (button) => {
-                    // chais pas mdr
-                }),
-            new Button(game, "inventory-button-1", constants.TILE_SIZE / 2, constants.TILE_SIZE / 2,
-                inventory_side / 3.85 , inventory_side / 3.85, true, (button) => {
-                    // chais pas mdr
-                }),
-            new Button(game, "inventory-button-2", constants.TILE_SIZE / 2, constants.TILE_SIZE / 2,
-                inventory_side / 3.85 , inventory_side / 3.85, true, (button) => {
-                    // chais pas mdr
-                }),
-            new Button(game, "inventory-button-3", constants.TILE_SIZE / 2, constants.TILE_SIZE / 2,
-                inventory_side / 3.85 , inventory_side / 3.85, true, (button) => {
-                    // chais pas mdr
-                }),
-            new Button(game, "inventory-button-4", constants.TILE_SIZE / 2, constants.TILE_SIZE / 2,
-                inventory_side / 3.85 , inventory_side / 3.85, true, (button) => {
-                    // chais pas mdr
-                }),
-            new Button(game, "inventory-button-5", constants.TILE_SIZE / 2, constants.TILE_SIZE / 2,
-                inventory_side / 3.85 , inventory_side / 3.85, true, (button) => {
-                    // chais pas mdr
-                }),
-            new Button(game, "inventory-button-6", constants.TILE_SIZE / 2, constants.TILE_SIZE / 2,
-                inventory_side / 3.85 , inventory_side / 3.85, true, (button) => {
-                    // chais pas mdr
-                }),
-            new Button(game, "inventory-button-7", constants.TILE_SIZE / 2, constants.TILE_SIZE / 2,
-                inventory_side / 3.85 , inventory_side / 3.85, true, (button) => {
-                    // chais pas mdr
-                }),
-            new Button(game, "inventory-button-8", constants.TILE_SIZE / 2, constants.TILE_SIZE / 2,
-                inventory_side / 3.85 , inventory_side / 3.85, true, (button) => {
-                    // chais pas mdr
-                }),
-            hovered_texture,
-            new Texture(game, "hovered_icon", -100, -100, constants.TILE_SIZE / 8, constants.TILE_SIZE / 8, false)
-        ]
+    constructor(game, textures_array, hovered_texture){
+        /**@type {Array<Widget>} */
+        var widgets = []
+        for(let i=0; i<9; i++){
+            widgets.push(new Button(game, `inventory-button-${i}`,
+                Inventory.get_slot_coordinates(i).x, Inventory.get_slot_coordinates(i).y,
+                constants.TILE_SIZE, constants.TILE_SIZE, true,
+                (button) => {
+
+                }))
+        }
+        textures_array.forEach(texture => {widgets.push(texture)})
+        widgets.push(hovered_texture)
+          
         /**@type {(inv: Inventory) => void} */
         var widgets_states_handler = (inv)=>{
             var hovered_icon = inv.get_widget("hovered_icon")
@@ -69,6 +41,7 @@ export class Inventory extends Ui{
             if(!has_hovered)
                 hovered_icon.rendered = false
         }
+        var inventory_side = Math.min(window.innerWidth,window.innerHeight) / 2
         super(game, inventory_side, inventory_side, widgets, widgets_states_handler)
         /** @type {Array<Array<ItemStack>>} */
         this.itemstacks = [
@@ -82,11 +55,15 @@ export class Inventory extends Ui{
      * 
      * @param {Game} game 
      * @param {String} src 
-     * @returns {Inventory}
+     * @returns {Promise<Inventory>}
      */
     static async create(game, src){
         let hovered_texture = await Texture.create(game, "hovered-texture", "inventory_hovered_tileset.png", 0, 0, constants.TILE_SIZE / 8, constants.TILE_SIZE / 8, false)
-        var inventory = new Inventory(game, hovered_texture)
+        let textures_array = []
+        for(let i=0; i<9; i++){
+            textures_array.push(await Texture.create(game, `item-texture-${i}`, null, Inventory.get_slot_coordinates(i).x, Inventory.get_slot_coordinates(i).y, constants.TILE_SIZE, constants.TILE_SIZE, false))
+        }
+        var inventory = new Inventory(game, textures_array, hovered_texture)
         try{
             await inventory.load(config.IMG_DIR + src)
         }catch (error){
@@ -97,10 +74,6 @@ export class Inventory extends Ui{
     }
 
     update(current_time) {    //update_config(x=null, y=null, width=null, height=null, rendered=null, command=null)
-        inventory_side = Math.min(window.innerWidth,window.innerHeight) / 2
-        for (let i = 0; i < 9; i++){
-            this.get_widget(`inventory-button-${i}`).update_config(0, 0,inventory_side / 3.85 , inventory_side / 3.85)
-        }   
         if (this.game.inputHandler.isKeyPressed("e")) {
             if (this.game.current_ui === this) {
                 this.game.current_ui = null;
@@ -108,17 +81,24 @@ export class Inventory extends Ui{
                 this.game.current_ui = this;
             }
         }
-    
-        if (this.game.current_ui === this) {
-            super.update(current_time);
+        for(let i = 0; i < 9; i++){
+            if(this.get_slot(i)){
+                if(this.get_slot(i).count == 0){
+                    this.get_widget(`item-texture-${i}`).rendered = false
+                }
+            }
         }
     }
 
     /**
      * 
+     * @param {Item} item 
      * @returns {Number}
      */
-    get_next_empty_slot(){
+    get_next_empty_slot(item){
+        for(let i = 0; i < 9; i++){
+            if(this.get_slot(i).item == item) return i
+        }
         for(let i = 0; i < 9; i++){
             if(this.get_slot(i) == null) return i
         }
@@ -144,15 +124,26 @@ export class Inventory extends Ui{
 
     /**
      * 
+     * @param {Number} n 
+     * @returns {{x: Number; y: Number}}
+     */
+    static get_slot_coordinates(n){
+        return {
+            x: ((n % 3) * constants.TILE_SIZE * 1.1) - (constants.TILE_SIZE * 1.6),
+            y: (Math.floor(n / 3) * constants.TILE_SIZE * 1.1) - (constants.TILE_SIZE * 1.6)
+        }
+    }
+
+    /**
+     * 
      * @param {Array<ItemStack>} itemstacks 
      */
-    async add_items(itemstacks){
+    add_items(itemstacks){
         for(let itemstack of itemstacks){
-            let widgets = await itemstack.make_widget()
-            widgets.forEach(widget => {
-                this.add_widget(widget)
-            })
-            this.set_slot(this.get_next_empty_slot(), itemstack)
+            var slot = this.get_next_empty_slot(itemstack.item)
+            this.get_widget(`item-texture-${slot}`).img = this.game.items[itemstack.item.name]
+            this.get_widget(`item-texture-${slot}`).rendered = true
+            this.set_slot(slot, itemstack)
         }
     }
 }

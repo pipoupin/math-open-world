@@ -1,18 +1,37 @@
-import { constants } from "../constants.js"
+import { config } from "../constants.js"
 import { Game } from "../core/game.js"
-import { Label, Texture, Widget } from "./widgets.js"
 
 export class Item{
     /**
      * 
      * @param {Game} game 
-     * @param {String} src 
      * @param {String} name 
      */
-    constructor(game, src, name){
+    constructor(game, name){
         this.game = game
-        this.src = src
         this.name = name
+        this.game.items[name] = this
+    }
+
+    static async create(game, src, name){
+        let item = new Item(game, name)
+        try{
+            item.load(config.IMG_DIR + src)
+        } catch (error){
+            console.error(`Couldn't load file "${src}": ${error.message}`);
+        }
+        return item
+    }
+
+    async load(src){
+        const img = new Image();
+        img.src = src;
+        this.img = img;
+
+        await new Promise((resolve, reject) => {
+            img.onload = resolve;
+            img.onerror = () => reject(new Error(`Failed to load image: ${src}`));
+        });
     }
 }
 
@@ -44,18 +63,10 @@ export class ItemStack{
 
     /**
      * 
-     * @param {Number} x 
-     * @param {Number} y 
-     * @returns {Array<Widget>}
+     * @param {Number} n 
      */
-    async make_widget(x, y){
-        var texture = await Texture.create(this.game, this.item.name + "-texture", this.item.src,
-            x, y, constants.TILE_SIZE / 8, constants.TILE_SIZE / 8, false)
-
-        var label = new Label(this.game, this.item.name + "-label",
-            x + constants.TILE_SIZE / 16, y, /** we'll need to tweak this */
-            this.count.toString(), false, constants.TILE_SIZE / 4)
-
-        return [texture, label]
+    add_count(n){
+        if(this.count < -n) console.error("Negative item count")
+        this.count += n
     }
 }
