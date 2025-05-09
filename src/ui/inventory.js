@@ -4,7 +4,7 @@ import { Item, ItemStack } from "./items.js";
 import { Ui } from "./ui.js";
 import { Button, Texture, Widget } from "./widgets.js";
 
-var inventory_side = Math.min(window.innerWidth,window.innerHeight) / 2
+
 export class Inventory extends Ui{
     /**
      * 
@@ -41,6 +41,7 @@ export class Inventory extends Ui{
             if(!has_hovered)
                 hovered_icon.rendered = false
         }
+        var inventory_side = Math.min(window.innerWidth,window.innerHeight) / 2
         super(game, inventory_side, inventory_side, widgets, widgets_states_handler)
         /** @type {Array<Array<ItemStack>>} */
         this.itemstacks = [
@@ -73,16 +74,13 @@ export class Inventory extends Ui{
     }
 
     update(current_time) {    //update_config(x=null, y=null, width=null, height=null, rendered=null, command=null)
-        inventory_side = Math.min(window.innerWidth,window.innerHeight) / 2
-        for (let i = 0; i < 9; i++){
-            this.get_widget(`inventory-button-${i}`).update_config(0, 0,inventory_side / 3.85 , inventory_side / 3.85)
-        }   
         if (this.game.inputHandler.isKeyPressed("e")) {
             if (this.game.current_ui === this) {
                 this.game.current_ui = null;
             } else if (!this.game.current_ui) {
                 this.game.current_ui = this;
             }
+        }
         for(let i = 0; i < 9; i++){
             if(this.get_slot(i)){
                 if(this.get_slot(i).count == 0){
