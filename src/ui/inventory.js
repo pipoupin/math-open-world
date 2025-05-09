@@ -6,6 +6,7 @@ import { ItemStack } from "./items.js";
 import { Ui } from "./ui.js";
 import { Button, Texture } from "./widgets.js";
 
+var inventory_side = Math.min(window.innerWidth,window.innerHeight) / 2
 export class Inventory extends Ui{
     /**
      * 
@@ -14,40 +15,40 @@ export class Inventory extends Ui{
      */
     constructor(game, hovered_texture){
         var widgets = [
-            new Button(game, "inventory-button-0", constants.TILE_SIZE / 2, constants.TILE_SIZE / 2,
-                constants.TILE_SIZE / 8, constants.TILE_SIZE / 8, true, (button) => {
+            new Button(game, "inventory-button-0", constants.TILE_SIZE / 2 - 10, constants.TILE_SIZE / 2 -10,
+                inventory_side / 3.85 , inventory_side / 3.85, true, (button) => {
                     // chais pas mdr
                 }),
             new Button(game, "inventory-button-1", constants.TILE_SIZE / 2, constants.TILE_SIZE / 2,
-                constants.TILE_SIZE / 8, constants.TILE_SIZE / 8, true, (button) => {
+                inventory_side / 3.85 , inventory_side / 3.85, true, (button) => {
                     // chais pas mdr
                 }),
             new Button(game, "inventory-button-2", constants.TILE_SIZE / 2, constants.TILE_SIZE / 2,
-                constants.TILE_SIZE / 8, constants.TILE_SIZE / 8, true, (button) => {
+                inventory_side / 3.85 , inventory_side / 3.85, true, (button) => {
                     // chais pas mdr
                 }),
             new Button(game, "inventory-button-3", constants.TILE_SIZE / 2, constants.TILE_SIZE / 2,
-                constants.TILE_SIZE / 8, constants.TILE_SIZE / 8, true, (button) => {
+                inventory_side / 3.85 , inventory_side / 3.85, true, (button) => {
                     // chais pas mdr
                 }),
             new Button(game, "inventory-button-4", constants.TILE_SIZE / 2, constants.TILE_SIZE / 2,
-                constants.TILE_SIZE / 8, constants.TILE_SIZE / 8, true, (button) => {
+                inventory_side / 3.85 , inventory_side / 3.85, true, (button) => {
                     // chais pas mdr
                 }),
             new Button(game, "inventory-button-5", constants.TILE_SIZE / 2, constants.TILE_SIZE / 2,
-                constants.TILE_SIZE / 8, constants.TILE_SIZE / 8, true, (button) => {
+                inventory_side / 3.85 , inventory_side / 3.85, true, (button) => {
                     // chais pas mdr
                 }),
             new Button(game, "inventory-button-6", constants.TILE_SIZE / 2, constants.TILE_SIZE / 2,
-                constants.TILE_SIZE / 8, constants.TILE_SIZE / 8, true, (button) => {
+                inventory_side / 3.85 , inventory_side / 3.85, true, (button) => {
                     // chais pas mdr
                 }),
             new Button(game, "inventory-button-7", constants.TILE_SIZE / 2, constants.TILE_SIZE / 2,
-                constants.TILE_SIZE / 8, constants.TILE_SIZE / 8, true, (button) => {
+                inventory_side / 3.85 , inventory_side / 3.85, true, (button) => {
                     // chais pas mdr
                 }),
             new Button(game, "inventory-button-8", constants.TILE_SIZE / 2, constants.TILE_SIZE / 2,
-                constants.TILE_SIZE / 8, constants.TILE_SIZE / 8, true, (button) => {
+                inventory_side / 3.85 , inventory_side / 3.85, true, (button) => {
                     // chais pas mdr
                 }),
             hovered_texture,
@@ -68,7 +69,7 @@ export class Inventory extends Ui{
             if(!has_hovered)
                 hovered_icon.rendered = false
         }
-        super(game, game.canvas.width, game.canvas.height, widgets, widgets_states_handler)
+        super(game, inventory_side, inventory_side, widgets, widgets_states_handler)
         /** @type {Array<Array<ItemStack>>} */
         this.itemstacks = [
             [null, null, null],
@@ -95,7 +96,11 @@ export class Inventory extends Ui{
         return inventory
     }
 
-    update(current_time) {
+    update(current_time) {    //update_config(x=null, y=null, width=null, height=null, rendered=null, command=null)
+        inventory_side = Math.min(window.innerWidth,window.innerHeight) / 2
+        for (let i = 0; i < 9; i++){
+            this.get_widget(`inventory-button-${i}`).update_config(0, 0,inventory_side / 3.85 , inventory_side / 3.85)
+        }   
         if (this.game.inputHandler.isKeyPressed("e")) {
             if (this.game.current_ui === this) {
                 this.game.current_ui = null;
