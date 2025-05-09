@@ -53,7 +53,7 @@ export class Resizeable{
 		if(!isNaN(new_value / this.game.canvas.width))
 			this.value = new_value / this.game.canvas.width
 		else
-			throw new Error("value nan")
+			throw new Error(`value ${new_value} nan`)
 	}
 
 	get() {
@@ -85,18 +85,10 @@ export class YResizeable{
 		if(!isNaN(new_value / this.game.canvas.width))
 			this.value = new_value / this.game.canvas.height
 		else
-			throw new Error("value nan")
+			throw new Error(`value ${new_value} nan`)
 	}
 
 	get(){
 		return this.value * this.game.canvas.height
 	}
-}
-
-/**
- * 
- * @returns {Boolean}
- */
-export function isWithinMapBounds(map, hitbox) {
-	return !(map.world.width.get() <= hitbox.x2.get() || hitbox.x1.get() <= 0 || hitbox.y2.get() >= map.world.height.get() || hitbox.y1.get() <= 0)
 }

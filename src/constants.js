@@ -44,8 +44,9 @@ export const constants = {
 	MOUSE_BACK_BUTTON: 3,
 	MOUSE_FORWARD_BUTTON: 4,
 
-	WALK_STATE: 0,
-	ATTACK_STATE: 1
+    IDLE_STATE: 0,
+	WALK_STATE: 1,
+	ATTACK_STATE: 2
 }
 
 // The future has arrived

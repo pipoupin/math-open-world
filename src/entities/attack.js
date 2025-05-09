@@ -2,7 +2,7 @@ import { Hitbox } from './hitbox.js'
 import { Entity } from './entity.js'
 import { Game } from '../core/game.js'
 import { Map } from '../world/map.js'
-import { Resizeable, isWithinMapBounds } from '../utils.js'
+import { Resizeable } from '../utils.js'
 import { constants } from '../constants.js'
 import { Tileset } from '../world/tileset.js'
 
@@ -136,19 +136,24 @@ export class Attack {
 	 */
 	apply(entity, current) {
 		if (entity === this.attacker) return
+		let invincible = entity.life == null
 		const i = this.entities.indexOf(entity)
 		if (i !== -1) {
 			if (!this.persistent)
 				return
 			if (current - this.last_applies[i] >= this.cooldown) {
 				this.attack(entity)
+				if(invincible) entity.life = null
 				this.last_applies[i] = current
+				entity.on_attacked(this)
 			}
 		} else {
 			this.attack(entity)
+			if(invincible) entity.life = null
 			this.entities.push(entity)
 			if (this.still)
 				this.last_applies.push(current)
+			entity.on_attacked(this)
 		}
 	}
 
@@ -306,7 +311,7 @@ export class ProjectileAttack extends Attack {
 				}
 			}
 
-			if (is_colliding || !isWithinMapBounds(this.map, hb)) {
+			if (is_colliding || !hb.isWithinMapBounds(this.map)) {
 				this.destroy()
 				return
 			}

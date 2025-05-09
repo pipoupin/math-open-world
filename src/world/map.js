@@ -34,7 +34,7 @@ export class Map {
 	 * @param {Tileset} tileset - The tileset used to render the map
 	 * @param {String} background - The color of the tileless background
 	 * @param {{x: Number, y: Number}} player_pos - The position of the player on this specific map
-	 * @returns {Map}
+	 * @returns {Promise<Map>}
 	 */
 	static async create(game, src, tileset, background, player_pos) {
 		const map = new Map(game, tileset, background, player_pos)
@@ -43,6 +43,7 @@ export class Map {
 		} catch (error) {
 			console.error(`Failed to load map "${src}": ${error.message}`)
 		}
+		game.maps[src.slice(0, src.length - 5)] = map
 		return map
 	}
 
@@ -130,7 +131,7 @@ export class Map {
 										new_height = constants.TILE_SIZE - new_y
 								}
 							}
-							new Hitbox(this.game, this, tileX + new_x, tileY + new_y, new_width, new_height, true, false, null, (e, h, t) => {})
+							new Hitbox(this.game, this, tileX + new_x, tileY + new_y, new_width, new_height, true, false)
 						}
 					}
 				}

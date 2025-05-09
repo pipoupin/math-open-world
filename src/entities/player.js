@@ -14,9 +14,9 @@ export class Player extends Entity {
 	constructor(game, player_tileset) {
 		super(
 			game, game.get_current_map(), player_tileset,
-			new Hitbox(game, game.get_current_map(), 400, 400 + constants.TILE_SIZE / 2, 2 * constants.TILE_SIZE / 3, constants.TILE_SIZE / 2, true, true, null, (e, h, t) => {}),
-			new Hitbox(game, game.get_current_map(), 400, 400, 2 * constants.TILE_SIZE / 3, constants.TILE_SIZE, false, true, null, (e, h, t) => {}),
-			600, 600, 125, {combat: {x: 0, y: 0}, collision: {x: 0, y: constants.TILE_SIZE / 4}}, -1
+			new Hitbox(game, game.get_current_map(), 400, 400 + constants.TILE_SIZE / 2, 2 * constants.TILE_SIZE / 3, constants.TILE_SIZE / 2, true, true),
+			new Hitbox(game, game.get_current_map(), 400, 400, 2 * constants.TILE_SIZE / 3, constants.TILE_SIZE, false, true),
+			600, 600, 125, null, {combat: {x: 0, y: 0}, collision: {x: 0, y: constants.TILE_SIZE / 4}}
 		)
 
 		this.collision_hitbox.owner = this
@@ -28,13 +28,13 @@ export class Player extends Entity {
 
 		this.inputHandler = game.inputHandler
 
-		this.fullSpeed = new Resizeable(game, 10)
-		this.acceleration = new Resizeable(game, 4)
+		this.fullSpeed = new Resizeable(game, constants.TILE_SIZE / 12)
+		this.acceleration = new Resizeable(game, constants.TILE_SIZE / 32)
 		this.last_dash = -constants.PLAYER_DASH_COOLDOWN // used both for during the dash and for waiting state
 		this.dash_reset = false
 		this.dashing = false
 
-		this.raycast_hitbox = new Hitbox(game, game.get_current_map(), 400, 400, 0, 100, false, true, this, (e, h, t) => {})
+		this.raycast_hitbox = new Hitbox(game, game.get_current_map(), 400, 400, 0, 100, false, true, this)
 	}
 
 	reset_dash_cooldown() {
@@ -67,8 +67,8 @@ export class Player extends Entity {
 		// Handle player movement
 		if (!this.dashing && this.inputHandler.isKeyDown(constants.DASH_KEY) && current_time - this.last_dash >= constants.PLAYER_DASH_COOLDOWN) {
 			this.dashing = true
-			this.acceleration.set_value(10)
-			this.fullSpeed.set_value(30)
+			this.acceleration.set_value(constants.TILE_SIZE / 12)
+			this.fullSpeed.set_value(constants.TILE_SIZE / 4)
 			this.last_dash = current_time
 		}
 
@@ -76,8 +76,13 @@ export class Player extends Entity {
 			this.last_dash = this.dash_reset ? 0 : current_time
 			this.dash_reset = false
 			this.dashing = false
-			this.fullSpeed.set_value(10)
-			this.acceleration.set_value(4)
+			this.fullSpeed.set_value(constants.TILE_SIZE / 12)
+			this.acceleration.set_value(constants.TILE_SIZE / 32)
+		}
+
+		if(!this.dashing && this.state != constants.ATTACK_STATE){
+			this.fullSpeed.set_value(constants.TILE_SIZE / 12)
+			this.acceleration.set_value(constants.TILE_SIZE / 32)
 		}
 	
 		if (this.inputHandler.isKeyDown(constants.UP_KEY)) {
@@ -112,13 +117,17 @@ export class Player extends Entity {
 
 				const distance = Math.hypot(dx, dy)
 				if (distance <= 10) return
+				
 			   
 				const speed = 20
 				const velX = (dx / distance) * speed
 				const velY = (dy / distance) * speed
 				
-				const hb = new Hitbox(this.game, this.game.get_current_map(), playerWorldX, playerWorldY, constants.TILE_SIZE / 2, constants.TILE_SIZE / 2, false, false)
-				new ProjectileAttack(this.game, this, this.game.get_current_map(), current_time, 2000, [hb], velX, velY,(e) => { e.life -= 2 }, false, this.game.axe_tileset, 50, {x: playerWorldX - hb.width.get() / 2, y: playerWorldY - hb.height.get() /2})
+				const hb = new Hitbox(this.game, this.game.get_current_map(), playerWorldX, playerWorldY,
+					constants.TILE_SIZE / 2, constants.TILE_SIZE / 2, false, false)
+				new ProjectileAttack(this.game, this, this.game.get_current_map(), current_time,
+					2000, [hb], velX, velY,(e) => { e.life -= 2 }, false, this.game.tilesets["Axe"], 50,
+					{x: playerWorldX - hb.width.get() / 2, y: playerWorldY - hb.height.get() /2})
 			}
 
 			let mouse_input = this.inputHandler.isMousePressed(constants.MOUSE_LEFT_BUTTON)
@@ -130,7 +139,11 @@ export class Player extends Entity {
 
 				this.game.effects.ATTACK.apply(current_time,this, 300)
 				this.game.effects.MOTIONLESS.apply(current_time, this, 300)
-				new SwingingAttack(this.game, this, this.game.get_current_map(), current_time, 300, {x: this.worldX.get(), y: this.worldY.get()}, this.direction, constants.TILE_SIZE/5, constants.TILE_SIZE, constants.TILE_SIZE/2, (e) => { e.life -= 2 })
+
+				new SwingingAttack(this.game, this, this.game.get_current_map(), current_time, 300,
+					{x: this.worldX.get(), y: this.worldY.get()}, this.direction,
+					constants.TILE_SIZE/5, constants.TILE_SIZE, constants.TILE_SIZE/2,
+					(e) => { e.life -= 2 })
 			}
 		}
 	

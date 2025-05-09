@@ -16,18 +16,21 @@ export class Entity {
     * @param {Number} worldX - the entity's x position in the world
     * @param {Number} worldY - the entity's y position in the world
     * @param {Number} animation_duration - the animation's frames' duration
+    * @param {number} [life=null] - The entity's life, the entity is being invincible if life is null
     * @param {{ combat: { x: Number, y: Number; }; collision: { x: Number, y: Number; }; }} [hitboxes_offset={combat:{x:0,y:0},collision:{x:0,y:0}}] - The entity's hitboxes' offset in case you need them to be a little bit offcentered
-    * @param {number} [life=-1] - The entity's life
     */
-    constructor(game, map, tileset, collision_hitbox, combat_hitbox, worldX, worldY, animation_duration, hitboxes_offset={combat:{x:0,y:0},collision:{x:0,y:0}}, life=-1) {
+    constructor(game, map, tileset, collision_hitbox, combat_hitbox, worldX, worldY, animation_duration, life=null, hitboxes_offset={combat:{x:0,y:0},collision:{x:0,y:0}}) {
         this.game = game
         this.map = map
 
 		this.id = game.next_entity_id
 		game.next_entity_id++
 
-		this.state = constants.WALK_STATE // each state takes 4 lines in the tileset (down, up, right, left)
-		this.framesPerState = [5] // first walk, then attack, ...
+        this.player = false
+
+		this.state = constants.IDLE_STATE // each state takes 4 lines in the tileset (down, up, right, left)
+		this.framesPerState = [null, 5] // first idle, then walk, then attack, ...
+        // when idle is null, the entity uses the first walking frame
 
         // World position at the center
         this.worldX = new Resizeable(game, worldX)
@@ -39,6 +42,8 @@ export class Entity {
         this.tileset = tileset
         this.collision_hitbox = collision_hitbox
         this.combat_hitbox = combat_hitbox
+        this.collision_hitbox.set_owner(this)
+        this.combat_hitbox.set_owner(this)
 
         this.animation_step = 0
         this.animation_duration = animation_duration
@@ -46,6 +51,8 @@ export class Entity {
         this.last_time = 0
 
         this.life = life
+
+        this.active = true
 
         this.hitboxes_offset = {
             combat: {
@@ -68,11 +75,6 @@ export class Entity {
     update(current_time) {
         if(this.game.get_current_map() != this.map)
             return
-		
-		if (this.life === 0) {
-			this.destroy()
-			return
-		}
 
         // Split movement into X and Y components to handle collisions separately
         this.updatePositionX()
@@ -90,23 +92,31 @@ export class Entity {
         }
 
         this.collision_hitbox.get_colliding_hitboxes(true, false).forEach(hitbox => {
-			hitbox.command(this, hitbox, current_time)
+			hitbox.command(hitbox, this.collision_hitbox, current_time)
 		})
 
 		this.combat_hitbox.get_colliding_hitboxes(false, true).forEach(hitbox => {
-			if (hitbox.owner instanceof Attack && hitbox.owner !== this) {
+			if (hitbox.owner instanceof Attack){
 				if (hitbox.owner instanceof SwingingAttack) {
 				}
 				hitbox.owner.apply(this, current_time)
-			} else {
-				hitbox.command(this, hitbox, current_time)
 			}
+			hitbox.command(hitbox, this.combat_hitbox, current_time)
 		})
+        if(!this.active) return
 
 		// only apply to comabt hitboxes as they're included in collision ones, so don't need to apply to collisions
 		this.combat_hitbox.get_colliding_hitboxes(false, false).forEach(hitbox => {
-			hitbox.command(this, hitbox, current_time)
+			hitbox.command(hitbox, this.combat_hitbox, current_time)
 		})
+
+        if(this.dx.get() == 0 && this.dy.get() == 0){
+            if(this.state == constants.WALK_STATE)
+                this.state = constants.IDLE_STATE
+        }else{
+            if(this.state == constants.IDLE_STATE)
+                this.state = constants.WALK_STATE
+        }
 
         this.handleAnimation(current_time)
     }
@@ -167,8 +177,11 @@ export class Entity {
         if (current_time - this.last_time < this.animation_duration) return
 
 		switch(this.state) {
+            case constants.IDLE_STATE:
+                this.animation_step = this.framesPerState[constants.IDLE_STATE] == null ? 0: (this.animation_step + 1) % this.framesPerState[constants.IDLE_STATE]
+                break
 			case constants.WALK_STATE:
-				this.animation_step = (this.dx.get() || this.dy.get()) ? (this.animation_step + 1) % this.framesPerState[constants.WALK_STATE] : 0
+				this.animation_step = (this.animation_step + 1) % this.framesPerState[constants.WALK_STATE]
 				break
 			case constants.ATTACK_STATE:
 				this.animation_step = (this.animation_step + 1) % this.framesPerState[constants.ATTACK_STATE]
@@ -228,17 +241,24 @@ export class Entity {
     }
 
 	destroy() {
-		this.combat_hitbox.destroy()
-		this.combat_hitbox = null
-
-		this.collision_hitbox.destroy()
-		this.collision_hitbox = null
-
-		const i = this.game.entities.indexOf(this)
-		if (i !== 1) {
-			this.game.entities.splice(i, 1)
-		} else {
-			throw new Error("entity should be contained in game.entities")
-		}
+        if(this.player) throw new Error("Player shouldn't be deleted")
+		this.combat_hitbox.active = false
+		this.collision_hitbox.active = false
+        this.active = false
 	}
+
+    // Here are overrideable methods for entities subclasses
+    /**
+     * @param {Attack} killing_attack 
+     */
+    on_death(killing_attack){
+        if(!this.player)
+            this.destroy()
+    }
+    /**
+     * @param {Attack} attack 
+     */
+    on_attacked(attack){
+        if(this.life != null && this.life <= 0) this.on_death(attack)
+    }
 }
