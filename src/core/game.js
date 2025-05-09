@@ -261,7 +261,7 @@ export class Game {
 			}, constants.TILE_SIZE / 5, "black", "arial"
 		)
 		var dialogue_test = new Hitbox(this, this.get_current_map(), 0, 4 * constants.TILE_SIZE, constants.TILE_SIZE, constants.TILE_SIZE, false, false, null, (h, c_h, t) => {
-			if(!c_h.owner instanceof Player) return
+			if(!c_h.player) return
 			this.current_ui = mqc_dialogue
 		})
 		mqc_dialogue.set_source(dialogue_test)
@@ -269,7 +269,7 @@ export class Game {
 		// SWITCH MAP HITBOXES
 		// -- from the house (manual)
 		new Hitbox(this, this.get_current_map(), 3 * constants.TILE_SIZE, 8 * constants.TILE_SIZE, constants.TILE_SIZE, constants.TILE_SIZE, false, false, null, (h, c_h, time) => {
-			if(!c_h.owner instanceof Player) return
+			if(!c_h.player) return
 			if (!this.inputHandler.isKeyPressed(constants.INTERACTION_KEY)) return // one must press INTERACTION_KEY to switch map
 			this.maps["house"].set_player_pos({x: this.player.worldX.get(), y: this.player.worldY.get() - constants.TILE_SIZE / 2})
 			this.set_map("map")
@@ -288,7 +288,7 @@ export class Game {
 
 		// -- from the house (auto)
 		new Hitbox(this, this.get_current_map(), 3 * constants.TILE_SIZE, 8.75 * constants.TILE_SIZE, constants.TILE_SIZE, constants.TILE_SIZE / 4, false, false, null, (h, c_h, time) => {
-			if(!c_h.owner instanceof Player) return
+			if(!c_h.player) return
 			this.maps["house"].set_player_pos({x: this.player.worldX.get(), y: this.player.worldY.get() - constants.TILE_SIZE / 2})
 			this.set_map("map")
 
@@ -315,7 +315,7 @@ export class Game {
 			false,
 			null,
 			(h, c_h, time) => {
-				if(!c_h.owner instanceof Player) return
+				if(!c_h.player) return
 				if (!this.inputHandler.isKeyPressed(constants.INTERACTION_KEY)) return
 				this.maps["map"].set_player_pos({x: 15.5 * constants.TILE_SIZE, y: 14.01 * constants.TILE_SIZE})
 
@@ -340,7 +340,7 @@ export class Game {
 			false, 
 			null, 
 			(h, c_h, time) => {
-				if(!c_h.owner instanceof Player) return
+				if(!c_h.player) return
 				this.maps["map"].set_player_pos({x: 15.5 * constants.TILE_SIZE, y: 14.01 * constants.TILE_SIZE})
 
 				this.set_map("house")
