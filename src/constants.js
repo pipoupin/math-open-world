@@ -4,7 +4,7 @@ export const config = {
 }
 
 export const constants = {
-    DEBUG: false,
+    DEBUG: true,
 
     TILE_SIZE: 128,
 

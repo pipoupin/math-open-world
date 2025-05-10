@@ -16,6 +16,7 @@ import { Resizeable, YResizeable } from '../utils.js'
 import { Effect } from '../entities/effect.js'
 import { Frog } from '../entities/game_entities/frog.js'
 import { Spider } from '../entities/game_entities/spider.js'
+import { OptionsMenu } from '../ui/options.js'
 
 export class Game {
 	constructor() {
@@ -84,6 +85,9 @@ export class Game {
 		this.tilesets = {}
 
 		this.camera = { x: new Resizeable(this, -1000), y: new Resizeable(this, -1000)}
+
+		/**@type {OptionsMenu} */
+		this.options_menu = null
 		
 		this.effects = {
 			MOTIONLESS: new Effect((entity) => {
@@ -123,6 +127,8 @@ export class Game {
 
 		await Map.create(this, 'house.json', this.tilesets["cabane_tileset"], "black", {x: constants.TILE_SIZE * 1.5, y: 3 * constants.TILE_SIZE}),
 		await Map.create(this, 'map.json', this.tilesets["map"], "grey", {x: 15.5 * constants.TILE_SIZE, y: 14.01 * constants.TILE_SIZE})
+
+		this.options_menu = await OptionsMenu.create(this)
 		
 		this.current_map = "house" // "scene"
 		this.map = this.maps[this.current_map]
@@ -381,6 +387,8 @@ export class Game {
 				this.current_ui.update(current_time)
 				return
 			}
+		}else if(this.inputHandler.isKeyPressed("escape")){
+			this.current_ui = this.options_menu
 		}
 
 		this.get_current_map().update(current_time)
