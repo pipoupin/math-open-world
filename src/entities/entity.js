@@ -211,7 +211,7 @@ export class Entity {
 			this.tileset.drawEntity(this, screenX, screenY)
         }
 
-        if(constants.DEBUG){
+        if(this.game.options_menu.debug){
             this.game.ctx.beginPath()
             this.game.ctx.arc(this.worldX.get() - this.game.camera.x.get(), this.worldY.get() - this.game.camera.y.get(), 3, 0, Math.PI * 2)
             this.game.ctx.fillStyle = this.player ? "blue": "red"

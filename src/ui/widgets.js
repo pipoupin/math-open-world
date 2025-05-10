@@ -73,7 +73,7 @@ export class Label extends Widget{
                 this.game.canvas.width / 2 + this.x.get(),
                 this.game.canvas.height / 2 + this.y.get() + this.fontsize.get() / 3)
             
-            if(constants.DEBUG){
+            if(this.game.options_menu.debug){
                 this.game.ctx.beginPath()
                 this.game.ctx.arc(this.game.canvas.width / 2 + this.x.get(),
                     this.game.canvas.height / 2 + this.y.get(),
@@ -129,8 +129,14 @@ export class Button extends Widget{
         this.command = command
     }
 
+    center_arround(x, y){
+        this.x.set_value(x - this.width.get() / 2)
+        this.y.set_value(y - this.height.get() / 2)
+        return this
+    }
+
     render(){
-        if(this.rendered && constants.DEBUG){
+        if(this.rendered && this.game.options_menu.debug){
             this.game.ctx.strokeStyle = "blue"
             this.game.ctx.strokeRect(
                 this.game.canvas.width / 2 + this.x.get(),
@@ -195,9 +201,15 @@ export class TextArea extends Widget{
         this.usable = true
     }
 
+    center_arround(x, y){
+        this.x.set_value(x - this.width.get() / 2)
+        this.y.set_value(y - this.height.get() / 2)
+        return this
+    }
+
     render(){
         if(this.rendered){
-            if(constants.DEBUG){
+            if(this.game.options_menu.debug){
                 this.game.ctx.strokeStyle = "blue"
                 this.game.ctx.strokeRect(
                     this.game.canvas.width / 2 + this.x.get(),
@@ -299,6 +311,12 @@ export class Icon extends Widget{
         this.tile_nb = tile_nb
     }
 
+    center_arround(x, y){
+        this.x.set_value(x - this.tileset.screen_tile_size.get() / 2)
+        this.y.set_value(y - this.tileset.screen_tile_size.get() / 2)
+        return this
+    }
+
     render(){
         if(this.rendered){
             this.tileset.drawTile(
@@ -384,6 +402,12 @@ export class Texture extends Widget{
 			img.onload = resolve
 			img.onerror = reject
 		})
+    }
+
+    center_arround(x, y){
+        this.x.set_value(x - this.width.get() / 2)
+        this.y.set_value(y - this.height.get() / 2)
+        return this
     }
 
     render(){

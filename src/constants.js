@@ -4,8 +4,6 @@ export const config = {
 }
 
 export const constants = {
-    DEBUG: false,
-
     TILE_SIZE: 128,
 
     PLAYER_COLLISION_BOX_WIDTH: 2 * 128 / 3,
