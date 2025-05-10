@@ -1,6 +1,6 @@
 import { config, constants } from "../constants.js"
 import { Game } from "../core/game.js"
-import { Resizeable } from "../utils.js"
+import { Resizeable, YResizeable } from "../utils.js"
 import { Tileset } from "../world/tileset.js"
 import { Ui } from "./ui.js"
 
@@ -327,8 +327,11 @@ export class Texture extends Widget{
      */
     constructor(game, id, x, y, width, height, rendered){
         super(game, id, x, y, constants.TEXTURE_TYPE, rendered)
-        this.width = width
-        this.height = height
+        this.width = new Resizeable(game, width)
+        if(height instanceof YResizeable)
+            this.height = height
+        else
+            this.height = new Resizeable(game, height)
     }
 
     /**
@@ -372,7 +375,7 @@ export class Texture extends Widget{
     }
 
     render(){
-        if(this.rendered){
+        if(this.rendered && this.img != null){
             this.game.ctx.drawImage(
                 this.img,
                 this.game.canvas.width / 2 + this.x.get(),

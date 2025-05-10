@@ -14,7 +14,9 @@ export class Inventory extends Ui{
      */
     constructor(game, textures_array, hovered_texture){
         /**@type {Array<Widget>} */
-        var widgets = []
+        var widgets = [
+            new Texture(game, "Item_Black3", 0, 0, constants.TILE_SIZE / 8, constants.TILE_SIZE / 8, false),
+        ]
         for(let i=0; i<9; i++){
             widgets.push(new Button(game, `inventory-button-${i}`,
                 Inventory.get_slot_coordinates(i).x, Inventory.get_slot_coordinates(i).y,
@@ -41,7 +43,7 @@ export class Inventory extends Ui{
             if(!has_hovered)
                 hovered_icon.rendered = false
         }
-        var inventory_side = Math.min(window.innerWidth,window.innerHeight) / 2
+        var inventory_side = Math.min(window.innerWidth,window.innerHeight) / 1.35
         super(game, inventory_side, inventory_side, widgets, widgets_states_handler)
         /** @type {Array<Array<ItemStack>>} */
         this.itemstacks = [
@@ -61,7 +63,7 @@ export class Inventory extends Ui{
         let hovered_texture = await Texture.create(game, "hovered-texture", "inventory_hovered_tileset.png", 0, 0, constants.TILE_SIZE / 8, constants.TILE_SIZE / 8, false)
         let textures_array = []
         for(let i=0; i<9; i++){
-            textures_array.push(await Texture.create(game, `item-texture-${i}`, null, Inventory.get_slot_coordinates(i).x, Inventory.get_slot_coordinates(i).y, constants.TILE_SIZE, constants.TILE_SIZE, false))
+            textures_array.push(await Texture.create(game, `item-texture-${i}`, `hovered_inventory_icon.png`, Inventory.get_slot_coordinates(i).x, Inventory.get_slot_coordinates(i).y, constants.TILE_SIZE, constants.TILE_SIZE, false))
         }
         var inventory = new Inventory(game, textures_array, hovered_texture)
         try{
@@ -97,7 +99,7 @@ export class Inventory extends Ui{
      */
     get_next_empty_slot(item){
         for(let i = 0; i < 9; i++){
-            if(this.get_slot(i).item == item) return i
+            if(this.get_slot(i) != null && this.get_slot(i).item == item) returni
         }
         for(let i = 0; i < 9; i++){
             if(this.get_slot(i) == null) return i

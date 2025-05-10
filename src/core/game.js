@@ -14,7 +14,7 @@ import { Transition, UnicoloreTransition } from '../ui/transition.js'
 import { Dialogue, QuestionDialogue } from '../ui/dialogue.js'
 import { Resizeable } from '../utils.js'
 import { Inventory } from '../ui/inventory.js'
-import { Item } from '../ui/items.js'
+import { Item, ItemStack} from '../ui/items.js'
 
 export class Game {
 	constructor() {
@@ -112,6 +112,12 @@ export class Game {
 
 		const black_transition = new UnicoloreTransition(this, 500, "black")
 
+		const test_Item = await Item.create(this, "Item_Black3.png", "example_item");
+
+		const test_item_stack = new ItemStack(test_Item, 1);
+
+		inventory.add_items([test_item_stack])
+		
 		const colors_problem = await Problem.create(
 			this, "book_ui.png", 440, 580, "colors",
 			[
