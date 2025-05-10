@@ -10,11 +10,11 @@ export class OptionsMenu extends Ui{
      */
     constructor(game){
         super(game, constants.TILE_SIZE * 6 * 0.8, constants.TILE_SIZE * 5 * 0.8, [
-            new Button(game, "music-volume-button", constants.TILE_SIZE * 1.5, -constants.TILE_SIZE,
+            new Button(game, "music-volume-button", constants.TILE_SIZE * 1.5, -constants.TILE_SIZE / 4,
                 constants.TILE_SIZE / 2, constants.TILE_SIZE / 2, true, (b) => {}),
             new Button(game, "sound-effects-volume-button", constants.TILE_SIZE * 1.5, constants.TILE_SIZE,
                 constants.TILE_SIZE / 2, constants.TILE_SIZE / 2, true, (b) => {}),
-            new Icon(game, "music-volume-cursor-icon", constants.TILE_SIZE * 1.5, -constants.TILE_SIZE,
+            new Icon(game, "music-volume-cursor-icon", constants.TILE_SIZE * 1.5, -constants.TILE_SIZE / 4,
                 game.tilesets["selection_cursor"], 1, true, 1),
             new Icon(game, "sound-effects-volume-cursor-icon", constants.TILE_SIZE * 1.5, constants.TILE_SIZE,
                 game.tilesets["selection_cursor"], 1, true, 1)
@@ -35,6 +35,7 @@ export class OptionsMenu extends Ui{
                 music_volume_button.x.set_value(Math.max(Math.min(
                     ui.game.inputHandler.mouse_pos.x - constants.TILE_SIZE / 4,
                     constants.TILE_SIZE * 1.5), - constants.TILE_SIZE * 1.5))
+
                 ui.get_widget("music-volume-cursor-icon").x.set_value(music_volume_button.x.get())
                 this.music_volume = Math.round((music_volume_button.x.get() +
                                                 constants.TILE_SIZE * 1.5) / (constants.TILE_SIZE * 3) * 100)
@@ -43,6 +44,7 @@ export class OptionsMenu extends Ui{
                 sound_effects_volume_button.x.set_value(Math.max(Math.min(
                     ui.game.inputHandler.mouse_pos.x - constants.TILE_SIZE / 4,
                     constants.TILE_SIZE * 1.5), - constants.TILE_SIZE * 1.5))
+                    
                 ui.get_widget("sound-effects-volume-cursor-icon").x.set_value(sound_effects_volume_button.x.get())
                 this.sound_effects_volume = Math.round((sound_effects_volume_button.x.get() +
                                                 constants.TILE_SIZE * 1.5) / (constants.TILE_SIZE * 3) * 100)
