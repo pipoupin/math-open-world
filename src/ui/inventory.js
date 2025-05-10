@@ -1,9 +1,8 @@
 import { config, constants } from "../constants.js";
 import { Game } from "../core/game.js";
-import { Item, ItemStack } from "./items.js";
+import { Consumable, Item, ItemStack } from "./items.js";
 import { Ui } from "./ui.js";
 import { Button, Texture, Widget } from "./widgets.js";
-
 
 export class Inventory extends Ui{
     /**
@@ -22,8 +21,18 @@ export class Inventory extends Ui{
                 Inventory.get_slot_coordinates(i).x, Inventory.get_slot_coordinates(i).y,
                 constants.TILE_SIZE, constants.TILE_SIZE, true,
                 (button) => {
-
-                }))
+                const itemstack = this.get_slot(i);       
+                if (itemstack && itemstack.item_type) {
+                    itemstack.count -= 1;
+                    if (itemstack.count == 0) {
+                        console.log(`Item ${itemstack.item.name} removed from inventory.`);
+                        this.set_slot(i, null); // Remove the item from the slot
+                        this.get_widget(`item-texture-${i}`).rendered = false; // Update the UI
+                        this.shift_items(i); // Shift items to fill empty slots
+                    }
+                    console.log(`Item used: ${itemstack.item.name}, remaining count: ${itemstack.count}`);
+      }
+    }))
         }
         textures_array.forEach(texture => {widgets.push(texture)})
         widgets.push(hovered_texture)
@@ -99,7 +108,7 @@ export class Inventory extends Ui{
      */
     get_next_empty_slot(item){
         for(let i = 0; i < 9; i++){
-            if(this.get_slot(i) != null && this.get_slot(i).item == item) returni
+            if(this.get_slot(i) != null && this.get_slot(i).item == item) return i
         }
         for(let i = 0; i < 9; i++){
             if(this.get_slot(i) == null) return i
@@ -143,9 +152,23 @@ export class Inventory extends Ui{
     add_items(itemstacks){
         for(let itemstack of itemstacks){
             var slot = this.get_next_empty_slot(itemstack.item)
-            this.get_widget(`item-texture-${slot}`).img = this.game.items[itemstack.item.name]
+            this.get_widget(`item-texture-${slot}`).img = this.game.items[itemstack.item.name].img
             this.get_widget(`item-texture-${slot}`).rendered = true
             this.set_slot(slot, itemstack)
         }
     }
+
+    shift_items(startIndex) {
+    for (let i = startIndex; i < 8; i++) { 
+        const nextSlot = this.get_slot(i + 1);
+        if (nextSlot) {
+            this.set_slot(i, nextSlot);
+            this.get_widget(`item-texture-${i}`).img = this.get_widget(`item-texture-${i + 1}`).img;
+            this.get_widget(`item-texture-${i}`).rendered = true;
+            this.set_slot(i + 1, null);
+            this.get_widget(`item-texture-${i + 1}`).rendered = false;
+        } else {
+            break;
+        }
+    }}
 }

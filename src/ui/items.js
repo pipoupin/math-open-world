@@ -53,12 +53,14 @@ export class ItemStack{
     /**
      * 
      * @param {Item} item 
-     * @param {Number} count 
+     * @param {Number} count
+     * @param {type} item_type
      */
-    constructor(item, count){
+    constructor(item, count, item_type){
         this.game = item.game
         this.item = item
         this.count = count
+        this.item_type = item_type /*true=consumable else item*/
     }
 
     /**
