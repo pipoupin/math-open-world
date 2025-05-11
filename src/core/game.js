@@ -124,6 +124,12 @@ export class Game {
 		
 		inventory.add_items([test_item_stack])
 
+		const test_consumable2 = await Consumable.create(this, "Item_Black3.png", "example_item");
+
+		const test_consumable_stack2 = new ItemStack(test_consumable2, 5,true);
+
+		inventory.add_items([test_consumable_stack2])
+
 		const colors_problem = await Problem.create(
 			this, "book_ui.png", 440, 580, "colors",
 			[

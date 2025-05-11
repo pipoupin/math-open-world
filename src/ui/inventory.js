@@ -2,7 +2,7 @@ import { config, constants } from "../constants.js";
 import { Game } from "../core/game.js";
 import { Consumable, Item, ItemStack } from "./items.js";
 import { Ui } from "./ui.js";
-import { Button, Texture, Widget } from "./widgets.js";
+import { Button, Label, Texture, Widget } from "./widgets.js";
 
 export class Inventory extends Ui{
     /**
@@ -14,7 +14,6 @@ export class Inventory extends Ui{
     constructor(game, textures_array, hovered_texture){
         /**@type {Array<Widget>} */
         var widgets = [
-            new Texture(game, "Item_Black3", 0, 0, constants.TILE_SIZE / 8, constants.TILE_SIZE / 8, false),
         ]
         for(let i=0; i<9; i++){
             widgets.push(new Button(game, `inventory-button-${i}`,
@@ -24,15 +23,18 @@ export class Inventory extends Ui{
                 const itemstack = this.get_slot(i);       
                 if (itemstack && itemstack.item_type) {
                     itemstack.count -= 1;
+                    const countLabel = this.get_widget(`item-count-${i}`);
+                    countLabel.text = `${itemstack.count}`;
                     if (itemstack.count == 0) {
                         console.log(`Item ${itemstack.item.name} removed from inventory.`);
-                        this.set_slot(i, null); // Remove the item from the slot
-                        this.get_widget(`item-texture-${i}`).rendered = false; // Update the UI
-                        this.shift_items(i); // Shift items to fill empty slots
+                        this.set_slot(i, null);
+                        this.get_widget(`item-texture-${i}`).rendered = false;
+                        this.get_widget(`item-count-${i}`).rendered = false
+                        this.shift_items(i);
                     }
                     console.log(`Item used: ${itemstack.item.name}, remaining count: ${itemstack.count}`);
       }
-    }))
+    })),widgets.push(new Label(game,`item-count-${i}`,Inventory.get_slot_coordinates(i).x+constants.TILE_SIZE*0.72, Inventory.get_slot_coordinates(i).y+constants.TILE_SIZE*0.80,'0',false,70,'white','Impact',true))
         }
         textures_array.forEach(texture => {widgets.push(texture)})
         widgets.push(hovered_texture)
@@ -155,6 +157,14 @@ export class Inventory extends Ui{
             this.get_widget(`item-texture-${slot}`).img = this.game.items[itemstack.item.name].img
             this.get_widget(`item-texture-${slot}`).rendered = true
             this.set_slot(slot, itemstack)
+            const countLabel = this.get_widget(`item-count-${slot}`);
+            countLabel.text = `${itemstack.count}`;
+            if (itemstack.item_type && itemstack.count >= 1) {
+                countLabel.rendered = true;
+            }
+            else {
+                countLabel.rendered = false;
+            }
         }
     }
 
@@ -165,8 +175,16 @@ export class Inventory extends Ui{
             this.set_slot(i, nextSlot);
             this.get_widget(`item-texture-${i}`).img = this.get_widget(`item-texture-${i + 1}`).img;
             this.get_widget(`item-texture-${i}`).rendered = true;
+            this.get_widget(`item-count-${i}`).text = this.get_widget(`item-count-${i+1}`).text;
             this.set_slot(i + 1, null);
             this.get_widget(`item-texture-${i + 1}`).rendered = false;
+            this.get_widget(`item-count-${i+1}`).rendered=false
+            if (this.get_slot(i).item_type==false) {
+                this.get_widget(`item-count-${i}`).rendered = false;
+            }
+            else {
+                this.get_widget(`item-count-${i}`).rendered = true
+            }
         } else {
             break;
         }
