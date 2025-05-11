@@ -124,6 +124,9 @@ export class Game {
 		this.audioManager.preloadSounds('menu', [
 			{path: 'click.mp3', key: 'click'}
 		])
+		this.audioManager.preloadSounds('game', [
+			{path: 'slash.mp3', key: 'slash'}
+		])
 
 		await Tileset.create(this, "map.png", 16, constants.TILE_SIZE, 0)
 		await Tileset.create(this, "cabane_tileset.png", 16, constants.TILE_SIZE, 0)

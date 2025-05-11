@@ -144,6 +144,7 @@ export class Player extends Entity {
 					{x: this.worldX.get(), y: this.worldY.get()}, this.direction,
 					constants.TILE_SIZE/5, constants.TILE_SIZE, constants.TILE_SIZE/2,
 					(e) => { e.life -= 2 ; this.game.effects.BLINK.apply(current_time, e, 200)})
+				this.game.audioManager.playSound('game', 'slash', 0.5)
 			}
 		}
 	
