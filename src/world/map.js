@@ -38,11 +38,12 @@ export class Map {
 	 */
 	static async create(game, src, tileset, background, player_pos) {
 		const map = new Map(game, tileset, background, player_pos)
-		try {
-			await map.load(src)
-		} catch (error) {
-			console.error(`Failed to load map "${src}": ${error.message}`)
-		}
+		await map.load(src)
+		//try {
+			//await map.load(src)
+		//} catch (error) {
+		//	console.error(`Failed to load map "${src}": ${error.message}`)
+		//}
 		game.maps[src.slice(0, src.length - 5)] = map
 		return map
 	}
@@ -64,7 +65,7 @@ export class Map {
 		this.world.width = new Resizeable(this.game, this.width * constants.TILE_SIZE)
 		this.world.height = new Resizeable(this.game, this.height * constants.TILE_SIZE)
 
-		this.animated_tiles = body.animated
+		this.animated_tiles = body.animated || {}
 		this.framerate = null
 		if(body.map_framerate)
 			this.framerate = body.map_framerate
@@ -119,8 +120,8 @@ export class Map {
 
 					x = (col.x || 0) * scale
 					y = (col.y || 0) * scale
-					width = col.width ? col.width * scale : constants.TILE_SIZE - x
-					height = col.height ? col.height * scale : constants.TILE_SIZE - y
+					width = col.width !== undefined ? col.width * scale : constants.TILE_SIZE - x
+					height = col.height !== undefined ? col.height * scale : constants.TILE_SIZE - y
 				}
 
 				new Hitbox(this.game, this, tileX + x, tileY + y, width, height, true, false)

@@ -79,7 +79,10 @@ export const collisions = {
     "house.json": {
         11: {y: -8, height: 96},
         55: {y: -8, height: 96}
-    }
+    },
+	"new_map.json": {
+		169: {width: 0, height: 1}
+	}
 }
 
 
@@ -98,5 +101,8 @@ export const blockDepthOrder = {
     "house.json": [
         11,
         55
-    ]
+    ],
+	"new_map.json": [
+		169
+	]
 }

@@ -7,7 +7,7 @@ import { Hitbox } from '../entities/hitbox.js'
 import { Problem, TimedProblem } from '../ui/problem.js'
 import { Attack } from '../entities/attack.js'
 import { Ui } from '../ui/ui.js'
-import { Button, NumberArea, Icon } from '../ui/widgets.js'
+import { Button, NumberArea, Icon, Label, TextArea } from '../ui/widgets.js'
 import { Talkable } from '../entities/talkable.js'
 import { constants } from "../constants.js"
 import { Transition, UnicoloreTransition } from '../ui/transition.js'
@@ -140,6 +140,7 @@ export class Game {
 
 		await Map.create(this, 'house.json', this.tilesets["cabane_tileset"], "black", {x: constants.TILE_SIZE * 1.5, y: 3 * constants.TILE_SIZE}),
 		await Map.create(this, 'map.json', this.tilesets["map"], "grey", {x: 15.5 * constants.TILE_SIZE, y: 14.01 * constants.TILE_SIZE})
+		await Map.create(this, 'new_map.json', this.tilesets["map"], "grey", {x: 116 * constants.TILE_SIZE, y: 79 * constants.TILE_SIZE})
 
 		this.options_menu = await OptionsMenu.create(this)
 		
@@ -291,9 +292,9 @@ export class Game {
 			if(!c_h.player) return
 			if (!this.inputHandler.isKeyPressed(constants.INTERACTION_KEY)) return // one must press INTERACTION_KEY to switch map
 			this.maps["house"].set_player_pos({x: this.player.worldX.get(), y: this.player.worldY.get() - constants.TILE_SIZE / 2})
-			this.set_map("map")
+			this.set_map("new_map")
 
-			this.player.set_map(this.maps["map"])
+			this.player.set_map(this.maps["new_map"])
 			this.player.direction = 0
 
 			// reset dash
@@ -309,9 +310,9 @@ export class Game {
 		new Hitbox(this, this.get_current_map(), 3 * constants.TILE_SIZE, 8.75 * constants.TILE_SIZE, constants.TILE_SIZE, constants.TILE_SIZE / 4, false, false, null, (h, c_h, time) => {
 			if(!c_h.player) return
 			this.maps["house"].set_player_pos({x: this.player.worldX.get(), y: this.player.worldY.get() - constants.TILE_SIZE / 2})
-			this.set_map("map")
+			this.set_map("new_map")
 
-			this.player.set_map(this.maps["map"])
+			this.player.set_map(this.maps["new_map"])
 			this.player.direction = 0
 
 			// reset dash
@@ -325,18 +326,18 @@ export class Game {
 
 		// -- from the outside (manually activated)
 		new Hitbox(this,
-			this.maps["map"],
-			15 * constants.TILE_SIZE,
-			13.5 * constants.TILE_SIZE,
+			this.maps["new_map"],
+			116 * constants.TILE_SIZE,
+			79 * constants.TILE_SIZE,
 			constants.TILE_SIZE,
-			constants.TILE_SIZE / 2.859375,
+			constants.TILE_SIZE,
 			false,
 			false,
 			null,
 			(h, c_h, time) => {
 				if(!c_h.player) return
 				if (!this.inputHandler.isKeyPressed(constants.INTERACTION_KEY)) return
-				this.maps["map"].set_player_pos({x: 15.5 * constants.TILE_SIZE, y: 14.01 * constants.TILE_SIZE})
+				this.maps["new_map"].set_player_pos({x: 116.5 * constants.TILE_SIZE, y: 80.5 * constants.TILE_SIZE})
 
 				this.set_map("house")
 
@@ -350,9 +351,9 @@ export class Game {
 		)
 		// -- from the outside (automatic)
 		new Hitbox(this,
-			this.maps["map"],
-			15 * constants.TILE_SIZE,
-			13 * constants.TILE_SIZE,
+			this.maps["new_map"],
+			116 * constants.TILE_SIZE,
+			79 * constants.TILE_SIZE,
 			constants.TILE_SIZE,
 			constants.TILE_SIZE / 4, 
 			false, 
@@ -360,7 +361,7 @@ export class Game {
 			null, 
 			(h, c_h, time) => {
 				if(!c_h.player) return
-				this.maps["map"].set_player_pos({x: 15.5 * constants.TILE_SIZE, y: 14.01 * constants.TILE_SIZE})
+				this.maps["new_map"].set_player_pos({x: 116.5 * constants.TILE_SIZE, y: 80.5 * constants.TILE_SIZE})
 
 				this.set_map("house")
 
@@ -372,6 +373,160 @@ export class Game {
 				black_transition.start(time)
 			}
 		)
+
+		// problem 2
+
+		const bridge_blocking_hitbox = new Hitbox(this, this.maps["new_map"], 86 * constants.TILE_SIZE, 76 * constants.TILE_SIZE, constants.TILE_SIZE, constants.TILE_SIZE, true, false);
+
+		const uiWidth = this.canvas.width * 0.6875;
+		const uiHeight = this.canvas.width * 0.453125;
+		const uiHalfWidth = uiWidth / 2;
+		const uiHalfHeight = uiHeight / 2;
+
+		const bridge_problem = await Problem.create(
+			this, 
+			"opened_book_ui.png", 
+			uiWidth, 
+			uiHeight,
+			"block_destroyer",
+			[
+				new Label(
+					this,
+					"hint-text",
+					-uiHalfWidth * 0.8,
+					-uiHalfHeight * 0.8,
+					"La vérité s'éparpille dans les feuillages",
+					true,
+					1,
+					this.canvas.width / 32,
+				),
+				new Label(
+					this,
+					"hint-text-1",
+					-uiHalfWidth * 0.8,
+					-uiHalfHeight * 0.6,
+					"... compte bien, et le mot te sera révélé.",
+					true,
+					1,
+					this.canvas.width / 32,
+				),
+				new TextArea(
+					this, 
+					"answer-input",
+					-uiHalfWidth * 0.3, 
+					-uiHalfHeight * 0.3,
+					uiHalfWidth * 0.6,
+					uiHalfHeight * 0.2,
+					7, 
+					true,
+					1,
+					this.canvas.width / 20,
+					"black",
+					"Times New Roman",
+					""
+				),
+				new Button(
+					this, 
+					"submit-button",
+					uiHalfWidth * 0.3, 
+					-uiHalfHeight * 0.3,
+					uiHalfWidth * 0.3,
+					uiHalfHeight * 0.2,
+					false,
+					(button) => {
+						const answerInput = button.ui.get_widget("answer-input");
+						if (answerInput.content.toLowerCase() === "passage") {
+							bridge_blocking_hitbox.destroy();
+							button.ui.is_finished = true;
+							bridge_problem_box.destructor();
+						}
+					}
+				),
+				new Button(
+					this,
+					"button-undo-left",
+					-this.canvas.width/2,
+					-this.canvas.height/2,
+					this.canvas.width/2 - uiHalfWidth,
+					this.canvas.height,
+					true,
+					(button) => { button.ui.is_finished = true; }
+				),
+				new Button(
+					this,
+					"button-undo-right",
+					uiHalfWidth,
+					-this.canvas.height/2,
+					this.canvas.width/2 - uiHalfWidth,
+					this.canvas.height,
+					true,
+					(button) => { button.ui.is_finished = true; }
+				),
+				new Button(
+					this,
+					"button-undo-top",
+					-uiHalfWidth,
+					-this.canvas.height/2,
+					uiWidth,
+					this.canvas.height/2 - uiHalfHeight,
+					true,
+					(button) => { button.ui.is_finished = true; }
+				),
+				new Button(
+					this,
+					"button-undo-bottom",
+					-uiHalfWidth,
+					uiHalfHeight,
+					uiWidth,
+					this.canvas.height/2 - uiHalfHeight,
+					true,
+					(button) => { button.ui.is_finished = true; }
+				)
+			],
+			(problem) => {
+				const answerInput = problem.get_widget("answer-input");
+				const submitButton = problem.get_widget("submit-button");
+				submitButton.rendered = answerInput.content.length > 0;
+			}
+		);
+		var bridge_problem_box = new Talkable(
+			this,
+			this.maps["new_map"],
+			new Hitbox(
+				this,
+				this.maps["new_map"],
+				86 * constants.TILE_SIZE - constants.TILE_SIZE,
+				76 * constants.TILE_SIZE - constants.TILE_SIZE,
+				constants.TILE_SIZE * 3,
+				constants.TILE_SIZE * 3,
+				false,
+				false,
+				null,
+				(h, c_h, t) => { }
+			),
+			bridge_problem
+		)
+
+		const bridge_dialogues = [
+			await Dialogue.create(this, "dialogue_box.png", "11", (d) => {}, constants.TILE_SIZE / 3),
+			await Dialogue.create(this, "dialogue_box.png", "12", (d) => {}, constants.TILE_SIZE / 3),
+			await Dialogue.create(this, "dialogue_box.png", "22", (d) => {}, constants.TILE_SIZE / 3),
+			await Dialogue.create(this, "dialogue_box.png", "25", (d) => {}, constants.TILE_SIZE / 3),
+			await Dialogue.create(this, "dialogue_box.png", "32", (d) => {}, constants.TILE_SIZE / 3),
+			await Dialogue.create(this, "dialogue_box.png", "33", (d) => {}, constants.TILE_SIZE / 3),
+			await Dialogue.create(this, "dialogue_box.png", "34", (d) => {}, constants.TILE_SIZE / 3),
+			await Dialogue.create(this, "dialogue_box.png", "35", (d) => {}, constants.TILE_SIZE / 3),
+		]
+
+		new Talkable(this, this.maps["new_map"], new Hitbox(this, this.maps["new_map"], 100 * constants.TILE_SIZE, 74 * constants.TILE_SIZE, constants.TILE_SIZE * 2, constants.TILE_SIZE * 2), bridge_dialogues[0])
+		new Talkable(this, this.maps["new_map"], new Hitbox(this, this.maps["new_map"], 103 * constants.TILE_SIZE, 68 * constants.TILE_SIZE, constants.TILE_SIZE * 2, constants.TILE_SIZE * 2), bridge_dialogues[1])
+		new Talkable(this, this.maps["new_map"], new Hitbox(this, this.maps["new_map"], 108 * constants.TILE_SIZE, 75 * constants.TILE_SIZE, constants.TILE_SIZE * 2, constants.TILE_SIZE * 2), bridge_dialogues[2])
+		new Talkable(this, this.maps["new_map"], new Hitbox(this, this.maps["new_map"], 115 * constants.TILE_SIZE, 67 * constants.TILE_SIZE, constants.TILE_SIZE * 2, constants.TILE_SIZE * 2), bridge_dialogues[3])
+		new Talkable(this, this.maps["new_map"], new Hitbox(this, this.maps["new_map"], 118 * constants.TILE_SIZE, 72 * constants.TILE_SIZE, constants.TILE_SIZE * 2, constants.TILE_SIZE * 2), bridge_dialogues[4])
+		new Talkable(this, this.maps["new_map"], new Hitbox(this, this.maps["new_map"], 125 * constants.TILE_SIZE, 70 * constants.TILE_SIZE, constants.TILE_SIZE * 2, constants.TILE_SIZE * 2), bridge_dialogues[5])
+		new Talkable(this, this.maps["new_map"], new Hitbox(this, this.maps["new_map"], 129 * constants.TILE_SIZE, 76 * constants.TILE_SIZE, constants.TILE_SIZE * 2, constants.TILE_SIZE * 2), bridge_dialogues[6])
+		new Talkable(this, this.maps["new_map"], new Hitbox(this, this.maps["new_map"], 129 * constants.TILE_SIZE, 73 * constants.TILE_SIZE, constants.TILE_SIZE * 2, constants.TILE_SIZE * 2), bridge_dialogues[7])
+
 
 		requestAnimationFrame(this.loop.bind(this))
 	}
