@@ -126,7 +126,7 @@ export class Player extends Entity {
 				const hb = new Hitbox(this.game, this.game.get_current_map(), playerWorldX, playerWorldY,
 					constants.TILE_SIZE / 2, constants.TILE_SIZE / 2, false, false)
 				new ProjectileAttack(this.game, this, this.game.get_current_map(), current_time,
-					2000, [hb], velX, velY,(e) => { e.life -= 2 }, false, this.game.tilesets["Axe"], 50,
+					2000, [hb], velX, velY,(e) => { e.life -= 2; this.game.effects.BLINK.apply(current_time, e, 200) }, false, this.game.tilesets["Axe"], 50,
 					{x: playerWorldX - hb.width.get() / 2, y: playerWorldY - hb.height.get() /2})
 			}
 
@@ -143,7 +143,7 @@ export class Player extends Entity {
 				new SwingingAttack(this.game, this, this.game.get_current_map(), current_time, 300,
 					{x: this.worldX.get(), y: this.worldY.get()}, this.direction,
 					constants.TILE_SIZE/5, constants.TILE_SIZE, constants.TILE_SIZE/2,
-					(e) => { e.life -= 2 })
+					(e) => { e.life -= 2 ; this.game.effects.BLINK.apply(current_time, e, 200)})
 			}
 		}
 	

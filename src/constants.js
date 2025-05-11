@@ -1,6 +1,7 @@
 export const config = {
 	MAP_DIR: "./assets/maps/",
 	IMG_DIR: "./assets/images/",
+	AUDIO_DIR: "./assets/audio/"
 }
 
 export const constants = {
@@ -44,7 +45,11 @@ export const constants = {
 
     IDLE_STATE: 0,
 	WALK_STATE: 1,
-	ATTACK_STATE: 2
+	ATTACK_STATE: 2,
+
+	WANDERING_AI_STATE: 0,
+	STILL_AI_STATE: 1,
+	CHASING_AI_STATE: 2,
 }
 
 // The future has arrived
@@ -77,3 +82,21 @@ export const collisions = {
     }
 }
 
+
+export const blockDepthOrder = {
+    "map.json": [
+        127,
+        131,
+        113,
+        171,
+        168,
+        170,
+        167,
+        76,
+        114
+    ],
+    "house.json": [
+        11,
+        55
+    ]
+}

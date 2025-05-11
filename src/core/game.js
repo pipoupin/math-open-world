@@ -14,9 +14,10 @@ import { Transition, UnicoloreTransition } from '../ui/transition.js'
 import { Dialogue, QuestionDialogue } from '../ui/dialogue.js'
 import { Resizeable, YResizeable } from '../utils.js'
 import { Effect } from '../entities/effect.js'
-import { Frog } from '../entities/game_entities/frog.js'
-import { Spider } from '../entities/game_entities/spider.js'
+import { Frog } from '../entities/mobs/frog.js'
+import { Spider } from '../entities/mobs/spider.js'
 import { OptionsMenu } from '../ui/options.js'
+import { AudioManager } from './audioManager.js'
 
 export class Game {
 	constructor() {
@@ -109,13 +110,20 @@ export class Game {
 				entity.e.state = constants.ATTACK_STATE
 			}, (entity) => {
 				entity.e.state = entity.state
-			}, 1000)
+			}, 1000),
+			BLINK: new Effect((e) => {}, (entity) => {entity.map = entity.e.map, entity.e.map = null}, (entity) => {entity.e.map = entity.map}, 0)
 		}
 	}
 
 	async run() {
 		// create class objects
 		this.inputHandler = new InputHandler(this)
+		this.audioManager = new AudioManager()
+		this.audioManager.setSoundVolume(1)
+
+		this.audioManager.preloadSounds('menu', [
+			{path: 'click.mp3', key: 'click'}
+		])
 
 		await Tileset.create(this, "map.png", 16, constants.TILE_SIZE, 0)
 		await Tileset.create(this, "cabane_tileset.png", 16, constants.TILE_SIZE, 0)
@@ -420,19 +428,22 @@ export class Game {
 	}
 
 	render() {
+		/*
 		this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
 		this.get_current_map().render_ground_blocks()
 
 		this.entities.forEach(entity => entity.render())
 		this.attacks.forEach(attack => attack.render())
 
-		this.player.render()
-
 		this.get_current_map().render_perspective()
+		*/
+
+		this.get_current_map().render()
 		
-		if(this.options_menu.debug){
+		if(this.options_menu.debug) {
 			this.hitboxes.forEach(hitbox => {hitbox.render()})
 			this.talkables.forEach(talkable => {talkable.render()})
+			this.get_current_map().renderGrid()
 		}
 
 		if(this.current_ui){
