@@ -3,6 +3,7 @@ import { Map } from "../world/map.js"
 import { Attack } from "./attack.js"
 import { Entity } from "./entity.js"
 import { Resizeable } from "../utils.js"
+import { Talkable } from "./talkable.js"
 
 export class Hitbox {
 	/**
@@ -15,7 +16,7 @@ export class Hitbox {
 	 * @param {boolean} collision - is the hitbox a collision hitbox
 	 * @param {boolean} [player=false] - is the hitbox a player's hitbox
 	 * @param {Attack | Entity} [owner=null] - the hitbox's owner, let null to make it unmovable
-	 * @param {(hitbox: Hitbox, colliding_hitbox: Hitbox, time: Number) => void} [command=((e, h, t) => {})] - function executed when colliding with anonther hitbox
+	 * @param {(hitbox: Hitbox, colliding_hitbox: Hitbox, time: Number) => void} [command=((h, c_h, t) => {})] - function executed when colliding with anonther hitbox
 	 */
 	constructor(game, map, x, y, width, height, collision=false, player=false, owner=null, command=((h, c_h, t) => {})){
 		this.game = game
@@ -56,7 +57,7 @@ export class Hitbox {
 	}
 
 	/**
-	 * @param {Attack | Entity} owner 
+	 * @param {Attack | Entity | Talkable} owner 
 	 */
 	set_owner(owner){
 		this.owner = owner

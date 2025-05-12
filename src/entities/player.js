@@ -5,13 +5,15 @@ import { Hitbox } from './hitbox.js'
 import { Map } from '../world/map.js'
 import { clamp, Resizeable } from '../utils.js'
 import { ProjectileAttack, SwingingAttack } from './attack.js'
+import { Inventory } from '../ui/inventory.js'
 
 export class Player extends Entity {
 	/**
 	 * @param {Game} game - The current game
 	 * @param {TileSet} player_tileset - the tileset used for animating the player
+	 * @param {Inventory} inventory - the player's inventory
 	 */
-	constructor(game, player_tileset) {
+	constructor(game, player_tileset, inventory) {
 		super(
 			game, game.get_current_map(), player_tileset,
 			new Hitbox(game, game.get_current_map(), 400, 400 + constants.TILE_SIZE / 2, 2 * constants.TILE_SIZE / 3, constants.TILE_SIZE / 2, true, true),
@@ -35,6 +37,7 @@ export class Player extends Entity {
 		this.dashing = false
 
 		this.raycast_hitbox = new Hitbox(game, game.get_current_map(), 400, 400, 0, 100, false, true, this)
+		this.inventory = inventory
 	}
 
 	reset_dash_cooldown() {
