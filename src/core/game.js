@@ -128,8 +128,6 @@ export class Game {
 		await Tileset.create(this, "selection_cursor.png", 16, constants.TILE_SIZE / 2, 0)
 		await Tileset.create(this, "checkbox_tileset.png", 32, constants.TILE_SIZE / 2, 0)
 		await Tileset.create(this, "arrow.png", 15, constants.TILE_SIZE / 8, 0)
-		await Tileset.create(this, "anwser_box.png", 16, 0, 0)
-			this.tilesets["anwser_box"].screen_tile_size = new YResizeable(this, this.canvas.height / 16)
 
 		await Map.create(this, 'house.json', this.tilesets["cabane_tileset"], "black", {x: constants.TILE_SIZE * 1.5, y: 3 * constants.TILE_SIZE}),
 		await Map.create(this, 'map.json', this.tilesets["map"], "grey", {x: 15.5 * constants.TILE_SIZE, y: 14.01 * constants.TILE_SIZE})
