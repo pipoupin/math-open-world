@@ -11,7 +11,7 @@ export class OptionsMenu extends Ui{
     constructor(game){
         super(game, constants.TILE_SIZE * 6 * 0.8, constants.TILE_SIZE * 5 * 0.8, [
             new Label(game, "debug-option-label", - constants.TILE_SIZE * 1.5, - constants.TILE_SIZE,
-                "Debug:", true, 1, 50),
+                "Debug:", true, 1, constants.TILE_SIZE / 3),
             new Button(game, "debug-option-button", 0, 0,
                 constants.TILE_SIZE / 2, constants.TILE_SIZE / 2, true,
                 button => {
@@ -25,19 +25,23 @@ export class OptionsMenu extends Ui{
                 game.tilesets["checkbox_tileset"], 1, true)
                 .center_arround(constants.TILE_SIZE, - constants.TILE_SIZE),
 
+            new Label(game, "music-volume-label", -constants.TILE_SIZE * 2, -constants.TILE_SIZE / 2.5,
+                "Music Volume", true, 0, constants.TILE_SIZE / 3),
             new Button(game, "music-volume-button", 0, 0,
                 constants.TILE_SIZE / 2, constants.TILE_SIZE / 2, true, (b) => {
 					b.ui.game.audioManager.playSound('menu', 'click')
 				})
                 .center_arround(constants.TILE_SIZE * 1.5, 0),
+            new Icon(game, "music-volume-cursor-icon", 0, 0,
+                game.tilesets["selection_cursor"], 1, true, 1)
+                .center_arround(constants.TILE_SIZE * 1.5, 0),
+            new Label(game, "sound-effect-volume-label", -constants.TILE_SIZE * 2, constants.TILE_SIZE / 1.5,
+                "Sound Effects Volume", true, 0, constants.TILE_SIZE / 3),
             new Button(game, "sound-effects-volume-button", 0, 0,
                 constants.TILE_SIZE / 2, constants.TILE_SIZE / 2, true, (b) => {
 					b.ui.game.audioManager.playSound('menu', 'click')
 				})
                 .center_arround(constants.TILE_SIZE * 1.5, constants.TILE_SIZE),
-            new Icon(game, "music-volume-cursor-icon", 0, 0,
-                game.tilesets["selection_cursor"], 1, true, 1)
-                .center_arround(constants.TILE_SIZE * 1.5, 0),
             new Icon(game, "sound-effects-volume-cursor-icon", 0, 0,
                 game.tilesets["selection_cursor"], 1, true, 1)
                 .center_arround(constants.TILE_SIZE * 1.5, constants.TILE_SIZE)
@@ -74,6 +78,8 @@ export class OptionsMenu extends Ui{
                                                 sound_effects_volume_button.width.get() / 2 +
                                                 constants.TILE_SIZE * 1.5) / (constants.TILE_SIZE * 3) * 100))
             }
+            game.audioManager.setMusicVolume(this.music_volume / 100)
+            game.audioManager.setSoundVolume(this.sound_effects_volume / 100)
             if(this.game.inputHandler.isKeyPressed("escape")) this.is_finished = true
         })
         this.debug = false
