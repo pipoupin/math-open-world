@@ -15,6 +15,7 @@ export class OptionsMenu extends Ui{
             new Button(game, "debug-option-button", 0, 0,
                 constants.TILE_SIZE / 2, constants.TILE_SIZE / 2, true,
                 button => {
+					button.ui.game.audioManager.playSound('menu', 'click')
                     this.debug = !this.debug
                     let checkbox = button.ui.get_widget("debug-option-checkbox-icon")
                     if(this.debug) checkbox.tile_nb = 2
@@ -25,10 +26,14 @@ export class OptionsMenu extends Ui{
                 .center_arround(constants.TILE_SIZE, - constants.TILE_SIZE),
 
             new Button(game, "music-volume-button", 0, 0,
-                constants.TILE_SIZE / 2, constants.TILE_SIZE / 2, true, (b) => {})
+                constants.TILE_SIZE / 2, constants.TILE_SIZE / 2, true, (b) => {
+					b.ui.game.audioManager.playSound('menu', 'click')
+				})
                 .center_arround(constants.TILE_SIZE * 1.5, 0),
             new Button(game, "sound-effects-volume-button", 0, 0,
-                constants.TILE_SIZE / 2, constants.TILE_SIZE / 2, true, (b) => {})
+                constants.TILE_SIZE / 2, constants.TILE_SIZE / 2, true, (b) => {
+					b.ui.game.audioManager.playSound('menu', 'click')
+				})
                 .center_arround(constants.TILE_SIZE * 1.5, constants.TILE_SIZE),
             new Icon(game, "music-volume-cursor-icon", 0, 0,
                 game.tilesets["selection_cursor"], 1, true, 1)

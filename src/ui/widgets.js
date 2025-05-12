@@ -359,7 +359,7 @@ export class Texture extends Widget{
      */
     constructor(game, id, x, y, width, height, rendered, layer){
         super(game, id, x, y, constants.TEXTURE_TYPE, rendered, layer)
-        this.width = width
+        this.width = new Resizeable(game, width)
         if(height instanceof YResizeable)
             this.height = height
         else

@@ -19,7 +19,7 @@ export class Entity {
     * @param {number} [life=null] - The entity's life, the entity is being invincible if life is null
     * @param {{ combat: { x: Number, y: Number; }; collision: { x: Number, y: Number; }; }} [hitboxes_offset={combat:{x:0,y:0},collision:{x:0,y:0}}] - The entity's hitboxes' offset in case you need them to be a little bit offcentered
     */
-    constructor(game, map, tileset, collision_hitbox, combat_hitbox, worldX, worldY, animation_duration, life=null, hitboxes_offset={combat:{x:0,y:0},collision:{x:0,y:0}}) {
+    constructor(game, map, tileset, collision_hitbox, combat_hitbox, worldX, worldY, animation_duration, life=null, hitboxes_offset={combat:{x:0,y:0},collision:{x:0,y:0}}, bottom_y=null) {
         this.game = game
         this.map = map
 
@@ -27,6 +27,7 @@ export class Entity {
 		game.next_entity_id++
 
         this.player = false
+		this.rendered = false
 
 		this.state = constants.IDLE_STATE // each state takes 4 lines in the tileset (down, up, right, left)
 		this.framesPerState = [null, 5] // first idle, then walk, then attack, ...
@@ -36,8 +37,10 @@ export class Entity {
         this.worldX = new Resizeable(game, worldX)
         this.worldY = new Resizeable(game, worldY)
 
-        this.dx = new Resizeable(game, 1)
-        this.dy = new Resizeable(game, 1)
+		this.bottom_y = new Resizeable(game, bottom_y || 0)
+        
+        this.dx = new Resizeable(game, 0)
+        this.dy = new Resizeable(game, 0)
 
         this.tileset = tileset
         this.collision_hitbox = collision_hitbox
@@ -204,6 +207,8 @@ export class Entity {
 
     render() {
         if (this.game.get_current_map() !== this.map) return
+		if (this.rendered === true) return
+		this.rendered = true
 
         if (this.isWithinCameraView()) {
             const screenX = this.worldX.get() - this.game.camera.x.get() - this.tileset.screen_tile_size.get() / 2
