@@ -21,7 +21,7 @@ export class Inventory extends Ui{
                 constants.TILE_SIZE, constants.TILE_SIZE, true,
                 (button) => {
                 const itemstack = this.get_slot(i);       
-                if (itemstack && itemstack.item_type) {
+                if (itemstack && itemstack.consumable) {
                     itemstack.count -= 1;
                     const countLabel = this.get_widget(`item-count-${i}`);
                     countLabel.text = `${itemstack.count}`;
@@ -159,7 +159,7 @@ export class Inventory extends Ui{
             this.set_slot(slot, itemstack)
             const countLabel = this.get_widget(`item-count-${slot}`);
             countLabel.text = `${itemstack.count}`;
-            if (itemstack.item_type && itemstack.count >= 1) {
+            if (itemstack.consumable && itemstack.count >= 1) {
                 countLabel.rendered = true;
             }
             else {
@@ -179,7 +179,7 @@ export class Inventory extends Ui{
             this.set_slot(i + 1, null);
             this.get_widget(`item-texture-${i + 1}`).rendered = false;
             this.get_widget(`item-count-${i+1}`).rendered=false
-            if (this.get_slot(i).item_type==false) {
+            if (!this.get_slot(i).consumable) {
                 this.get_widget(`item-count-${i}`).rendered = false;
             }
             else {
