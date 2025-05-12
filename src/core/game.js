@@ -178,19 +178,19 @@ export class Game {
 
 		const black_transition = new UnicoloreTransition(this, 500, "black")
 
-		const test_consumable = await Consumable.create(this, "Item_71.png", "example_item");
+		const test_consumable = await Consumable.create(this, "Item_71.png", "example_item", (c) => console.log("item 71 used"));
 
 		const test_consumable_stack = new ItemStack(test_consumable, 1,true);
 		
 		inventory.add_items([test_consumable_stack])
 		
-		const test_item = await Consumable.create(this, "Item_51.png", "example_item");
+		const test_item = await Item.create(this, "Item_51.png", "example_item");
 
 		const test_item_stack = new ItemStack(test_item, 1,false);
 		
 		inventory.add_items([test_item_stack])
 
-		const test_consumable2 = await Consumable.create(this, "Item_Black3.png", "example_item");
+		const test_consumable2 = await Consumable.create(this, "Item_Black3.png", "example_item", (c) => console.log("item black3 used"));
 
 		const test_consumable_stack2 = new ItemStack(test_consumable2, 5,true);
 
