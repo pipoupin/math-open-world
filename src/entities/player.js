@@ -4,6 +4,7 @@ import { Entity } from './entity.js'
 import { Hitbox } from './hitbox.js'
 import { Map } from '../world/map.js'
 import { clamp, Resizeable } from '../utils.js'
+import { ProjectileAttack, SwingingAttack } from './attack.js'
 import { Inventory } from '../ui/inventory.js'
 
 export class Player extends Entity {
@@ -15,35 +16,51 @@ export class Player extends Entity {
 	constructor(game, player_tileset, inventory) {
 		super(
 			game, game.get_current_map(), player_tileset,
-			new Hitbox(game, game.get_current_map(), 400, 400 + constants.TILE_SIZE / 2, 2 * constants.TILE_SIZE / 3, constants.TILE_SIZE / 2, true, true, null, (e, h, t) => {}),
-			new Hitbox(game, game.get_current_map(), 400, 400, 2 * constants.TILE_SIZE / 3, constants.TILE_SIZE, false, true, null, (e, h, t) => {}),
-			600, 600, 175, {combat: {x: 0, y: 0}, collision: {x: 0, y: constants.TILE_SIZE / 4}}, -1
+			new Hitbox(game, game.get_current_map(), 400, 400 + constants.TILE_SIZE / 2, 2 * constants.TILE_SIZE / 3, constants.TILE_SIZE / 2, true, true),
+			new Hitbox(game, game.get_current_map(), 400, 400, 2 * constants.TILE_SIZE / 3, constants.TILE_SIZE, false, true),
+			600, 600, 125, null, {combat: {x: 0, y: 0}, collision: {x: 0, y: constants.TILE_SIZE / 4}}
 		)
 
 		this.collision_hitbox.owner = this
 		this.combat_hitbox.owner = this
 
+		this.framesPerState.push(6)
+
 		this.player = true
 
 		this.inputHandler = game.inputHandler
 
-		this.fullSpeed = new Resizeable(game, 0.078125 * constants.TILE_SIZE)
-		this.acceleration = new Resizeable(game, 0.03125 * constants.TILE_SIZE)
+		this.fullSpeed = new Resizeable(game, constants.TILE_SIZE / 12)
+		this.acceleration = new Resizeable(game, constants.TILE_SIZE / 32)
 		this.last_dash = -constants.PLAYER_DASH_COOLDOWN // used both for during the dash and for waiting state
 		this.dash_reset = false
 		this.dashing = false
 
-		this.raycast_hitbox = new Hitbox(game, game.get_current_map(), 400, 400, 0, 100, false, true, this, (e, h, t) => {})
-
+		this.raycast_hitbox = new Hitbox(game, game.get_current_map(), 400, 400, 0, 100, false, true, this)
 		this.inventory = inventory
 	}
 
 	reset_dash_cooldown() {
 		if (this.dashing)
-			this.dash_reset = true;
+			this.dash_reset = true
 		else
 			this.last_dash = -constants.PLAYER_DASH_COOLDOWN
 	}
+
+    updateDirectionFromMouse() {
+		const mouseWorldX = this.game.camera.x.get() + (this.inputHandler.mouse_pos.x + this.game.canvas.width / 2)
+		const mouseWorldY = this.game.camera.y.get() + (this.inputHandler.mouse_pos.y + this.game.canvas.height / 2)
+        const playerWorldX = this.worldX.get()
+        const playerWorldY = this.worldY.get()
+        const dx = mouseWorldX - playerWorldX
+        const dy = mouseWorldY - playerWorldY
+
+        if (Math.abs(dx) >= Math.abs(dy)) {
+            this.direction = dx > 0 ? constants.RIGHT_DIRECTION : constants.LEFT_DIRECTION
+        } else {
+            this.direction = dy > 0 ? constants.DOWN_DIRECTION : constants.UP_DIRECTION
+        }
+    }
 
 	/**
 	 * 
@@ -51,11 +68,10 @@ export class Player extends Entity {
 	 */
 	update(current_time) {
 		// Handle player movement
-		
 		if (!this.dashing && this.inputHandler.isKeyDown(constants.DASH_KEY) && current_time - this.last_dash >= constants.PLAYER_DASH_COOLDOWN) {
 			this.dashing = true
-			this.acceleration.set_value(10)
-			this.fullSpeed.set_value(30)
+			this.acceleration.set_value(constants.TILE_SIZE / 12)
+			this.fullSpeed.set_value(constants.TILE_SIZE / 4)
 			this.last_dash = current_time
 		}
 
@@ -63,15 +79,78 @@ export class Player extends Entity {
 			this.last_dash = this.dash_reset ? 0 : current_time
 			this.dash_reset = false
 			this.dashing = false
-			this.fullSpeed.set_value(10)
-			this.acceleration.set_value(4)
+			this.fullSpeed.set_value(constants.TILE_SIZE / 12)
+			this.acceleration.set_value(constants.TILE_SIZE / 32)
+		}
+
+		if(!this.dashing && this.state != constants.ATTACK_STATE){
+			this.fullSpeed.set_value(constants.TILE_SIZE / 12)
+			this.acceleration.set_value(constants.TILE_SIZE / 32)
 		}
 	
-		if (this.inputHandler.isKeyDown(constants.UP_KEY)) this.dy.set_value(this.dy.get() - this.acceleration.get())
-		if (this.inputHandler.isKeyDown(constants.DOWN_KEY)) this.dy.set_value(this.dy.get() + this.acceleration.get())
-		if (this.inputHandler.isKeyDown(constants.LEFT_KEY)) this.dx.set_value(this.dx.get() - this.acceleration.get())
-		if (this.inputHandler.isKeyDown(constants.RIGHT_KEY)) this.dx.set_value(this.dx.get() + this.acceleration.get())
+		if (this.inputHandler.isKeyDown(constants.UP_KEY)) {
+			this.direction = constants.UP_DIRECTION
+			this.dy.set_value(this.dy.get() - this.acceleration.get())
+		}
+		if (this.inputHandler.isKeyDown(constants.DOWN_KEY)) {
+			this.direction = constants.DOWN_DIRECTION
+			this.dy.set_value(this.dy.get() + this.acceleration.get())
+		}
+		if (this.inputHandler.isKeyDown(constants.LEFT_KEY)) {
+			this.direction = constants.LEFT_DIRECTION
+			this.dx.set_value(this.dx.get() - this.acceleration.get())
+		}
+		if (this.inputHandler.isKeyDown(constants.RIGHT_KEY)) {
+			this.direction = constants.RIGHT_DIRECTION
+			this.dx.set_value(this.dx.get() + this.acceleration.get())
+		}
 
+		// ATTACKS
+		if (this.state !== constants.ATTACK_STATE) {
+
+			if (this.inputHandler.isMousePressed(constants.MOUSE_RIGHT_BUTTON)) {
+				const playerWorldX = this.worldX.get()
+				const playerWorldY = this.worldY.get()
+
+				const mouseWorldX = this.game.camera.x.get() + (this.inputHandler.mouse_pos.x + this.game.canvas.width / 2)
+				const mouseWorldY = this.game.camera.y.get() + (this.inputHandler.mouse_pos.y + this.game.canvas.height / 2)
+
+				const dx = mouseWorldX - playerWorldX
+				const dy = mouseWorldY - playerWorldY
+
+				const distance = Math.hypot(dx, dy)
+				if (distance <= 10) return
+				
+			   
+				const speed = 20
+				const velX = (dx / distance) * speed
+				const velY = (dy / distance) * speed
+				
+				const hb = new Hitbox(this.game, this.game.get_current_map(), playerWorldX, playerWorldY,
+					constants.TILE_SIZE / 2, constants.TILE_SIZE / 2, false, false)
+				new ProjectileAttack(this.game, this, this.game.get_current_map(), current_time,
+					2000, [hb], velX, velY,(e) => { e.life -= 2; this.game.effects.BLINK.apply(current_time, e, 200) }, false, this.game.tilesets["Axe"], 50,
+					{x: playerWorldX - hb.width.get() / 2, y: playerWorldY - hb.height.get() /2})
+			}
+
+			let mouse_input = this.inputHandler.isMousePressed(constants.MOUSE_LEFT_BUTTON)
+			if (mouse_input || this.inputHandler.isKeyPressed('a')) {
+				// fancy stuff
+				if (mouse_input) {
+					this.updateDirectionFromMouse()
+				}
+
+				this.game.effects.ATTACK.apply(current_time,this, 300)
+				this.game.effects.MOTIONLESS.apply(current_time, this, 300)
+
+				new SwingingAttack(this.game, this, this.game.get_current_map(), current_time, 300,
+					{x: this.worldX.get(), y: this.worldY.get()}, this.direction,
+					constants.TILE_SIZE/5, constants.TILE_SIZE, constants.TILE_SIZE/2,
+					(e) => { e.life -= 2 ; this.game.effects.BLINK.apply(current_time, e, 200)})
+				this.game.audioManager.playSound('game', 'slash', 0.5)
+			}
+		}
+	
 		// Handle deceleration
 		if (!this.inputHandler.isKeyDown(constants.UP_KEY) && !this.inputHandler.isKeyDown(constants.DOWN_KEY))
 			this.dy.set_value(Math.sign(this.dy.get()) * Math.max(Math.abs(this.dy.get()) - this.acceleration.get(), 0))
@@ -91,17 +170,20 @@ export class Player extends Entity {
 
 		super.updateHitboxes()
 
-		if(this.direction == 0){
-			this.raycast_hitbox.set(this.worldX.get(), this.worldY.get(), 0, constants.TILE_SIZE / 1.5)
-		}
-		if(this.direction == 1){
-			this.raycast_hitbox.set(this.worldX.get(), this.worldY.get(), 0, - constants.TILE_SIZE / 1.5)
-		}
-		if(this.direction == 2){
-			this.raycast_hitbox.set(this.worldX.get(), this.worldY.get(), constants.TILE_SIZE / 1.5, 0)
-		}
-		if(this.direction == 3){
-			this.raycast_hitbox.set(this.worldX.get(), this.worldY.get(), - constants.TILE_SIZE / 1.5, 0)
+		switch(this.direction) {
+			case constants.UP_DIRECTION:
+				this.raycast_hitbox.set(this.worldX.get(), this.worldY.get(), 0, - constants.TILE_SIZE / 1.5)
+				break
+			case constants.DOWN_DIRECTION:
+				this.raycast_hitbox.set(this.worldX.get(), this.worldY.get(), 0, constants.TILE_SIZE / 1.5)
+				break
+			case constants.RIGHT_DIRECTION:
+				this.raycast_hitbox.set(this.worldX.get(), this.worldY.get(), constants.TILE_SIZE / 1.5, 0)
+				break
+			case constants.LEFT_DIRECTION:
+				this.raycast_hitbox.set(this.worldX.get(), this.worldY.get(), - constants.TILE_SIZE / 1.5, 0)
+				break
+
 		}
 	}
 

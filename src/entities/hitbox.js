@@ -15,12 +15,16 @@ export class Hitbox {
 	 * @param {Number} height - hitbox height
 	 * @param {boolean} collision - is the hitbox a collision hitbox
 	 * @param {boolean} [player=false] - is the hitbox a player's hitbox
-	 * @param {Attack | Entity |Talkable} [owner=null] - the hitbox's owner, let null to make it unmovable
-	 * @param {(entity: Entity, hitbox: Hitbox, time: Number) => void} [command=((e, h, t) => {})] - function executed when colliding with the an entity, the 'hitbox' argument refers to the actual hitbox object
+	 * @param {Attack | Entity} [owner=null] - the hitbox's owner, let null to make it unmovable
+	 * @param {(hitbox: Hitbox, colliding_hitbox: Hitbox, time: Number) => void} [command=((h, c_h, t) => {})] - function executed when colliding with anonther hitbox
 	 */
-	constructor(game, map, x, y, width, height, collision=false, player=false, owner = null, command=((e, h, t) => {})){
+	constructor(game, map, x, y, width, height, collision=false, player=false, owner=null, command=((h, c_h, t) => {})){
 		this.game = game
 		this.map = map
+		this.active = true
+
+		this.id = this.game.next_hitbox_id
+		this.game.next_hitbox_id++
 
 		this.x1 = new Resizeable(game, x)
 		this.x2 = new Resizeable(game, x + width)
@@ -30,9 +34,9 @@ export class Hitbox {
 		this.width = new Resizeable(game, width)
 		this.height = new Resizeable(game, height)
 
+		this.game.hitboxes.push(this)
 		if (collision) game.collision_hitboxes.push(this)
 		else game.combat_hitboxes.push(this)
-		this.game.hitboxes.push(this)
 		
 		this.player = player
 		this.owner = owner
@@ -53,7 +57,6 @@ export class Hitbox {
 	}
 
 	/**
-	 * 
 	 * @param {Attack | Entity | Talkable} owner 
 	 */
 	set_owner(owner){
@@ -62,7 +65,12 @@ export class Hitbox {
 
 	render() {
 		if(this.game.get_current_map() == this.map){
-			this.game.ctx.strokeStyle = this.player ? "blue" : "red"
+			if (this.active) {
+				this.game.ctx.strokeStyle = this.player ? "blue" : "red"
+			} else {
+				this.game.ctx.strokeStyle = "gray"
+			}
+
 			this.game.ctx.strokeRect(
 				this.x1.get() - this.game.camera.x.get(),
 				this.y1.get() - this.game.camera.y.get(),
@@ -90,27 +98,33 @@ export class Hitbox {
 	 */
 	get_colliding_hitboxes(collision=true, combat=true) {
 		const colliding_hitboxes = []
-		if (collision) {
-			for (let i = 0; i < this.game.combat_hitboxes.length; i++) {
-				if (this.is_colliding(this.game.combat_hitboxes[i]))
-					colliding_hitboxes.push(this.game.combat_hitboxes[i])
-			}
+		if (combat) {
+			this.game.combat_hitboxes.forEach(hitbox => {
+				if (!hitbox.active)
+					return
+				if (this.is_colliding(hitbox))
+					colliding_hitboxes.push(hitbox)
+			})
 		}
 
-		if (combat) {
-			for (let i = 0; i < this.game.collision_hitboxes.length; i++) {
-				if (this.is_colliding(this.game.collision_hitboxes[i]))
-					colliding_hitboxes.push(this.game.collision_hitboxes[i])
-			}
+		if (collision) {
+			this.game.collision_hitboxes.forEach(hitbox => {
+				if (!hitbox.active)
+					return
+				if (this.is_colliding(hitbox))
+					colliding_hitboxes.push(hitbox)
+			})
 		}
 
 		if(!(combat || collision)){
-			for (let i = 0; i < this.game.hitboxes.length; i++) {
-				if( (! this.game.hitboxes[i] in colliding_hitboxes) && (!this.game.hitboxes[i] in this.game.collision_hitboxes) && (! this.game.hitboxes[i] in this.game.combat_hitboxes)){
-					if (this.is_colliding(this.game.hitboxes[i]))
+			this.game.hitboxes.forEach(hitbox => {
+				if( (!hitbox in colliding_hitboxes) && (!hitbox in this.game.collision_hitboxes) && (!hitbox in this.game.combat_hitboxes)){
+					if (!hitbox.active)
+						return
+					if (this.is_colliding(hitbox))
 						colliding_hitboxes.push(this.game.collision_hitboxes[i])
 				}
-			}
+			})
 		}
 		return colliding_hitboxes
 	}
@@ -128,7 +142,6 @@ export class Hitbox {
 	}
 
 	/**
-	 * 
 	 * @param {Number} x 
 	 * @param {Number} y 
 	 * @param {Number} [width=null] 
@@ -154,15 +167,14 @@ export class Hitbox {
 	}
 
 	/**
-	 * 
 	 * @param {Number} dx 
 	 * @param {Number} dy 
 	 */
 	move_by(dx, dy) {
-		this.x1.set_value(this.x1.get() + dx.get())
-		this.x2.set_value(this.x2.get() + dx.get())
-		this.y1.set_value(this.y1.get() + dy.get())
-		this.y2.set_value(this.y2.get() + dy.get())
+		this.x1.set_value(this.x1.get() + dx)
+		this.x2.set_value(this.x2.get() + dx)
+		this.y1.set_value(this.y1.get() + dy)
+		this.y2.set_value(this.y2.get() + dy)
 	}
 
 	/**
@@ -173,9 +185,22 @@ export class Hitbox {
 		this.map = new_map
 	}
 
-	destructor() {
+	/**
+	 * 
+	 * @returns {Boolean}
+	 */
+	isWithinMapBounds() {
+		return !(this.map.world.width.get() <= this.x2.get() || this.x1.get() <= 0 || this.y2.get() >= this.map.world.height.get() || this.y1.get() <= 0)
+	}
+
+	destroy() {
+		// to prevent unexpected behaviour
+		// we rather use "active" and remove the inactive at each frame in the game than remove while iterating
+		this.active = false
+		/*
 		this.game.collision_hitboxes.splice(this.game.collision_hitboxes.indexOf(this), 1)
 		this.game.hitboxes.splice(this.game.hitboxes.indexOf(this), 1)
 		this.game.combat_hitboxes.splice(this.game.combat_hitboxes.indexOf(this), 1)
+		*/
 	}
 }

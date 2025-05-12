@@ -1,9 +1,9 @@
-import { Game } from "../core/game.js";
-import { Map } from "../world/map.js";
-import { Ui } from "../ui/ui.js";
-import { Hitbox } from "./hitbox.js";
-import { constants } from "../constants.js";
-import { Entity } from "./entity.js";
+import { Game } from "../core/game.js"
+import { Map } from "../world/map.js"
+import { Ui } from "../ui/ui.js"
+import { Hitbox } from "./hitbox.js"
+import { constants } from "../constants.js"
+import { Entity } from "./entity.js"
 
 export class Talkable{
     /**
@@ -54,6 +54,6 @@ export class Talkable{
     }
 
     destructor(){
-        this.game.talkables.slice(this.game.talkables.indexOf(this), 1)
+        this.game.talkables.splice(this.game.talkables.indexOf(this), 1)
     }
 }

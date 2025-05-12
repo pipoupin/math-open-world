@@ -1,11 +1,10 @@
 export const config = {
 	MAP_DIR: "./assets/maps/",
 	IMG_DIR: "./assets/images/",
+	AUDIO_DIR: "./assets/audio/"
 }
 
 export const constants = {
-    DEBUG: true,
-
     TILE_SIZE: 128,
 
     PLAYER_COLLISION_BOX_WIDTH: 2 * 128 / 3,
@@ -30,7 +29,27 @@ export const constants = {
     LEFT_KEY: "q",
     RIGHT_KEY: "d",
     INTERACTION_KEY: "e",
-    DASH_KEY: " "
+    DASH_KEY: " ",
+
+	DOWN_DIRECTION: 0,
+	UP_DIRECTION: 1,
+	RIGHT_DIRECTION: 2,
+	LEFT_DIRECTION: 3,
+
+
+	MOUSE_LEFT_BUTTON: 0,
+	MOUSE_MIDDLE_BUTTON: 1,
+	MOUSE_RIGHT_BUTTON: 2,
+	MOUSE_BACK_BUTTON: 3,
+	MOUSE_FORWARD_BUTTON: 4,
+
+    IDLE_STATE: 0,
+	WALK_STATE: 1,
+	ATTACK_STATE: 2,
+
+	WANDERING_AI_STATE: 0,
+	STILL_AI_STATE: 1,
+	CHASING_AI_STATE: 2,
 }
 
 // The future has arrived
@@ -48,7 +67,7 @@ export const constants = {
 export const collisions = {
     "map.json": {
         76: { width: 96, height: 112},
-        113: {x: 16, y: 24, width: 96, height: 88},
+        113: {x: 22, y: 75, width: 85, height: 25},
         114: {x: 32, width: 64, height: 112},
         127: {x: 56, width: 72},
         131: {width: 72},
@@ -60,5 +79,30 @@ export const collisions = {
     "house.json": {
         11: {y: -8, height: 96},
         55: {y: -8, height: 96}
-    }
+    },
+	"new_map.json": {
+		169: {width: 0, height: 1}
+	}
+}
+
+
+export const blockDepthOrder = {
+    "map.json": [
+        127,
+        131,
+        113,
+        171,
+        168,
+        170,
+        167,
+        76,
+        114
+    ],
+    "house.json": [
+        11,
+        55
+    ],
+	"new_map.json": [
+		169
+	]
 }

@@ -1,6 +1,6 @@
-import { config } from "../constants.js";
-import { Game } from "../core/game.js";
-import { Ui } from "./ui.js";
+import { config } from "../constants.js"
+import { Game } from "../core/game.js"
+import { Ui } from "./ui.js"
 
 export class Problem extends Ui{
 
@@ -27,7 +27,7 @@ export class Problem extends Ui{
      * @param {String} answer - The right answer that the player should answer to solve the problem
      * @param {Array<Widget>} widgets - The list of widgets that shows up on the ui
      * @param {(problem: Problem) => void} widgets_state_handler - method made to handle widgets states (like widgets being 'cliked' on 'focused-on'), executed at each update
-     * @returns {Problem}
+     * @returns {Promise<Problem>}
      */
     static async create(game, src, width, height, answer, widgets, widgets_state_handler){
         const problem = new Problem(game, width, height, answer, widgets, widgets_state_handler)
@@ -73,6 +73,7 @@ export class TimedProblem extends Problem{
      * @param {(problem: TimedProblem) => void} [on_fail=(problem)=>{}] - Function called when exceeding the time limit for the problem
      * @param {Array<Widget>} widgets - The list of widgets that shows up on the ui
      * @param {(problem: Problem) => void} widgets_state_handler - method made to handle widgets states (like widgets being 'cliked' on 'focused-on'), executed at each update
+     * @returns {Promise<TimedProblem>}
      */
     static async create(game, src, width, height, answer, time_limit, on_fail=(problem)=>{}, widgets, widgets_state_handler){
         const problem = new TimedProblem(game, width, height, answer, time_limit, on_fail, widgets, widgets_state_handler)
@@ -83,6 +84,25 @@ export class TimedProblem extends Problem{
 			return
 		}
 		return problem
+    }
+
+    get_time_left(current_time, raw_time=true){
+        let time_left = this.start_time + this.time_limit - current_time
+        if(raw_time)
+            return time_left
+        else
+        return {sec: (Math.floor(time_left / 1000)) % 60,
+                min: (Math.floor(Math.floor(time_left / 1000) / 60)) % 60,
+                h: (Math.floor(Math.floor(time_left / 1000) / 3600))}
+    }
+
+    /**
+     * 
+     * @param {Number} time 
+     */
+    start(time){
+        this.start_time = time
+        this.game.current_ui = this
     }
 
     trigger(){
