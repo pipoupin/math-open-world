@@ -74,7 +74,7 @@ export class Tileset {
 			throw new Error("Tileset image not loaded.")
 		}
 
-		// Just subtract 1 (1-based index to 0-based index)
+		// subtract 1 (1-based index to 0-based index)
 		tile_num = (tile_num - 1) % this.tiles_length // just in case
 
 		const tile_num_x = tile_num % this.tilesPerRow

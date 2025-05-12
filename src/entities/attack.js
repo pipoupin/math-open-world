@@ -303,15 +303,25 @@ export class ProjectileAttack extends Attack {
 
 	updateHitboxes(current) {
 		for (const hb of this.hitboxes) {
-			let is_colliding = false
-			for (const col_hb of hb.get_colliding_hitboxes(true, false)) {
-				if (col_hb.owner !== this.attacker) {
-					is_colliding = true
-					break
+			for (const colliding of hb.get_colliding_hitboxes(true, false)) {
+				if (colliding.owner !== this.attacker) {
+					this.destroy()
+					return
 				}
 			}
 
-			if (is_colliding || !hb.isWithinMapBounds(this.map)) {
+			for (const colliding of hb.get_colliding_hitboxes(false, true)) {
+				if (colliding.owner instanceof ProjectileAttack && colliding.owner !== this) {
+					if (!colliding.piercing)
+						colliding.destroy()
+					if (!this.piercing) {
+						this.destroy()
+						return
+					}
+				}
+			}
+
+			if (!hb.isWithinMapBounds(this.map)) {
 				this.destroy()
 				return
 			}
