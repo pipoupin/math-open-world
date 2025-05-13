@@ -146,7 +146,7 @@ export class Game {
 
 		await Map.create(this, 'house.json', this.tilesets["cabane_tileset"], "black", {x: constants.TILE_SIZE * 1.5, y: 3 * constants.TILE_SIZE}),
 		await Map.create(this, 'map.json', this.tilesets["map"], "grey", {x: 15.5 * constants.TILE_SIZE, y: 14.01 * constants.TILE_SIZE})
-		await Map.create(this, 'new_map.json', this.tilesets["map"], "grey", {x: 116 * constants.TILE_SIZE, y: 79 * constants.TILE_SIZE})
+		await Map.create(this, 'new_map.json', this.tilesets["map"], "grey", {x: 116.5 * constants.TILE_SIZE, y: 80.5 * constants.TILE_SIZE})
 
 		this.options_menu = await OptionsMenu.create(this)
 		
@@ -331,6 +331,7 @@ export class Game {
 				this.player.last_dash = -constants.PLAYER_DASH_COOLDOWN
 
 			black_transition.start(time)
+
 		})
 
 		// -- from the house (auto)

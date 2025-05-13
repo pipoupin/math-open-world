@@ -15,10 +15,11 @@ export class Inventory extends Ui{
         /**@type {Array<Widget>} */
         var widgets = [
         ]
+		const slot_width = Inventory.get_slot_width(game)
         for(let i=0; i<9; i++){
             widgets.push(new Button(game, `inventory-button-${i}`,
-                Inventory.get_slot_coordinates(i).x, Inventory.get_slot_coordinates(i).y,
-                constants.TILE_SIZE, constants.TILE_SIZE, true,
+                Inventory.get_slot_coordinates(game, i).x, Inventory.get_slot_coordinates(game, i).y,
+               slot_width,slot_width, true,
                 (button) => {
                 const itemstack = this.get_slot(i);       
                 if (itemstack && itemstack.item_type) {
@@ -34,7 +35,7 @@ export class Inventory extends Ui{
                     }
                     console.log(`Item used: ${itemstack.item.name}, remaining count: ${itemstack.count}`);
       }
-    })),widgets.push(new Label(game,`item-count-${i}`,Inventory.get_slot_coordinates(i).x+constants.TILE_SIZE*0.72, Inventory.get_slot_coordinates(i).y+constants.TILE_SIZE*0.80,'0',false,70,'white','Impact',true))
+    })),widgets.push(new Label(game,`item-count-${i}`,Inventory.get_slot_coordinates(game, i).x+constants.TILE_SIZE*0.72, Inventory.get_slot_coordinates(game, i).y+constants.TILE_SIZE*0.80,'0',false,2,70,'white','Impact',true))
         }
         textures_array.forEach(texture => {widgets.push(texture)})
         widgets.push(hovered_texture)
@@ -54,8 +55,7 @@ export class Inventory extends Ui{
             if(!has_hovered)
                 hovered_icon.rendered = false
         }
-        var inventory_side = Math.min(window.innerWidth,window.innerHeight) / 1.35
-        super(game, inventory_side, inventory_side, widgets, widgets_states_handler)
+        super(game, game.canvas.height * 2/ 3, game.canvas.height * 2/ 3, widgets, widgets_states_handler)
         /** @type {Array<Array<ItemStack>>} */
         this.itemstacks = [
             [null, null, null],
@@ -74,7 +74,10 @@ export class Inventory extends Ui{
         let hovered_texture = await Texture.create(game, "hovered-texture", "inventory_hovered_tileset.png", 0, 0, constants.TILE_SIZE / 8, constants.TILE_SIZE / 8, false)
         let textures_array = []
         for(let i=0; i<9; i++){
-            textures_array.push(await Texture.create(game, `item-texture-${i}`, `hovered_inventory_icon.png`, Inventory.get_slot_coordinates(i).x, Inventory.get_slot_coordinates(i).y, constants.TILE_SIZE, constants.TILE_SIZE, false))
+
+			const width = Inventory.get_slot_width(game)
+			const offset = width / 7
+            textures_array.push(await Texture.create(game, `item-texture-${i}`, `hovered_inventory_icon.png`, Inventory.get_slot_coordinates(game, i).x + offset, Inventory.get_slot_coordinates(game, i).y + offset, width - 2 * offset, width - 2 * offset, false))
         }
         var inventory = new Inventory(game, textures_array, hovered_texture)
         try{
@@ -140,12 +143,24 @@ export class Inventory extends Ui{
      * @param {Number} n 
      * @returns {{x: Number; y: Number}}
      */
-    static get_slot_coordinates(n){
+    static get_slot_coordinates(game, n){
+		const offset = game.canvas.height * 0.030303030303
+		const gap = Inventory.get_gap(game)
+		const width = Inventory.get_slot_width(game)
         return {
-            x: ((n % 3) * constants.TILE_SIZE * 1.1) - (constants.TILE_SIZE * 1.6),
-            y: (Math.floor(n / 3) * constants.TILE_SIZE * 1.1) - (constants.TILE_SIZE * 1.6)
-        }
+			x: (n % 3) * width + ((n%3) +1)*gap - game.canvas.height / 3 + offset,
+            y: Math.floor(n / 3) * width + gap * (Math.floor(n / 3) + 1) - game.canvas.height /3 + offset
+		}
     }
+
+	static get_gap(game) {
+		return 0.0121212121212 * game.canvas.height
+	}
+
+	static get_slot_width(game) {
+		return 0.181818181818 * game.canvas.height 
+
+	}
 
     /**
      * 

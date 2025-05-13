@@ -45,8 +45,12 @@ export class Entity {
         this.tileset = tileset
         this.collision_hitbox = collision_hitbox
         this.combat_hitbox = combat_hitbox
-        this.collision_hitbox.set_owner(this)
-        this.combat_hitbox.set_owner(this)
+		if (this.collision_hitbox) {
+			this.collision_hitbox.set_owner(this)
+		}
+		if (this.combat_hitbox) {
+			this.combat_hitbox.set_owner(this)
+		}
 
         this.animation_step = 0
         this.animation_duration = animation_duration
