@@ -12,7 +12,7 @@ export class Ui {
      * @param {Number} width - The Ui's width on the screen
      * @param {Number | YResizeable} height - The Ui's height on the screen
      * @param {Array<Widget>} widgets - The list of widgets that shows up on the ui
-     * @param {(ui: Ui) => void} widgets_states_handler - method made to handle widgets states (like widgets being 'cliked' on 'focused-on'), executed at each update
+     * @param {(ui: Ui, time: Number) => void} widgets_states_handler - method made to handle widgets states (like widgets being 'cliked' on 'focused-on'), executed at each update
      */
     constructor(game, width, height, widgets, widgets_states_handler){
         this.game = game
@@ -45,7 +45,7 @@ export class Ui {
      * @param {Number} width - The Ui's width on the screen
      * @param {Number} height - The Ui's height on the screen
      * @param {Array<Widget>} widgets - The list of widgets that shows up on the ui
-     * @param {(ui: Ui) => void} widgets_state_handler - method made to handle widgets states (like widgets being 'cliked' on 'focused-on'), executed at each update
+     * @param {(ui: Ui, time: Number) => void} widgets_state_handler - method made to handle widgets states (like widgets being 'cliked' on 'focused-on'), executed at each update
      * @returns {Promise<Ui>}
      */
     static async create(game, src, width, height, widgets, widgets_state_handler){
@@ -97,7 +97,7 @@ export class Ui {
      * @param {Number} current_time 
      */
     update(current_time){
-        this.widgets_states_handler(this)
+        this.widgets_states_handler(this, current_time)
         this.widgets.forEach(widget => {
             widget.update(current_time)
         })
@@ -165,6 +165,10 @@ export class Ui {
         })
     }
 
+    /**
+     * 
+     * @param {(widget: Widget) => boolean} condition 
+     */
     unfocus(condition=null){
         if(condition == null)
             condition = (w) => true

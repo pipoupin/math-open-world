@@ -103,6 +103,8 @@ export class Game {
 			}, (entity) => {
 				entity.direction = entity.e.direction
 				entity.fullSpeed = entity.e.fullSpeed
+				if(entity.e.dashing)
+					entity.fullSpeed.set_value(constants.TILE_SIZE / 12)
 				entity.new_fullSpeed = new Resizeable(this, 0)
 
 				entity.e.fullSpeed = entity.new_fullSpeed
@@ -117,7 +119,18 @@ export class Game {
 			}, (entity) => {
 				entity.e.state = entity.state
 			}, 1000),
-			BLINK: new Effect((e) => {}, (entity) => {entity.map = entity.e.map, entity.e.map = null}, (entity) => {entity.e.map = entity.map}, 0)
+			BLINK: new Effect((e) => {}, (entity) => {
+				entity.map = entity.e.map, entity.e.map = null
+			}, (entity) => {
+				entity.e.map = entity.map
+			}, 0),
+			SPEED: new Effect((entity) => {
+				entity.e.fullSpeed.set_value(constants.TILE_SIZE / 6)
+			}, (entity) => {
+				entity.speed_before = entity.e.fullSpeed.get()
+			}, (entity) => {
+				entity.e.fullSpeed.set_value(entity.speed_before)
+			}, 0)
 		}
 	}
 
@@ -159,7 +172,7 @@ export class Game {
 
 		await Tileset.create(this, 'Kanji.png', 16, constants.TILE_SIZE, 0)
 		
-    const inventory = await Inventory.create(this, "inventory.png")
+    	const inventory = await Inventory.create(this, "inventory.png")
 		this.player = new Player(this, this.tilesets["Kanji"], inventory)
 
 		this.player.set_map(this.get_current_map())
@@ -178,7 +191,9 @@ export class Game {
 
 		const black_transition = new UnicoloreTransition(this, 500, "black")
 
-		const test_consumable = await Consumable.create(this, "Item_71.png", "example_item", (c) => console.log("item 71 used"));
+		const test_consumable = await Consumable.create(this, "Item_71.png", "example_item",
+			(c, time) => {}
+		)
 
 		const test_consumable_stack = new ItemStack(test_consumable, 1);
 		
@@ -190,7 +205,9 @@ export class Game {
 		
 		inventory.add_items([test_item_stack])
 
-		const test_consumable2 = await Consumable.create(this, "Item_Black3.png", "example_item", (c) => console.log("item black3 used"));
+		const test_consumable2 = await Consumable.create(this, "Item_Black3.png", "example_item",
+			(c, time) => {this.effects.SPEED.apply(time, this.player, 10000)}
+		);
 
 		const test_consumable_stack2 = new ItemStack(test_consumable2, 5);
 
@@ -212,37 +229,37 @@ export class Game {
 					1, true, 1, this.canvas.width / 16, "black", "Times New Roman", ""),
 
 				new Button(this, "button-undo-1", this.canvas.width * 0.15625, new YResizeable(this, -(this.canvas.height / 2)),
-					this.canvas.width / 2 - this.canvas.width * 0.15625, new YResizeable(this, this.canvas.height), true, (button)=>{
+					this.canvas.width / 2 - this.canvas.width * 0.15625, new YResizeable(this, this.canvas.height), true, (button, t)=>{
 						button.ui.is_finished=true
 					}
 				),
 				new Button(this, "button-undo-2", -(this.canvas.width / 2), new YResizeable(this, -(this.canvas.height / 2)),
-					this.canvas.width / 2 - this.canvas.width * 0.15625, new YResizeable(this, this.canvas.height), true, (button)=>{
+					this.canvas.width / 2 - this.canvas.width * 0.15625, new YResizeable(this, this.canvas.height), true, (button, t)=>{
 						button.ui.is_finished=true
 					}
 				),
 				new Button(this, "button-undo-3", -this.canvas.width * 0.15625, this.canvas.width * 0.1796875,
 					this.canvas.width * 0.3125, new YResizeable(this, this.canvas.height / 2 - this.canvas.width * 0.1796875, (resizeable) => {
 						resizeable.set_value(this.canvas.height / 2 - this.canvas.width * 0.1796875)
-					}), true, (button)=>{
+					}), true, (button, t)=>{
 						button.ui.is_finished=true
 					}
 				),
 				new Button(this, "button-undo-4", -this.canvas.width * 0.15625, new YResizeable(this, -(this.canvas.height / 2)),
 					this.canvas.width * 0.3125, new YResizeable(this, this.canvas.height / 2 - this.canvas.width * 0.2109375, (resizeable) => {
 						resizeable.set_value(this.canvas.height / 2 - this.canvas.width * 0.2109375)
-					}), true, (button)=>{
+					}), true, (button, t)=>{
 						button.ui.is_finished=true
 					}
 				),
 				new Button(this, "open-button", this.canvas.width / 16, this.canvas.height / 16,
-					this.tilesets["next_page_arrow_tileset"].screen_tile_size.get(), this.tilesets["next_page_arrow_tileset"].screen_tile_size.get(), false, (button)=>{
+					this.tilesets["next_page_arrow_tileset"].screen_tile_size.get(), this.tilesets["next_page_arrow_tileset"].screen_tile_size.get(), false, (button, t)=>{
 						button.game.current_ui = colors_problem_finishing_ui
 					}
 				),
 				new Icon(this, "open-icon", this.canvas.width / 16, this.canvas.height / 16, this.tilesets["next_page_arrow_tileset"], 1, false)
 			],
-			(problem) => {
+			(problem, t) => {
 				var numberarea_pink = problem.get_widget("numberarea-pink")
 				var numberarea_blue = problem.get_widget("numberarea-blue")
 				var numberarea_red = problem.get_widget("numberarea-red")
@@ -460,7 +477,7 @@ export class Game {
 					uiHalfWidth * 0.3,
 					uiHalfHeight * 0.2,
 					false,
-					(button) => {
+					(button, t) => {
 						const answerInput = button.ui.get_widget("answer-input");
 						if (answerInput.content.toLowerCase() === "passage") {
 							bridge_blocking_hitbox.destroy();
@@ -477,7 +494,7 @@ export class Game {
 					this.canvas.width/2 - uiHalfWidth,
 					this.canvas.height,
 					true,
-					(button) => { button.ui.is_finished = true; }
+					(button, t) => { button.ui.is_finished = true; }
 				),
 				new Button(
 					this,
@@ -487,7 +504,7 @@ export class Game {
 					this.canvas.width/2 - uiHalfWidth,
 					this.canvas.height,
 					true,
-					(button) => { button.ui.is_finished = true; }
+					(button, t) => { button.ui.is_finished = true; }
 				),
 				new Button(
 					this,
@@ -497,7 +514,7 @@ export class Game {
 					uiWidth,
 					this.canvas.height/2 - uiHalfHeight,
 					true,
-					(button) => { button.ui.is_finished = true; }
+					(button, t) => { button.ui.is_finished = true; }
 				),
 				new Button(
 					this,
@@ -507,12 +524,12 @@ export class Game {
 					uiWidth,
 					this.canvas.height/2 - uiHalfHeight,
 					true,
-					(button) => { button.ui.is_finished = true; }
+					(button, t) => { button.ui.is_finished = true; }
 				)
 			],
-			(problem) => {
-				const answerInput = problem.get_widget("answer-input");
-				const submitButton = problem.get_widget("submit-button");
+			(problem, t) => {
+				let answerInput = problem.get_widget("answer-input");
+				let submitButton = problem.get_widget("submit-button");
 				submitButton.rendered = answerInput.content.length > 0;
 			}
 		);

@@ -40,7 +40,7 @@ export class Consumable extends Item{
      * 
      * @param {Game} game 
      * @param {String} name 
-     * @param {(consumable: Consumable) => void} on_use 
+     * @param {(consumable: Consumable, time: Number) => void} on_use 
      */
     constructor(game, name, on_use){
         super(game, name)

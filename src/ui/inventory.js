@@ -19,13 +19,13 @@ export class Inventory extends Ui{
             widgets.push(new Button(game, `inventory-button-${i}`,
                 Inventory.get_slot_coordinates(i).x, Inventory.get_slot_coordinates(i).y,
                 constants.TILE_SIZE, constants.TILE_SIZE, true,
-                (button) => {
+                (b, time) => {
                     const itemstack = this.get_slot(i);       
                     if (itemstack && itemstack.consumable) {
                         itemstack.add_count(-1)
                         const countLabel = this.get_widget(`item-count-${i}`)
                         countLabel.text = `${itemstack.count}`
-                        itemstack.item.on_use(itemstack.item)
+                        itemstack.item.on_use(itemstack.item, time)
                     }
                 }
             ))
@@ -36,8 +36,8 @@ export class Inventory extends Ui{
         textures_array.forEach(texture => {widgets.push(texture)})
         widgets.push(hovered_texture)
           
-        /**@type {(inv: Inventory) => void} */
-        var widgets_states_handler = (inv)=>{
+        /**@type {(inv: Inventory, t: Number) => void} */
+        var widgets_states_handler = (inv, t)=>{
             var hovered_texture = inv.get_widget("hovered-texture")
             var has_hovered = false
             
