@@ -1,6 +1,6 @@
 import { config, constants } from "../constants.js";
 import { Game } from "../core/game.js";
-import { Consumable, Item, ItemStack } from "./items.js";
+import { Item, ItemStack } from "./items.js";
 import { Ui } from "./ui.js";
 import { Button, Label, Texture, Widget } from "./widgets.js";
 
@@ -38,18 +38,18 @@ export class Inventory extends Ui{
           
         /**@type {(inv: Inventory) => void} */
         var widgets_states_handler = (inv)=>{
-            var hovered_icon = inv.get_widget("hovered_icon")
+            var hovered_texture = inv.get_widget("hovered-texture")
             var has_hovered = false
             
             for(let i = 0; i < 9; i++){
                 if(inv.get_widget(`inventory-button-${i}`).is_hovered){
-                    hovered_icon.update_config(0, 0, null, null, true)
+                    hovered_texture.update_config(Inventory.get_slot_coordinates(i).x, Inventory.get_slot_coordinates(i).y, null, null, true)
                     has_hovered = true
                 }
             }
             
             if(!has_hovered)
-                hovered_icon.rendered = false
+                hovered_texture.rendered = false
         }
         var inventory_side = Math.min(window.innerWidth,window.innerHeight) / 1.35
         super(game, inventory_side, inventory_side, widgets, widgets_states_handler)
@@ -68,10 +68,13 @@ export class Inventory extends Ui{
      * @returns {Promise<Inventory>}
      */
     static async create(game, src){
-        let hovered_texture = await Texture.create(game, "hovered-texture", "inventory_hovered_tileset.png", 0, 0, constants.TILE_SIZE / 8, constants.TILE_SIZE / 8, false)
+        let hovered_texture = await Texture.create(game, "hovered-texture",
+            "inventory_hovered_tileset.png", 0, 0, constants.TILE_SIZE, constants.TILE_SIZE, false)
         let textures_array = []
         for(let i=0; i<9; i++){
-            textures_array.push(await Texture.create(game, `item-texture-${i}`, `hovered_inventory_icon.png`, Inventory.get_slot_coordinates(i).x, Inventory.get_slot_coordinates(i).y, constants.TILE_SIZE, constants.TILE_SIZE, false, 0))
+            textures_array.push(await Texture.create(game, `item-texture-${i}`,
+                `hovered_inventory_icon.png`, Inventory.get_slot_coordinates(i).x, Inventory.get_slot_coordinates(i).y,
+                constants.TILE_SIZE, constants.TILE_SIZE, false, 0))
         }
         var inventory = new Inventory(game, textures_array, hovered_texture)
         try{
@@ -84,6 +87,7 @@ export class Inventory extends Ui{
     }
 
     update(current_time) {    //update_config(x=null, y=null, width=null, height=null, rendered=null, command=null)
+        super.update(current_time)
         if (this.game.inputHandler.isKeyPressed("e")) {
             if (this.game.current_ui === this) {
                 this.game.current_ui = null;
