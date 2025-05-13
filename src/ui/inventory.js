@@ -140,6 +140,10 @@ export class Inventory extends Ui{
      * @param {ItemStack} itemstack 
      */
     set_slot(n, itemstack){
+        if(this.get_slot(n) != null && this.get_slot(n).item == itemstack.item){
+            this.get_slot(n).add_count(itemstack.count)
+            return
+        }
         this.itemstacks[Math.floor(n / 3)][n % 3] = itemstack
     }
 
@@ -165,8 +169,8 @@ export class Inventory extends Ui{
             this.get_widget(`item-texture-${slot}`).img = this.game.items[itemstack.item.name].img
             this.get_widget(`item-texture-${slot}`).rendered = true
             this.set_slot(slot, itemstack)
-            const countLabel = this.get_widget(`item-count-${slot}`);
-            countLabel.text = `${itemstack.count}`;
+            let countLabel = this.get_widget(`item-count-${slot}`);
+            countLabel.text = itemstack.count.toString();
             if (itemstack.consumable && itemstack.count >= 1) {
                 countLabel.rendered = true;
             }
@@ -178,7 +182,7 @@ export class Inventory extends Ui{
 
     shift_items(startIndex) {
     for (let i = startIndex; i < 8; i++) { 
-        const nextSlot = this.get_slot(i + 1);
+        let nextSlot = this.get_slot(i + 1);
         if (nextSlot) {
             this.set_slot(i, nextSlot);
             this.get_widget(`item-texture-${i}`).img = this.get_widget(`item-texture-${i + 1}`).img;
