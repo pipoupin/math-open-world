@@ -82,11 +82,6 @@ export class Player extends Entity {
 			this.fullSpeed.set_value(constants.TILE_SIZE / 12)
 			this.acceleration.set_value(constants.TILE_SIZE / 32)
 		}
-
-		if(!this.dashing && this.state != constants.ATTACK_STATE){
-			this.fullSpeed.set_value(constants.TILE_SIZE / 12)
-			this.acceleration.set_value(constants.TILE_SIZE / 32)
-		}
 	
 		if (this.inputHandler.isKeyDown(constants.UP_KEY)) {
 			this.direction = constants.UP_DIRECTION
