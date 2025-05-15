@@ -68,6 +68,8 @@ export class Dialogue extends Ui{
         super.update(current_time)
         if(current_time - this.last_time < 80) return
         this.last_time = current_time
+        if(this.game.inputHandler.isKeyPressed("enter"))
+            this.next()
         /** @type {Label} */
         var label = this.get_widget("dialogue-content")
         if(label.text == this.sentences[this.sentence]) return
@@ -219,7 +221,14 @@ export class QuestionDialogue extends Ui {
 
         if(current_time - this.last_time < 80) return
         this.last_time = current_time
-        
+
+        if(this.game.inputHandler.isKeyPressed("enter")){
+            this.next()
+            if(this.focused_widgets.length > 1){
+                let selected_awnser = this.focused_widgets.filter(widget => widget != this.get_widget("new-line-button"))[0]
+                selected_awnser.command(selected_awnser, current_time)
+            }
+        }
         /** @type {Label} */
         var label = this.get_widget("dialogue-content")
         

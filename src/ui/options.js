@@ -1,5 +1,6 @@
 import { constants, config } from "../constants.js";
 import { Game } from "../core/game.js";
+import { clamp } from "../utils.js";
 import { Ui } from "./ui.js";
 import { Label, Button, Icon } from "./widgets.js"
 
@@ -59,9 +60,8 @@ export class OptionsMenu extends Ui{
                 ui.get_widget("sound-effects-volume-cursor-icon").tile_nb = 1
 
             if(music_volume_button.is_clicked){
-                music_volume_button.center_arround(Math.max(Math.min(
-                    ui.game.inputHandler.mouse_pos.x, constants.TILE_SIZE * 1.5),
-                    - constants.TILE_SIZE * 1.5), 0)
+                music_volume_button.center_arround(clamp(ui.game.inputHandler.mouse_pos.x,
+                    - constants.TILE_SIZE * 1.5, constants.TILE_SIZE * 1.5), 0)
 
                 ui.get_widget("music-volume-cursor-icon").x.set_value(music_volume_button.x.get())
                 this.music_volume = Math.abs(Math.round((music_volume_button.x.get() +
@@ -69,9 +69,8 @@ export class OptionsMenu extends Ui{
                                         constants.TILE_SIZE * 1.5) / (constants.TILE_SIZE * 3) * 100))
             }
             if(sound_effects_volume_button.is_clicked){
-                sound_effects_volume_button.center_arround(Math.max(Math.min(
-                    ui.game.inputHandler.mouse_pos.x, constants.TILE_SIZE * 1.5),
-                    - constants.TILE_SIZE * 1.5), constants.TILE_SIZE)
+                sound_effects_volume_button.center_arround(clamp(ui.game.inputHandler.mouse_pos.x,
+                    - constants.TILE_SIZE * 1.5, constants.TILE_SIZE * 1.5), constants.TILE_SIZE)
                     
                 ui.get_widget("sound-effects-volume-cursor-icon").x.set_value(sound_effects_volume_button.x.get())
                 this.sound_effects_volume = Math.abs(Math.round((sound_effects_volume_button.x.get() +
