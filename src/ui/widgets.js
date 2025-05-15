@@ -1,4 +1,4 @@
-import { constants } from "../constants.js"
+import { config, constants } from "../constants.js"
 import { Game } from "../core/game.js"
 import { Resizeable, YResizeable } from "../utils.js"
 import { Tileset } from "../world/tileset.js"
@@ -382,11 +382,11 @@ export class Texture extends Widget{
     static async create(game, id, src, x, y, width, height, rendered, layer=0){
         var texture = new Texture(game, id, x, y, width, height, rendered, layer)
         try {
-			await texture.load(src)
-		} catch (error) {
+		    await texture.load(src)
+	    } catch (error) {
 			console.error(`couldn't load file "${src}" : ${error.message}`)
-			return
-		}
+	    	return
+	    }
         return texture
     }
 
@@ -395,13 +395,16 @@ export class Texture extends Widget{
      * @param {String} src 
      */
     async load(src){
-        const img = new Image()
-		img.src = src
+        var img = null
+        if(src!=null){
+            img = new Image()
+		    img.src = config.IMG_DIR + src
+    		await new Promise((resolve, reject) => { 
+	    		img.onload = resolve
+		    	img.onerror = reject
+		    })
+        }
 		this.img = img
-		await new Promise((resolve, reject) => { 
-			img.onload = resolve
-			img.onerror = reject
-		})
     }
 
     center_arround(x, y){
@@ -411,7 +414,7 @@ export class Texture extends Widget{
     }
 
     render(){
-        if(this.rendered){
+        if(this.rendered && this.img != null){
             this.game.ctx.drawImage(
                 this.img,
                 this.game.canvas.width / 2 + this.x.get(),

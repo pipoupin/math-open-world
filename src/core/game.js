@@ -18,6 +18,9 @@ import { Frog } from '../entities/mobs/frog.js'
 import { Spider } from '../entities/mobs/spider.js'
 import { OptionsMenu } from '../ui/options.js'
 import { AudioManager } from './audioManager.js'
+import { Inventory } from '../ui/inventory.js'
+import { Consumable, Item, ItemStack} from '../ui/items.js'
+
 
 export class Game {
 	constructor() {
@@ -75,6 +78,9 @@ export class Game {
 
 		/** @type {Array<Talkable>} */
 		this.talkables = []
+
+		/** @type {Item} */
+		this.items = {}
 
 		/** @type {Ui | Transition} */
 		this.current_ui = null
@@ -142,7 +148,7 @@ export class Game {
 
 		await Map.create(this, 'house.json', this.tilesets["cabane_tileset"], "black", {x: constants.TILE_SIZE * 1.5, y: 3 * constants.TILE_SIZE}),
 		await Map.create(this, 'map.json', this.tilesets["map"], "grey", {x: 15.5 * constants.TILE_SIZE, y: 14.01 * constants.TILE_SIZE})
-		await Map.create(this, 'new_map.json', this.tilesets["map"], "grey", {x: 116.5 * constants.TILE_SIZE, y: 80 * constants.TILE_SIZE})
+		await Map.create(this, 'new_map.json', this.tilesets["map"], "grey", {x: 116.5 * constants.TILE_SIZE, y: 80.5 * constants.TILE_SIZE})
 
 		this.options_menu = await OptionsMenu.create(this)
 		
@@ -153,7 +159,9 @@ export class Game {
 		new Spider(this, this.maps["map"], constants.TILE_SIZE * 2, constants.TILE_SIZE * 2)
 		new Frog(this, this.maps["map"], constants.TILE_SIZE * 12, constants.TILE_SIZE * 12, 0.5)
 
-		this.player = new Player(this, this.tilesets["Kanji"])
+    const inventory = await Inventory.create(this, "inventory.png")
+		this.player = new Player(this, this.tilesets["Kanji"], inventory)
+
 		this.player.set_map(this.get_current_map())
 		
 		// needed to place the player correctly
@@ -169,6 +177,24 @@ export class Game {
 		)
 
 		const black_transition = new UnicoloreTransition(this, 500, "black")
+
+		const test_consumable = await Consumable.create(this, "Item_71.png", "example_item");
+
+		const test_consumable_stack = new ItemStack(test_consumable, 1,true);
+		
+		inventory.add_items([test_consumable_stack])
+		
+		const test_item = await Consumable.create(this, "Item_51.png", "example_item");
+
+		const test_item_stack = new ItemStack(test_item, 1,false);
+		
+		inventory.add_items([test_item_stack])
+
+		const test_consumable2 = await Consumable.create(this, "Item_Black3.png", "example_item");
+
+		const test_consumable_stack2 = new ItemStack(test_consumable2, 5,true);
+
+		inventory.add_items([test_consumable_stack2])
 
 		const colors_problem = await Problem.create(
 			this, "book_ui.png", this.canvas.width * 0.34375, this.canvas.width * 0.453125, "colors",
@@ -305,6 +331,7 @@ export class Game {
 				this.player.last_dash = -constants.PLAYER_DASH_COOLDOWN
 
 			black_transition.start(time)
+
 		})
 
 		// -- from the house (auto)
@@ -583,7 +610,9 @@ export class Game {
 
 		Object.values(this.effects).forEach(effect => effect.update(current_time))
 
-		this.talkables.forEach(talkable => talkable.update())
+		this.talkables.forEach(talkable => {talkable.update()})
+
+		this.player.inventory.update(current_time)
 	}
 
 	render() {

@@ -18,6 +18,7 @@ export class Talkable{
         this.game = game
         this.map = map
         this.hitbox = hitbox
+        this.hitbox.set_owner(this)
         this.ui = ui
         this.entity = entity
         this.is_talkable = true

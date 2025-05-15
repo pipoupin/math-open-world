@@ -46,6 +46,7 @@ export const constants = {
     IDLE_STATE: 0,
 	WALK_STATE: 1,
 	ATTACK_STATE: 2,
+	DRAG_STATE: 3,
 
 	WANDERING_AI_STATE: 0,
 	STILL_AI_STATE: 1,
