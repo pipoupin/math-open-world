@@ -6,7 +6,6 @@ import { Map } from '../world/map.js'
 import { clamp, Resizeable } from '../utils.js'
 import { ProjectileAttack, SwingingAttack } from './attack.js'
 import { Inventory } from '../ui/inventory.js'
-import { Draggable } from './draggable.js'
 
 export class Player extends Entity {
 	/**
@@ -31,7 +30,7 @@ export class Player extends Entity {
 
 		this.inputHandler = game.inputHandler
 
-		/** @type {Draggable} */
+		/** @type {Entity} */
 		this.dragged_entity = null
 
 		this.fullSpeed = new Resizeable(game, constants.TILE_SIZE / 24)
@@ -143,6 +142,13 @@ export class Player extends Entity {
 	 */
 	set_map(new_map){
 		super.set_map(new_map)
+		if (this.dragged_entity) {
+			this.dragged_entity = null
+			this.state = constants.IDLE_STATE
+			this.fullSpeed.set_value(constants.TILE_SIZE / 24)
+			this.acceleration.set_value(constants.TILE_SIZE / 64)
+		}
+
 		this.worldX.set_value(new_map.player_pos.x.get())
 		this.worldY.set_value(new_map.player_pos.y.get())
 	}
@@ -160,6 +166,11 @@ export class Player extends Entity {
 	updateIdle(currentTime) {
 		this.handleMoveInput()
 		this.handleAttackInput(currentTime)
+
+		if (this.handleDragInput(currentTime)) {
+			return
+		}
+
 		this.updateMovements()
 		this.updateDash(currentTime)
 		super.update(currentTime)
@@ -239,29 +250,80 @@ export class Player extends Entity {
 	}
 
 	updateDrag(currentTime) {
-        this.acceleration.set_value(constants.TILE_SIZE / 64)
-        this.fullSpeed.set_value(constants.TILE_SIZE / 32)
+		if (this.inputHandler.isKeyPressed(constants.DRAG_KEY)) {
+			this.state = constants.IDLE_STATE
+			this.dragged_entity = null
+			this.fullSpeed.set_value(constants.TILE_SIZE / 24)
+			return
+		}
 
-        if (this.inputHandler.isKeyPressed("f")) {
-            this.state = constants.IDLE_STATE
-            this.dragged_entity = null
-        }
-        this.handleMoveInput()
-        this.updateMovements()
+		const originalPlayerDirection = this.direction
+		const originalPlayerX = this.worldX.get()
+		const originalPlayerY = this.worldY.get()
+		const originalEntityX = this.dragged_entity.worldX.get()
+		const originalEntityY = this.dragged_entity.worldY.get()
 
-        this.dragged_entity.dx.set_value(this.dx.get())
-        this.dragged_entity.dy.set_value(this.dy.get())
+		this.handleMoveInput()
+		this.updateMovements()
 
-        super.update(currentTime)
-    }
+		const gap = constants.TILE_SIZE * 0.3
+		let targetX, targetY
+		
+		switch(this.direction) {
+			case constants.LEFT_DIRECTION:
+				targetX = this.collision_hitbox.x1.get() - this.collision_hitbox.width.get()/2 - gap
+				targetY = this.worldY.get()
+				break
+			case constants.RIGHT_DIRECTION:
+				targetX = this.collision_hitbox.x2.get() + this.collision_hitbox.width.get()/2 + gap
+				targetY = this.worldY.get()
+				break
+			case constants.UP_DIRECTION:
+				targetX = this.worldX.get()
+				targetY = this.collision_hitbox.y1.get() - this.collision_hitbox.height.get() - gap
+				break
+			case constants.DOWN_DIRECTION:
+				targetX = this.worldX.get()
+				targetY = this.collision_hitbox.y2.get() + gap
+				break
+			default:
+				targetX = this.worldX.get()
+				targetY = this.worldY.get()
+		}
+
+		this.dragged_entity.worldX.set_value(targetX)
+		this.dragged_entity.worldY.set_value(targetY)
+		
+		this.updateHitboxes()
+		this.dragged_entity.updateHitboxes()
+
+		if (this.colliding() || this.dragged_entity.colliding()) {
+			this.worldX.set_value(originalPlayerX)
+			this.worldY.set_value(originalPlayerY)
+			this.dragged_entity.worldX.set_value(originalEntityX)
+			this.dragged_entity.worldY.set_value(originalEntityY)
+			
+			this.dx.set_value(0)
+			this.dy.set_value(0)
+			this.direction = originalPlayerDirection
+		}
+
+		super.update(currentTime)
+	}
 
 	handleDragInput() {
-		if (this.state !== constants.DRAG_STATE) {
-			for (const hb of this.raycast_hitbox.get_colliding_hitboxes(true, false)) {
-				if (hb.owner instanceof Draggable && this.inputHandler.isKeyPressed("f")) {
-					this.dragged_entity = hb.owner
-					this.state = constants.DRAG_STATE
-				}
+		if (!this.inputHandler.isKeyPressed(constants.DRAG_KEY))
+			return false
+
+		for (const hb of this.raycast_hitbox.get_colliding_hitboxes(true, true)) {
+			console.log(hb)
+			console.log(hb.owner instanceof Entity)
+			if (hb.owner instanceof Entity && hb.owner.draggable) {
+				this.dragged_entity = hb.owner
+				this.state = constants.DRAG_STATE
+
+				this.fullSpeed.set_value(constants.TILE_SIZE / 48)
+				return true
 			}
 		}
 	}

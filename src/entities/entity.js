@@ -19,7 +19,7 @@ export class Entity {
     * @param {number} [life=null] - The entity's life, the entity is being invincible if life is null
     * @param {{ combat: { x: Number, y: Number; }; collision: { x: Number, y: Number; }; }} [hitboxes_offset={combat:{x:0,y:0},collision:{x:0,y:0}}] - The entity's hitboxes' offset in case you need them to be a little bit offcentered
     */
-    constructor(game, map, tileset, collision_hitbox, combat_hitbox, worldX, worldY, animation_duration, life=null, hitboxes_offset={combat:{x:0,y:0},collision:{x:0,y:0}}, bottom_y=null) {
+    constructor(game, map, tileset, collision_hitbox, combat_hitbox, worldX, worldY, animation_duration, life=null, hitboxes_offset={combat:{x:0,y:0},collision:{x:0,y:0}}, bottom_y=null, draggable=false) {
         this.game = game
         this.map = map
 
@@ -42,15 +42,15 @@ export class Entity {
         this.dx = new Resizeable(game, 0)
         this.dy = new Resizeable(game, 0)
 
+		this.draggable = draggable 
+		if (draggable)
+			this.dragged = false
+
         this.tileset = tileset
         this.collision_hitbox = collision_hitbox
         this.combat_hitbox = combat_hitbox
-		if (this.collision_hitbox) {
-			this.collision_hitbox.set_owner(this)
-		}
-		if (this.combat_hitbox) {
-			this.combat_hitbox.set_owner(this)
-		}
+		this.collision_hitbox.set_owner(this)
+		this.combat_hitbox.set_owner(this)
 
         this.animation_step = 0
         this.animation_duration = animation_duration
@@ -60,6 +60,7 @@ export class Entity {
         this.life = life
 
         this.active = true
+
 
         this.hitboxes_offset = {
             combat: {
@@ -85,14 +86,14 @@ export class Entity {
 
         // Split movement into X and Y components to handle collisions separately
         this.updatePositionX()
-            this.updateHitboxes()
+		this.updateHitboxes()
         if (this.colliding()) {
             this.backPositionX()
             this.dx.set_value(0)
         }
         
         this.updatePositionY()
-            this.updateHitboxes()
+		this.updateHitboxes()
         if (this.colliding()) {
             this.backPositionY()
             this.dy.set_value(0)
@@ -105,6 +106,7 @@ export class Entity {
 		this.combat_hitbox.get_colliding_hitboxes(false, true).forEach(hitbox => {
 			if (hitbox.owner instanceof Attack){
 				if (hitbox.owner instanceof SwingingAttack) {
+					//...
 				}
 				hitbox.owner.apply(this, current_time)
 			}
@@ -112,7 +114,7 @@ export class Entity {
 		})
         if(!this.active) return
 
-		// only apply to comabt hitboxes as they're included in collision ones, so don't need to apply to collisions
+		// only apply to combat hitboxes as they're included in collision ones, so don't need to apply to collisions
 		this.combat_hitbox.get_colliding_hitboxes(false, false).forEach(hitbox => {
 			hitbox.command(hitbox, this.combat_hitbox, current_time)
 		})
@@ -120,8 +122,8 @@ export class Entity {
         if(this.dx.get() == 0 && this.dy.get() == 0){
             if(this.state == constants.WALK_STATE)
                 this.state = constants.IDLE_STATE
-        }else{
-            if(this.state == constants.IDLE_STATE)
+        } else {
+            if (this.state == constants.IDLE_STATE)
                 this.state = constants.WALK_STATE
         }
 
@@ -206,7 +208,6 @@ export class Entity {
         } else {
             this.direction = this.dx.get() > 0 ? constants.RIGHT_DIRECTION : constants.LEFT_DIRECTION
         }
-
     }
 
     render() {

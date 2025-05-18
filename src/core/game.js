@@ -159,13 +159,25 @@ export class Game {
 		new Spider(this, this.maps["map"], constants.TILE_SIZE * 2, constants.TILE_SIZE * 2)
 		new Frog(this, this.maps["map"], constants.TILE_SIZE * 12, constants.TILE_SIZE * 12, 0.5)
 
-    const inventory = await Inventory.create(this, "inventory.png")
+		const inventory = await Inventory.create(this, "inventory.png")
 		this.player = new Player(this, this.tilesets["Kanji"], inventory)
 
+		const draggable = new Entity(
+			this, this.maps["new_map"], this.tilesets["Kanji"], 
+
+			new Hitbox(this, this.maps["new_map"], constants.TILE_SIZE * 130, constants.TILE_SIZE * 80 + constants.TILE_SIZE / 2, 2 * constants.TILE_SIZE / 3, constants.TILE_SIZE / 2, true, true),
+			new Hitbox(this, this.maps["new_map"], constants.TILE_SIZE * 130, constants.TILE_SIZE * 80, 2 * constants.TILE_SIZE / 3, constants.TILE_SIZE, false, true),
+			constants.TILE_SIZE * 130, constants.TILE_SIZE * 80, 125, null, {combat: {x: 0, y: 0}, collision: {x: 0, y: constants.TILE_SIZE / 4}}, null, true
+		)
+
+		// needed to place the draggable correctly
+		draggable.updateHitboxes()
+
+
 		this.player.set_map(this.get_current_map())
-		
 		// needed to place the player correctly
-		this.update()
+		this.player.updateHitboxes()
+		
 
 		const colors_problem_finishing_ui = await Ui.create(this, "opened_book_ui.png", this.canvas.width * 0.6875, this.canvas.width * 0.453125, [
 			new Button(this, "button",

@@ -67,6 +67,7 @@ export class OptionsMenu extends Ui{
                 this.music_volume = Math.abs(Math.round((music_volume_button.x.get() +
                                         music_volume_button.width.get() / 2 +
                                         constants.TILE_SIZE * 1.5) / (constants.TILE_SIZE * 3) * 100))
+				this.game.audioManager.setMusicVolume(this.music_volume)
             }
             if(sound_effects_volume_button.is_clicked){
                 sound_effects_volume_button.center_arround(clamp(ui.game.inputHandler.mouse_pos.x,
@@ -76,6 +77,7 @@ export class OptionsMenu extends Ui{
                 this.sound_effects_volume = Math.abs(Math.round((sound_effects_volume_button.x.get() +
                                                 sound_effects_volume_button.width.get() / 2 +
                                                 constants.TILE_SIZE * 1.5) / (constants.TILE_SIZE * 3) * 100))
+				this.game.audioManager.setSoundVolume(this.sound_effects_volume)
             }
             game.audioManager.setMusicVolume(this.music_volume / 100)
             game.audioManager.setSoundVolume(this.sound_effects_volume / 100)
