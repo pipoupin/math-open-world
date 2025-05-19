@@ -51,6 +51,7 @@ export const constants = {
 	WANDERING_AI_STATE: 0,
 	STILL_AI_STATE: 1,
 	CHASING_AI_STATE: 2,
+    HEALTH_COLORS:['red', 'orange', 'green']
 }
 
 // The future has arrived
