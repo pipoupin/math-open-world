@@ -140,9 +140,11 @@ export class Game {
 		await Tileset.create(this, "spider_tileset.png", 100, constants.TILE_SIZE * 4, 0)
 		await Tileset.create(this, "book_ui_focus.png", 4, this.canvas.width / 16, 0)
 		await Tileset.create(this, "next_page_arrow_tileset.png", 24, this.canvas.width * 0.05, 0)
+		await Tileset.create(this, 'Kanji.png', 16, constants.TILE_SIZE, 0)
 		await Tileset.create(this, 'Axe.png', 16, constants.TILE_SIZE, 0)
 		await Tileset.create(this, "selection_cursor.png", 16, constants.TILE_SIZE / 2, 0)
 		await Tileset.create(this, "checkbox_tileset.png", 32, constants.TILE_SIZE / 2, 0)
+		await Tileset.create(this, "arrow.png", 15, constants.TILE_SIZE / 8, 0)
 
 		await Map.create(this, 'house.json', this.tilesets["cabane_tileset"], "black", {x: constants.TILE_SIZE * 1.5, y: 3 * constants.TILE_SIZE}),
 		await Map.create(this, 'map.json', this.tilesets["map"], "grey", {x: 15.5 * constants.TILE_SIZE, y: 14.01 * constants.TILE_SIZE})
@@ -157,15 +159,25 @@ export class Game {
 		new Spider(this, this.maps["map"], constants.TILE_SIZE * 2, constants.TILE_SIZE * 2)
 		new Frog(this, this.maps["map"], constants.TILE_SIZE * 12, constants.TILE_SIZE * 12, 0.5)
 
-		await Tileset.create(this, 'Kanji.png', 16, constants.TILE_SIZE, 0)
-		
-    const inventory = await Inventory.create(this, "inventory.png")
+		const inventory = await Inventory.create(this, "inventory.png")
 		this.player = new Player(this, this.tilesets["Kanji"], inventory)
 
+		const draggable = new Entity(
+			this, this.maps["new_map"], this.tilesets["Kanji"], 
+
+			new Hitbox(this, this.maps["new_map"], constants.TILE_SIZE * 130, constants.TILE_SIZE * 80 + constants.TILE_SIZE / 2, 2 * constants.TILE_SIZE / 3, constants.TILE_SIZE / 2, true, true),
+			new Hitbox(this, this.maps["new_map"], constants.TILE_SIZE * 130, constants.TILE_SIZE * 80, 2 * constants.TILE_SIZE / 3, constants.TILE_SIZE, false, true),
+			constants.TILE_SIZE * 130, constants.TILE_SIZE * 80, 125, null, {combat: {x: 0, y: 0}, collision: {x: 0, y: constants.TILE_SIZE / 4}}, null, true
+		)
+
+		// needed to place the draggable correctly
+		draggable.updateHitboxes()
+
+
 		this.player.set_map(this.get_current_map())
-		
 		// needed to place the player correctly
-		this.update()
+		this.player.updateHitboxes()
+		
 
 		const colors_problem_finishing_ui = await Ui.create(this, "opened_book_ui.png", this.canvas.width * 0.6875, this.canvas.width * 0.453125, [
 			new Button(this, "button",
@@ -553,7 +565,7 @@ export class Game {
 		new Talkable(this, this.maps["new_map"], new Hitbox(this, this.maps["new_map"], 118 * constants.TILE_SIZE, 72 * constants.TILE_SIZE, constants.TILE_SIZE * 2, constants.TILE_SIZE * 2), bridge_dialogues[4])
 		new Talkable(this, this.maps["new_map"], new Hitbox(this, this.maps["new_map"], 125 * constants.TILE_SIZE, 70 * constants.TILE_SIZE, constants.TILE_SIZE * 2, constants.TILE_SIZE * 2), bridge_dialogues[5])
 		new Talkable(this, this.maps["new_map"], new Hitbox(this, this.maps["new_map"], 129 * constants.TILE_SIZE, 76 * constants.TILE_SIZE, constants.TILE_SIZE * 2, constants.TILE_SIZE * 2), bridge_dialogues[6])
-		new Talkable(this, this.maps["new_map"], new Hitbox(this, this.maps["new_map"], 129 * constants.TILE_SIZE, 73 * constants.TILE_SIZE, constants.TILE_SIZE * 2, constants.TILE_SIZE * 2), bridge_dialogues[7])
+		new Talkable(this, this.maps["new_map"], new Hitbox(this, this.maps["new_map"], 135 * constants.TILE_SIZE, 73 * constants.TILE_SIZE, constants.TILE_SIZE * 2, constants.TILE_SIZE * 2), bridge_dialogues[7])
 
 
 		requestAnimationFrame(this.loop.bind(this))
