@@ -124,8 +124,15 @@ export class Game {
 			}, (entity) => {
 				entity.e.map = entity.map
 			}, 0),
-			SPEED: new Effect((entity) => {
+			SPEED1: new Effect((entity) => {
 				entity.e.fullSpeed.set_value(constants.TILE_SIZE / 6)
+			}, (entity) => {
+				entity.speed_before = entity.e.fullSpeed.get()
+			}, (entity) => {
+				entity.e.fullSpeed.set_value(entity.speed_before)
+			}, 0),
+			SPEED2: new Effect((entity) => {
+				entity.e.fullSpeed.set_value(constants.TILE_SIZE / 4)
 			}, (entity) => {
 				entity.speed_before = entity.e.fullSpeed.get()
 			}, (entity) => {
@@ -192,7 +199,7 @@ export class Game {
 		const black_transition = new UnicoloreTransition(this, 500, "black")
 
 		const test_consumable = await Consumable.create(this, "Item_71.png", "example_item",
-			(c, time) => {}
+			(c, time) => {this.effects.SPEED2.apply(time, this.player, 10000)}
 		)
 
 		const test_consumable_stack = new ItemStack(test_consumable, 1);
@@ -206,7 +213,7 @@ export class Game {
 		inventory.add_items([test_item_stack])
 
 		const test_consumable2 = await Consumable.create(this, "Item_Black3.png", "example_item",
-			(c, time) => {this.effects.SPEED.apply(time, this.player, 10000)}
+			(c, time) => {this.effects.SPEED1.apply(time, this.player, 10000)}
 		);
 
 		const test_consumable_stack2 = new ItemStack(test_consumable2, 5);

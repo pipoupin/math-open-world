@@ -1,5 +1,6 @@
 import { config, constants } from "../constants.js";
 import { Game } from "../core/game.js";
+import { Resizeable, YResizeable } from "../utils.js";
 import { Item, ItemStack } from "./items.js";
 import { Ui } from "./ui.js";
 import { Button, Label, Texture, Widget } from "./widgets.js";
@@ -31,7 +32,7 @@ export class Inventory extends Ui{
             ))
             widgets.push(new Label(game,`item-count-${i}`,Inventory.get_slot_coordinates(i).x + constants.TILE_SIZE*0.72,
                                     Inventory.get_slot_coordinates(i).y + constants.TILE_SIZE*0.80, '0',
-                                    false, 1, 70, 'white', 'Impact', true))
+                                    false, 1, constants.TILE_SIZE / 2, 'white', 'Impact', true))
         }
         textures_array.forEach(texture => {widgets.push(texture)})
         widgets.push(hovered_texture)
@@ -51,7 +52,7 @@ export class Inventory extends Ui{
             if(!has_hovered)
                 hovered_texture.rendered = false
         }
-        var inventory_side = Math.min(window.innerWidth,window.innerHeight) / 1.35
+        var inventory_side = new Resizeable(game, game.canvas.width / 2.6)
         super(game, inventory_side, inventory_side, widgets, widgets_states_handler)
         /** @type {Array<Array<ItemStack>>} */
         this.itemstacks = [
@@ -97,15 +98,13 @@ export class Inventory extends Ui{
         }
         for(let i = 0; i < 9; i++){
             if(this.get_slot(i)){
-                if(this.get_slot(i).count < 2){
+                if(this.get_slot(i).count == 0){
+                    this.get_widget(`item-texture-${i}`).rendered = false
                     this.get_widget(`item-count-${i}`).rendered = false
-                    if(this.get_slot(i).count == 0){
-                        this.get_widget(`item-texture-${i}`).rendered = false
-                        this.set_slot(i, null)
-                        this.shift_items(i);
-                    }
-                } else {
-                    this.get_widget(`item-count-${i}`).update_config(null, null, this.get_slot(i).count, true)
+                    this.set_slot(i, null)
+                    this.shift_items(i);
+                }else{
+                    this.get_widget(`item-count-${i}`).update_config(null, null, this.get_slot(i).count)
                 }
             }
         }
@@ -140,10 +139,6 @@ export class Inventory extends Ui{
      * @param {ItemStack} itemstack 
      */
     set_slot(n, itemstack){
-        if(this.get_slot(n) != null && this.get_slot(n).item == itemstack.item){
-            this.get_slot(n).add_count(itemstack.count)
-            return
-        }
         this.itemstacks[Math.floor(n / 3)][n % 3] = itemstack
     }
 
@@ -164,11 +159,16 @@ export class Inventory extends Ui{
      * @param {Array<ItemStack>} itemstacks 
      */
     add_items(itemstacks){
-        for(let itemstack of itemstacks){
+        for(let n = 0; n < itemstacks.length; n++){
+            let itemstack = itemstacks[n]
             var slot = this.get_next_empty_slot(itemstack.item)
             this.get_widget(`item-texture-${slot}`).img = this.game.items[itemstack.item.name].img
             this.get_widget(`item-texture-${slot}`).rendered = true
-            this.set_slot(slot, itemstack)
+            if(this.get_slot(n) != null && this.get_slot(n).item == itemstack.item){
+                this.get_slot(n).add_count(itemstack.count)
+            }else{
+                this.set_slot(slot, itemstack)
+            }
             let countLabel = this.get_widget(`item-count-${slot}`);
             countLabel.text = itemstack.count.toString();
             if (itemstack.consumable && itemstack.count >= 1) {
