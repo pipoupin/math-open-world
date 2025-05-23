@@ -63,7 +63,6 @@ export class AudioManager {
      * @param {number} [volume=1] - Volume level (0 to 1)
      */
     playSound(scene, key, volume = 1) {
-		console.log("playing sound")
         if (this.muted) return
         const sound = this.sounds[scene]?.[key]
         if (!sound) {
