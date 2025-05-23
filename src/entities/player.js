@@ -20,8 +20,6 @@ export class Player extends Entity {
 			new Hitbox(game, game.get_current_map(), 400, 400, 2 * constants.TILE_SIZE / 3, constants.TILE_SIZE, false, true),
 			600, 600, 125, 100, {combat: {x: 0, y: 0}, collision: {x: 0, y: constants.TILE_SIZE / 4}}
 		)
-		this.collision_hitbox.owner = this
-		this.combat_hitbox.owner = this
 
 		this.framesPerState.push(6)
 
@@ -77,8 +75,8 @@ export class Player extends Entity {
 			this.dash_reset = false
 			this.dashing = false
 
-			this.fullSpeed.set_value(constants.TILE_SIZE / 12)
-			this.acceleration.set_value(constants.TILE_SIZE / 32)
+			this.fullSpeed.set_value(constants.TILE_SIZE / 24)
+			this.acceleration.set_value(constants.TILE_SIZE / 64)
 		}
 	
 		if (this.inputHandler.isKeyDown(constants.UP_KEY)) {

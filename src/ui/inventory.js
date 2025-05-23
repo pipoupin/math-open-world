@@ -1,6 +1,6 @@
 import { config, constants } from "../constants.js";
 import { Game } from "../core/game.js";
-import { Resizeable, YResizeable } from "../utils.js";
+import { Resizeable } from "../utils.js";
 import { Item, ItemStack } from "./items.js";
 import { Ui } from "./ui.js";
 import { Button, Label, Texture, Widget } from "./widgets.js";
@@ -11,16 +11,15 @@ export class Inventory extends Ui{
      * @param {Game} game 
      * @param {Array<Texture>} textures_array 
      * @param {Texture} hovered_texture 
+     * @param {Number} slot_width 
      */
-    constructor(game, textures_array, hovered_texture){
+    constructor(game, textures_array, hovered_texture, slot_width){
         /**@type {Array<Widget>} */
-        var widgets = [
-        ]
-		const slot_width = Inventory.get_slot_width(game)
+        var widgets = []
         for(let i=0; i<9; i++){
             widgets.push(new Button(game, `inventory-button-${i}`,
                 Inventory.get_slot_coordinates(i).x, Inventory.get_slot_coordinates(i).y,
-                constants.TILE_SIZE, constants.TILE_SIZE, true,
+                slot_width, slot_width, true,
                 (b, time) => {
                     const itemstack = this.get_slot(i);       
                     if (itemstack && itemstack.consumable) {
@@ -55,6 +54,7 @@ export class Inventory extends Ui{
         }
         var inventory_side = new Resizeable(game, game.canvas.width / 2.6)
         super(game, inventory_side, inventory_side, widgets, widgets_states_handler)
+        this.slot_width = slot_width
         /** @type {Array<Array<ItemStack>>} */
         this.itemstacks = [
             [null, null, null],
@@ -70,15 +70,16 @@ export class Inventory extends Ui{
      * @returns {Promise<Inventory>}
      */
     static async create(game, src){
+        let slot_width = constants.TILE_SIZE * 1.05
         let hovered_texture = await Texture.create(game, "hovered-texture",
-            "inventory_hovered_tileset.png", 0, 0, constants.TILE_SIZE, constants.TILE_SIZE, false)
+            "inventory_hovered_tileset.png", 0, 0, slot_width, slot_width, false)
         let textures_array = []
         for(let i=0; i<9; i++){
             textures_array.push(await Texture.create(game, `item-texture-${i}`,
                 `hovered_inventory_icon.png`, Inventory.get_slot_coordinates(i).x, Inventory.get_slot_coordinates(i).y,
-                constants.TILE_SIZE, constants.TILE_SIZE, false, 0))
+                slot_width, slot_width, false, 0))
         }
-        var inventory = new Inventory(game, textures_array, hovered_texture)
+        var inventory = new Inventory(game, textures_array, hovered_texture, slot_width)
         try{
             await inventory.load(config.IMG_DIR + src)
         }catch (error){
@@ -148,24 +149,14 @@ export class Inventory extends Ui{
      * @param {Number} n 
      * @returns {{x: Number; y: Number}}
      */
-    static get_slot_coordinates(game, n){
-		const offset = game.canvas.height * 0.030303030303
-		const gap = Inventory.get_gap(game)
-		const width = Inventory.get_slot_width(game)
+    static get_slot_coordinates(n){
+        let gap = constants.TILE_SIZE / 16
+        let width = constants.TILE_SIZE * 1.05
         return {
-			x: (n % 3) * width + ((n%3) +1)*gap - game.canvas.height / 3 + offset,
-            y: Math.floor(n / 3) * width + gap * (Math.floor(n / 3) + 1) - game.canvas.height /3 + offset
+			x: (n % 3) * (width + gap) - 1.5 * width - gap,
+            y: (Math.floor(n / 3)) * (width + gap) - 1.5 * width - gap
 		}
     }
-
-	static get_gap(game) {
-		return 0.0121212121212 * game.canvas.height
-	}
-
-	static get_slot_width(game) {
-		return 0.181818181818 * game.canvas.height 
-
-	}
 
     /**
      * 
