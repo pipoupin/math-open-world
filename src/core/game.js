@@ -7,7 +7,7 @@ import { Hitbox } from '../entities/hitbox.js'
 import { Problem, TimedProblem } from '../ui/problem.js'
 import { Attack } from '../entities/attack.js'
 import { Ui } from '../ui/ui.js'
-import { Button, NumberArea, Icon, Label, TextArea } from '../ui/widgets.js'
+import { Button, NumberArea, Icon, Label, TextArea, Texture } from '../ui/widgets.js'
 import { Talkable } from '../entities/talkable.js'
 import { constants } from "../constants.js"
 import { Transition, UnicoloreTransition } from '../ui/transition.js'
@@ -191,26 +191,25 @@ export class Game {
 		const black_transition = new UnicoloreTransition(this, 500, "black")
 
 		const test_consumable = await Consumable.create(this, "Item_71.png", "example_item");
-
 		const test_consumable_stack = new ItemStack(test_consumable, 1,true);
-		
 		inventory.add_items([test_consumable_stack])
 		
 		const test_item = await Consumable.create(this, "Item_51.png", "example_item");
-
 		const test_item_stack = new ItemStack(test_item, 1,false);
-		
 		inventory.add_items([test_item_stack])
 
 		const test_consumable2 = await Consumable.create(this, "Item_Black3.png", "example_item");
-
 		const test_consumable_stack2 = new ItemStack(test_consumable2, 5,true);
-
 		inventory.add_items([test_consumable_stack2])
 
 		const colors_problem = await Problem.create(
-			this, "book_ui.png", this.canvas.width * 0.34375, this.canvas.width * 0.453125, "colors",
-			[	new Icon(this, "focus-icon", -100, -110, this.tilesets["book_ui_focus"], 1, false, 0),
+			this, "book_ui.png", this.canvas.width * 0.34375, this.canvas.width * 0.453125, ["3", "4", "4"], (problem) => {
+				let numberarea_pink = problem.get_widget("numberarea-pink")
+				let numberarea_blue = problem.get_widget("numberarea-blue")
+				let numberarea_red = problem.get_widget("numberarea-red")
+				return [numberarea_pink.content, numberarea_blue.content, numberarea_red.content]
+			}, [
+				new Icon(this, "focus-icon", -100, -110, this.tilesets["book_ui_focus"], 1, false, 0),
 				new NumberArea(this, "numberarea-pink", -this.canvas.width * 0.078125, -this.canvas.width * 0.0859375,
 					this.canvas.width * 0.046875, this.canvas.width / 16,
 					1, true, 1, this.canvas.width / 16, "black", "Times New Roman", ""),
@@ -285,7 +284,7 @@ export class Game {
 				else
 					problem.get_widget("open-icon").tile_nb = 1
 
-				if (numberarea_pink.content === "3" && numberarea_blue.content === "4" && numberarea_red.content === "4") {
+				if (problem.solved()) {
 					problem.source.is_talkable = false
 					problem.get_widget("open-button").rendered = true
 					problem.get_widget("open-icon").rendered = true
@@ -428,7 +427,8 @@ export class Game {
 			"opened_book_ui.png", 
 			uiWidth, 
 			uiHeight,
-			"block_destroyer",
+			"passage",
+			(problem) => {return problem.get_widget("answer-input").content.toLowerCase()},
 			[
 				new Label(
 					this,
@@ -474,8 +474,7 @@ export class Game {
 					uiHalfHeight * 0.2,
 					false,
 					(button) => {
-						const answerInput = button.ui.get_widget("answer-input");
-						if (answerInput.content.toLowerCase() === "passage") {
+						if (button.ui.resolved()) {
 							bridge_blocking_hitbox.destroy();
 							button.ui.is_finished = true;
 							bridge_problem_box.destructor();
@@ -567,6 +566,73 @@ export class Game {
 		new Talkable(this, this.maps["new_map"], new Hitbox(this, this.maps["new_map"], 129 * constants.TILE_SIZE, 76 * constants.TILE_SIZE, constants.TILE_SIZE * 2, constants.TILE_SIZE * 2), bridge_dialogues[6])
 		new Talkable(this, this.maps["new_map"], new Hitbox(this, this.maps["new_map"], 135 * constants.TILE_SIZE, 73 * constants.TILE_SIZE, constants.TILE_SIZE * 2, constants.TILE_SIZE * 2), bridge_dialogues[7])
 
+
+		let lost_lights_widgets = [
+			await Texture.create(this, "hovered-texture", "hovered_lost_light_texture.png", 0, 0,
+				constants.TILE_SIZE * 0.8, constants.TILE_SIZE * 0.8, false, 1)
+		]
+		for(let x=0; x < 5; x++){
+			for(let y=0; y<5; y++){
+				lost_lights_widgets.push(new Button(this, `button-${x}-${y}`,
+					(x - 2.5) * constants.TILE_SIZE * 0.8, (y - 2.5) * constants.TILE_SIZE * 0.8,
+					constants.TILE_SIZE * 0.8, constants.TILE_SIZE * 0.8, true, (button) => {
+						let current_texture = button.ui.get_widget(`texture-${x}-${y}`)
+						current_texture.rendered = !current_texture.rendered
+						if(x > 0){
+							let left_texture = button.ui.get_widget(`texture-${x - 1}-${y}`)
+							left_texture.rendered = !left_texture.rendered
+						}
+						if(x < 4){
+							let right_texture = button.ui.get_widget(`texture-${x + 1}-${y}`)
+							right_texture.rendered = !right_texture.rendered
+						}
+						if(y > 0){
+							let top_texture = button.ui.get_widget(`texture-${x}-${y - 1}`)
+							top_texture.rendered = !top_texture.rendered
+						}
+						if(y < 4){
+							let bottom_texture = button.ui.get_widget(`texture-${x}-${y + 1}`)
+							bottom_texture.rendered = !bottom_texture.rendered
+						}
+					}))
+				lost_lights_widgets.push(await Texture.create(this, `texture-${x}-${y}`,
+					"lost_light_texture.png", (x - 2.5) * constants.TILE_SIZE * 0.8,
+					(y - 2.5) * constants.TILE_SIZE * 0.8, constants.TILE_SIZE * 0.8,
+					constants.TILE_SIZE * 0.8, true, 0))
+			}			
+		}
+
+		const lost_lights_problem = await Problem.create(this, "lost_light.png",
+			constants.TILE_SIZE * 5 * 0.8, constants.TILE_SIZE * 5 * 0.8,
+			[false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+			(problem) => {
+				let list = []
+				for(let x=0; x < 5; x++){
+					for(let y=0; y<5; y++){
+						list.push(problem.get_widget(`texture-${x}-${y}`).rendered)
+					}
+				}
+				return list
+			},
+			lost_lights_widgets, (problem) => {
+				let hovered = false
+				for(let x=0; x < 5; x++){
+					for(let y=0; y<5; y++){
+						if(problem.get_widget(`button-${x}-${y}`).is_hovered){
+							problem.get_widget("hovered-texture").update_config((x - 2.5) * constants.TILE_SIZE * 0.8, (y - 2.5) * constants.TILE_SIZE * 0.8, null, null, true)
+							hovered = true
+						}
+					}
+				}
+				if(!hovered) problem.get_widget("hovered-texture").rendered = false
+
+				if(problem.solved()){
+					problem.is_finished = true
+				}
+			})
+
+		// Uncomment if you want to test the problem:
+		//this.current_ui = lost_lights_problem
 
 		requestAnimationFrame(this.loop.bind(this))
 	}
