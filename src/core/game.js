@@ -474,7 +474,7 @@ export class Game {
 					uiHalfHeight * 0.2,
 					false,
 					(button) => {
-						if (button.ui.resolved()) {
+						if (button.ui.solved()) {
 							bridge_blocking_hitbox.destroy();
 							button.ui.is_finished = true;
 							bridge_problem_box.destructor();
