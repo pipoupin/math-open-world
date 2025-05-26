@@ -18,9 +18,8 @@ export class Player extends Entity {
 			game, game.get_current_map(), player_tileset,
 			new Hitbox(game, game.get_current_map(), 400, 400 + constants.TILE_SIZE / 2, 2 * constants.TILE_SIZE / 3, constants.TILE_SIZE / 2, true, true),
 			new Hitbox(game, game.get_current_map(), 400, 400, 2 * constants.TILE_SIZE / 3, constants.TILE_SIZE, false, true),
-			600, 600, 125, null, {combat: {x: 0, y: 0}, collision: {x: 0, y: constants.TILE_SIZE / 4}}
+			600, 600, 125, 100, {combat: {x: 0, y: 0}, collision: {x: 0, y: constants.TILE_SIZE / 4}}
 		)
-
 		this.collision_hitbox.owner = this
 		this.combat_hitbox.owner = this
 
@@ -201,6 +200,7 @@ export class Player extends Entity {
 
 	handleAttackInput(currentTime) {
 		if (this.inputHandler.isMousePressed(constants.MOUSE_RIGHT_BUTTON)) {
+			if (this.remaining_attacks>0){
 			const playerWorldX = this.worldX.get()
 			const playerWorldY = this.worldY.get()
 
@@ -223,8 +223,10 @@ export class Player extends Entity {
 			new ProjectileAttack(this.game, this, this.game.get_current_map(), currentTime,
 				2000, [hb], velX, velY,(e) => { e.life -= 2; this.game.effects.BLINK.apply(currentTime, e, 200) }, false, this.game.tilesets["Axe"], 50,
 				{x: playerWorldX - hb.width.get() / 2, y: playerWorldY - hb.height.get() /2})
+			this.attack_time=currentTime
+			this.remaining_attacks-=1
 
-		}
+		}}
 
 		let mouse_input = this.inputHandler.isMousePressed(constants.MOUSE_LEFT_BUTTON)
 		if (mouse_input || this.inputHandler.isKeyPressed('a')) {
