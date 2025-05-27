@@ -9,11 +9,10 @@ export class Inventory extends Ui{
     /**
      * 
      * @param {Game} game 
-     * @param {Array<Texture>} textures_array 
-     * @param {Texture} hovered_texture 
+     * @param {Array<Widget>} widgets_array 
      * @param {Number} slot_width 
      */
-    constructor(game, textures_array, hovered_texture, slot_width){
+    constructor(game, widgets_array, slot_width){
         /**@type {Array<Widget>} */
         var widgets = []
         for(let i=0; i<9; i++){
@@ -34,8 +33,7 @@ export class Inventory extends Ui{
                                     Inventory.get_slot_coordinates(i).y + constants.TILE_SIZE*0.80, '0',
                                     false, 1, constants.TILE_SIZE / 2, 'white', 'Impact', true))
         }
-        textures_array.forEach(texture => {widgets.push(texture)})
-        widgets.push(hovered_texture)
+        widgets_array.forEach(texture => {widgets.push(texture)})
           
         /**@type {(inv: Inventory, t: Number) => void} */
         var widgets_states_handler = (inv, t)=>{
@@ -46,11 +44,57 @@ export class Inventory extends Ui{
                 if(inv.get_widget(`inventory-button-${i}`).is_hovered){
                     hovered_texture.update_config(Inventory.get_slot_coordinates(i).x, Inventory.get_slot_coordinates(i).y, null, null, true)
                     has_hovered = true
+
+                    if(inv.get_slot(i)){
+                        let item = inv.get_slot(i).item
+                        inv.get_widget("tooltip-title-label").update_config(
+                            inv.game.inputHandler.mouse_pos.x,
+                            inv.game.inputHandler.mouse_pos.y,
+                            item.name, true
+                        )
+                        if(item.tooltip){
+                            if(!inv.ids.includes("tooltip-description-0-label")){
+                                for(let i=0; i< item.tooltip.length; i++){
+                                    let line = item.tooltip[i]
+                                    inv.add_widget(new Label(inv.game, `tooltip-description-${i}-label`,
+                                        inv.game.inputHandler.mouse_pos.x,
+                                        inv.game.inputHandler.mouse_pos.y + constants.TILE_SIZE * (0.5 + i * 0.5),
+                                        line, true, 4, constants.TILE_SIZE * 0.2, "white"
+                                    ))
+                                }
+                            } else {
+                                for(let i=0; i < item.tooltip.length; i++){
+                                    inv.get_widget(`tooltip-description-${i}-label`).update_config(
+                                        inv.game.inputHandler.mouse_pos.x,
+                                        inv.game.inputHandler.mouse_pos.y + constants.TILE_SIZE * (0.5 + i * 0.3)
+                                    )
+                                }
+                                let hovered_changed = false
+                                /** @type {Array<Label>} */
+                                let tooltip_descriptions_label = inv.widgets.filter(
+                                    widget => widget.id.endsWith("-label") && widget.id.includes("tooltip-description-")
+                                )
+                                for(let i=0; i< tooltip_descriptions_label.length; i++){
+                                    if(tooltip_descriptions_label[i].text != item.tooltip[i]){
+                                        hovered_changed = true
+                                    }
+                                }
+                                if(hovered_changed){
+                                    inv.erase_tooltip_description()
+                                }
+                            }
+                        } else {
+                            inv.erase_tooltip_description()
+                        }
+                    }
                 }
             }
             
-            if(!has_hovered)
+            if(!has_hovered){
                 hovered_texture.rendered = false
+                inv.get_widget("tooltip-title-label").rendered = false
+                inv.erase_tooltip_description()
+            }
         }
         var inventory_side = new Resizeable(game, game.canvas.width / 2.6)
         super(game, inventory_side, inventory_side, widgets, widgets_states_handler)
@@ -71,15 +115,17 @@ export class Inventory extends Ui{
      */
     static async create(game, src){
         let slot_width = constants.TILE_SIZE * 1.05
-        let hovered_texture = await Texture.create(game, "hovered-texture",
-            "inventory_hovered_tileset.png", 0, 0, slot_width, slot_width, false)
-        let textures_array = []
+        let widgets_array = [
+            await Texture.create(game, "hovered-texture",
+                "inventory_hovered_tileset.png", 0, 0, slot_width, slot_width, false, 2),
+            new Label(game, "tooltip-title-label", 0, 0, "", false, 4, constants.TILE_SIZE * 0.5, "white")
+        ]
         for(let i=0; i<9; i++){
-            textures_array.push(await Texture.create(game, `item-texture-${i}`,
+            widgets_array.push(await Texture.create(game, `item-texture-${i}`,
                 `hovered_inventory_icon.png`, Inventory.get_slot_coordinates(i).x, Inventory.get_slot_coordinates(i).y,
                 slot_width, slot_width, false, 0))
         }
-        var inventory = new Inventory(game, textures_array, hovered_texture, slot_width)
+        var inventory = new Inventory(game, widgets_array, slot_width)
         try{
             await inventory.load(config.IMG_DIR + src)
         }catch (error){
@@ -99,14 +145,18 @@ export class Inventory extends Ui{
             }
         }
         for(let i = 0; i < 9; i++){
-            if(this.get_slot(i)){
-                if(this.get_slot(i).count == 0){
+            let slot = this.get_slot(i)
+            if(slot){
+                if(slot.count == 0){
                     this.get_widget(`item-texture-${i}`).rendered = false
                     this.get_widget(`item-count-${i}`).rendered = false
                     this.set_slot(i, null)
                     this.shift_items(i);
                 }else{
-                    this.get_widget(`item-count-${i}`).update_config(null, null, this.get_slot(i).count)
+                    this.get_widget(`item-count-${i}`).update_config(null, null, slot.count)
+                    if(slot.passive){
+                        slot.item.effect(slot.item, current_time)
+                    }
                 }
             }
         }
@@ -205,4 +255,9 @@ export class Inventory extends Ui{
             break;
         }
     }}
+
+    erase_tooltip_description(){
+        this.widgets = this.widgets.filter(widget => !(widget.id.endsWith("-label") && widget.id.includes("tooltip-description-")))
+        this.ids = this.ids.filter(id => !(id.endsWith("-label") && id.includes("tooltip-description-")))
+    }
 }
