@@ -3,7 +3,7 @@ import { Game } from "../core/game.js";
 import { Resizeable } from "../utils.js";
 import { Item, ItemStack } from "./items.js";
 import { Ui } from "./ui.js";
-import { Button, Label, Texture, Widget } from "./widgets.js";
+import { Button, Icon, Label, Texture, Widget } from "./widgets.js";
 
 export class Inventory extends Ui{
     /**
@@ -42,13 +42,17 @@ export class Inventory extends Ui{
             
             for(let i = 0; i < 9; i++){
                 if(inv.get_widget(`inventory-button-${i}`).is_hovered){
-                    hovered_texture.update_config(Inventory.get_slot_coordinates(i).x, Inventory.get_slot_coordinates(i).y, null, null, true)
+                    hovered_texture.update_config(
+                        Inventory.get_slot_coordinates(i).x,
+                        Inventory.get_slot_coordinates(i).y,
+                        null, null, true
+                    )
                     has_hovered = true
 
                     if(inv.get_slot(i)){
                         let item = inv.get_slot(i).item
                         inv.get_widget("tooltip-title-label").update_config(
-                            inv.game.inputHandler.mouse_pos.x,
+                            inv.game.inputHandler.mouse_pos.x + constants.TILE_SIZE * 0.25,
                             inv.game.inputHandler.mouse_pos.y,
                             item.name, true
                         )
@@ -57,34 +61,75 @@ export class Inventory extends Ui{
                                 for(let i=0; i< item.tooltip.length; i++){
                                     let line = item.tooltip[i]
                                     inv.add_widget(new Label(inv.game, `tooltip-description-${i}-label`,
-                                        inv.game.inputHandler.mouse_pos.x,
+                                        inv.game.inputHandler.mouse_pos.x + constants.TILE_SIZE * 0.25,
                                         inv.game.inputHandler.mouse_pos.y + constants.TILE_SIZE * (0.5 + i * 0.5),
                                         line, true, 4, constants.TILE_SIZE * 0.2, "white"
                                     ))
                                 }
                             } else {
-                                for(let i=0; i < item.tooltip.length; i++){
-                                    inv.get_widget(`tooltip-description-${i}-label`).update_config(
-                                        inv.game.inputHandler.mouse_pos.x,
-                                        inv.game.inputHandler.mouse_pos.y + constants.TILE_SIZE * (0.5 + i * 0.3)
-                                    )
-                                }
                                 let hovered_changed = false
                                 /** @type {Array<Label>} */
                                 let tooltip_descriptions_label = inv.widgets.filter(
                                     widget => widget.id.endsWith("-label") && widget.id.includes("tooltip-description-")
                                 )
                                 for(let i=0; i< tooltip_descriptions_label.length; i++){
-                                    if(tooltip_descriptions_label[i].text != item.tooltip[i]){
+                                    if(tooltip_descriptions_label[i].text != item.tooltip[i])
                                         hovered_changed = true
-                                    }
                                 }
                                 if(hovered_changed){
                                     inv.erase_tooltip_description()
+                                    return
+                                }
+                                for(let i=0; i < item.tooltip.length; i++){
+                                    inv.get_widget(`tooltip-description-${i}-label`).update_config(
+                                        inv.game.inputHandler.mouse_pos.x + constants.TILE_SIZE * 0.25,
+                                        inv.game.inputHandler.mouse_pos.y + constants.TILE_SIZE * (0.5 + i * 0.3)
+                                    )
+                                }
+                            }
+                        } else inv.erase_tooltip_description()
+
+                        if(!inv.ids.includes("tooltip-box-0-0-icon")){
+                            let widths = [item.name.length * inv.get_widget("tooltip-title-label").fontsize.get() / 2]
+                            inv.widgets.filter(
+                                widget => widget.id.endsWith("-label") && widget.id.includes("tooltip-description-")
+                            ).forEach(widget => {
+                                widths.push(widget.text.length * widget.fontsize.get() / 2)
+                            })
+                            let width_nb = Math.round((Math.max(...widths) + constants.TILE_SIZE * 0.25) / inv.game.tilesets["inventory_tooltip_tileset"].screen_tile_size.get()) + 1
+                            let height_nb = Math.round(((item.tooltip? item.tooltip.length: 0) * constants.TILE_SIZE * 0.5 + inv.get_widget("tooltip-title-label").fontsize.get()) / inv.game.tilesets["inventory_tooltip_tileset"].screen_tile_size.get()) + 1
+                            for(let x=0; x<width_nb; x++){
+                                for(let y=0; y<height_nb; y++){
+                                    inv.add_widget(new Icon(
+                                        inv.game, `tooltip-box-${x}-${y}-icon`,
+                                        inv.game.inputHandler.mouse_pos.x + inv.game.tilesets["inventory_tooltip_tileset"].screen_tile_size.get() * x,
+                                        inv.game.inputHandler.mouse_pos.y + inv.game.tilesets["inventory_tooltip_tileset"].screen_tile_size.get() * y,
+                                        inv.game.tilesets["inventory_tooltip_tileset"],
+                                        (x==0? 1: x==width_nb-1? 3: 2) + 3 * (y==0? 0: y==height_nb-1? 2: 1), true, 3
+                                    ))
                                 }
                             }
                         } else {
-                            inv.erase_tooltip_description()
+                            let widths = [item.name.length * inv.get_widget("tooltip-title-label").fontsize.get() / 2]
+                            inv.widgets.filter(
+                                widget => widget.id.endsWith("-label") && widget.id.includes("tooltip-description-")
+                            ).forEach(widget => {
+                                widths.push(widget.text.length * widget.fontsize.get() / 2)
+                            })
+                            let width_nb = Math.round((Math.max(...widths) + constants.TILE_SIZE * 0.25) / inv.game.tilesets["inventory_tooltip_tileset"].screen_tile_size.get()) + 1
+                            let height_nb = Math.round(((item.tooltip? item.tooltip.length: 0) * constants.TILE_SIZE * 0.5 + inv.get_widget("tooltip-title-label").fontsize.get()) / inv.game.tilesets["inventory_tooltip_tileset"].screen_tile_size.get()) + 1
+                            if(inv.ids.filter(id => id.endsWith("-icon") && id.includes("tooltip-box-")).length != width_nb * height_nb){
+                                inv.erase_tooltip_box()
+                                return
+                            }
+                            for(let x=0; x<width_nb; x++){
+                                for(let y=0; y<height_nb; y++){
+                                    inv.get_widget(`tooltip-box-${x}-${y}-icon`).update_config(
+                                        inv.game.inputHandler.mouse_pos.x + inv.game.tilesets["inventory_tooltip_tileset"].screen_tile_size.get() * x,
+                                        inv.game.inputHandler.mouse_pos.y + inv.game.tilesets["inventory_tooltip_tileset"].screen_tile_size.get() * y - inv.get_widget("tooltip-title-label").fontsize.get() / 1.5,
+                                    )
+                                }
+                            }
                         }
                     }
                 }
@@ -94,6 +139,7 @@ export class Inventory extends Ui{
                 hovered_texture.rendered = false
                 inv.get_widget("tooltip-title-label").rendered = false
                 inv.erase_tooltip_description()
+                inv.erase_tooltip_box()
             }
         }
         var inventory_side = new Resizeable(game, game.canvas.width / 2.6)
@@ -259,5 +305,10 @@ export class Inventory extends Ui{
     erase_tooltip_description(){
         this.widgets = this.widgets.filter(widget => !(widget.id.endsWith("-label") && widget.id.includes("tooltip-description-")))
         this.ids = this.ids.filter(id => !(id.endsWith("-label") && id.includes("tooltip-description-")))
+    }
+
+    erase_tooltip_box(){
+        this.widgets = this.widgets.filter(widget => !(widget.id.endsWith("-icon") && widget.id.includes("tooltip-box-")))
+        this.ids = this.ids.filter(id => !(id.endsWith("-icon") && id.includes("tooltip-box-")))
     }
 }

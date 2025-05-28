@@ -174,7 +174,7 @@ export class Game {
 		await Tileset.create(this, "selection_cursor.png", 16, constants.TILE_SIZE / 2, 0)
 		await Tileset.create(this, "checkbox_tileset.png", 32, constants.TILE_SIZE / 2, 0)
 		await Tileset.create(this, "arrow.png", 15, constants.TILE_SIZE / 8, 0)
-		await Tileset.create(this, "inventory_tooltip_tileset.png", 16, constants.TILE_SIZE / 2, 0)
+		await Tileset.create(this, "inventory_tooltip_tileset.png", 16, constants.TILE_SIZE / 4, 0)
 
 		await Map.create(this, 'house.json', this.tilesets["cabane_tileset"], "black", {x: constants.TILE_SIZE * 1.5, y: 3 * constants.TILE_SIZE}),
 		await Map.create(this, 'map.json', this.tilesets["map"], "grey", {x: 15.5 * constants.TILE_SIZE, y: 14.01 * constants.TILE_SIZE})
@@ -232,9 +232,9 @@ export class Game {
 		const test_item_stack = new ItemStack(test_item, 1)
 		inventory.add_items([test_item_stack])
 
-		const test_consumable2 = await Consumable.create(this, "Item_Black3.png", "Speed Potion",
+		const test_consumable2 = (await Consumable.create(this, "Item_Black3.png", "Speed Potion",
 			(c, time) => {this.effects.SPEED1.apply(time, this.player, 10000)}
-		)
+		)).set_tooltip("Drinking this potion makes you faster for a certain period")
 		const test_consumable_stack2 = new ItemStack(test_consumable2, 5)
 		inventory.add_items([test_consumable_stack2])
 
