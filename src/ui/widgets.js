@@ -339,6 +339,15 @@ export class Icon extends Widget{
                 this.tile_nb,
                 this.game.canvas.width / 2 + this.x.get(),
                 this.game.canvas.height / 2 + this.y.get())
+            if(this.game.options_menu.debug){
+                this.game.ctx.strokeStyle = "blue"
+                this.game.ctx.strokeRect(
+                    this.game.canvas.width / 2 + this.x.get(),
+                    this.game.canvas.height / 2 + this.y.get(),
+                    this.tileset.screen_tile_size.get(),
+                    this.tileset.screen_tile_size.get()
+                )
+            }
         }
     }
 

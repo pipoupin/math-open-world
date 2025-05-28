@@ -43,7 +43,7 @@ export class Item{
      * @returns {Item}
      */
     set_tooltip(tooltip){
-        this.tooltip = slice(tooltip, 25)
+        this.tooltip = slice(tooltip, 35)
         return this
     }
 }
