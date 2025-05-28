@@ -4,7 +4,7 @@ import { Resizeable } from "../utils.js";
 import { Item, ItemStack } from "./items.js";
 import { Ui } from "./ui.js";
 import { Button, Label, Texture, Widget } from "./widgets.js";
-//changement inutile
+
 export class Inventory extends Ui{
     /**
      * 
