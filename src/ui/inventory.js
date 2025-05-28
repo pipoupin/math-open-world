@@ -91,7 +91,7 @@ export class Inventory extends Ui{
 
     update(current_time) {    //update_config(x=null, y=null, width=null, height=null, rendered=null, command=null)
         super.update(current_time)
-        if (this.game.inputHandler.isKeyPressed("e")) {
+        if (this.game.inputHandler.isKeyPressed("e") && this.game.inventory_unlocked) {
             if (this.game.current_ui === this) {
                 this.game.current_ui = null;
             } else if (!this.game.current_ui) {
