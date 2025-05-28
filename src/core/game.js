@@ -180,6 +180,7 @@ export class Game {
 		new Frog(this, this.maps["map"], constants.TILE_SIZE * 12, constants.TILE_SIZE * 12, 0.5)
 
 		const inventory = await Inventory.create(this, "inventory.png")
+		this.inventory_unlocked = false
 		this.player = new Player(this, this.tilesets["Kanji"], inventory)
 
 		const draggable = new Entity(
@@ -316,6 +317,7 @@ export class Game {
 					numberarea_pink.usable = false
 					numberarea_blue.usable = false
 					numberarea_red.usable = false
+					this.inventory_unlocked = true
 					problem.unfocus()
 				}	
 			}
