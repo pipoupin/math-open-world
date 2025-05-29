@@ -259,7 +259,6 @@ export class Map {
 
 		if (this.animated_tiles?.[tileNum]) {
 			const frameIndex = this.current_frame % this.animated_tiles[tileNum].frameorder.length
-			console.log(this.current_frame)
 			const frame = this.animated_tiles[tileNum].frameorder[frameIndex]
 			this.animation_tilesets[tileNum]?.drawTile(frame, screenX, screenY)
 		} else {
