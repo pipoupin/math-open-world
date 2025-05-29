@@ -1,5 +1,4 @@
 import { Game } from "../core/game.js"
-import { Tileset } from "./tileset.js"
 import { Hitbox } from "../entities/hitbox.js"
 import { collisions, constants, config, blockDepthOrder } from "../constants.js"
 import { Resizeable } from "../utils.js"
@@ -71,15 +70,9 @@ export class Map {
 		this.current_frame = 0
 		this.animation_tilesets = {}
 
-		for(let tile_num of Object.keys(this.animated_tiles)){
+		for(let [tile_num, animation] of Object.entries(this.animated_tiles)){
 			tile_num = parseInt(tile_num)
-			if(!isNaN(this.animated_tiles[tile_num].tileset.path))
-				this.animation_tilesets[tile_num] = this.animation_tilesets[parseInt(this.animated_tiles[tile_num].tileset.path)]
-			else
-				this.animation_tilesets[tile_num] = await Tileset.create(this.game,
-					this.animated_tiles[tile_num].tileset.path,
-					this.animated_tiles[tile_num].tileset.tilesize,
-					constants.TILE_SIZE, this.animated_tiles[tile_num].tileset.spacing)
+			this.animation_tilesets[tile_num] = this.game.tilesets[animation.tileset]
 		}
 
 		for (let layer of body.layers) {
@@ -266,6 +259,7 @@ export class Map {
 
 		if (this.animated_tiles?.[tileNum]) {
 			const frameIndex = this.current_frame % this.animated_tiles[tileNum].frameorder.length
+			console.log(this.current_frame)
 			const frame = this.animated_tiles[tileNum].frameorder[frameIndex]
 			this.animation_tilesets[tileNum]?.drawTile(frame, screenX, screenY)
 		} else {

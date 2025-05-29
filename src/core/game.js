@@ -165,8 +165,9 @@ export class Game {
 		await Tileset.create(this, "selection_cursor.png", 16, constants.TILE_SIZE / 2, 0)
 		await Tileset.create(this, "checkbox_tileset.png", 32, constants.TILE_SIZE / 2, 0)
 		await Tileset.create(this, "arrow.png", 15, constants.TILE_SIZE / 8, 0)
+		await Tileset.create(this, "firefly.png", 16, constants.TILE_SIZE, 0)
 
-		await Map.create(this, 'house.json', "black", {x: constants.TILE_SIZE * 1.5, y: 3 * constants.TILE_SIZE}),
+		await Map.create(this, 'house.json', "black", {x: constants.TILE_SIZE * 1.5, y: 3 * constants.TILE_SIZE})
 		await Map.create(this, 'map.json', "grey", {x: 15.5 * constants.TILE_SIZE, y: 14.01 * constants.TILE_SIZE})
 		await Map.create(this, 'new_map.json', "grey", {x: 116.5 * constants.TILE_SIZE, y: 80.5 * constants.TILE_SIZE})
 
