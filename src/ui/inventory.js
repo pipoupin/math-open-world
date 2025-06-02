@@ -43,8 +43,8 @@ export class Inventory extends Ui{
             for(let i = 0; i < 9; i++){
                 if(inv.get_widget(`inventory-button-${i}`).is_hovered){
                     hovered_texture.update_config(
-                        Inventory.get_slot_coordinates(i).x,
-                        Inventory.get_slot_coordinates(i).y,
+                        Inventory.get_slot_coordinates(i).x - constants.TILE_SIZE * 0.25,
+                        Inventory.get_slot_coordinates(i).y - constants.TILE_SIZE * 0.25,
                         null, null, true
                     )
                     has_hovered = true
@@ -201,7 +201,7 @@ export class Inventory extends Ui{
         let slot_width = constants.TILE_SIZE * 1.05
         let widgets_array = [
             await Texture.create(game, "hovered-texture",
-                "inventory_hovered_tileset.png", 0, 0, slot_width, slot_width, false, 2),
+                "inventory_hovered_tileset.png", 0, 0, slot_width*1.5, slot_width*1.5, false, 0),
             new Label(game, "tooltip-title-label", 0, 0, "", false, 4, constants.TILE_SIZE * 0.5, "white")
         ]
         for(let i=0; i<9; i++){
